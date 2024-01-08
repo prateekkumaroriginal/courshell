@@ -46,6 +46,7 @@ const courseSchema = new Schema({
     price: {
         type: Number,
         required: true,
+        default: 0,
     },
     modules: [{
         module: {

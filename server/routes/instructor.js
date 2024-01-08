@@ -18,22 +18,38 @@ const signupInput = z.object({
     password: z.string().min(4),
 })
 
+const loginInput = z.object({
+    email: z.string().email(),
+    password: z.string().min(4),
+})
+
+const courseInput = z.object({
+    title: z.string().min(4).max(200),
+    description: z.string().min(4),
+    price: z.number(),
+    published: z.boolean(),
+})
+
 router.post('/signup', async (req, res) => {
     try {
-        const { firstName, lastName, email, password } = req.body;
-        const parsedInput = signupInput.safeParse({ firstName, lastName, email, password })
+        const parsedInput = signupInput.safeParse(req.body);
         if (!parsedInput.success) {
             return res.status(400).json({
                 message: parsedInput.error
             })
         }
-        const instructor = await Instructor.findOne({ email });
+        const instructor = await Instructor.findOne({ email: parsedInput.data.email });
 
         if (instructor) {
             res.status(403).json({ message: 'Instructor with same email already exists' });
         } else {
-            await Instructor.create({ email, password, firstName, lastName });
-            const token = jwt.sign({ email, role: 'instructor' }, SECRET, { expiresIn: '1h' });
+            await Instructor.create({
+                email: parsedInput.data.email,
+                password: parsedInput.data.password,
+                firstName: parsedInput.data.firstName,
+                lastName: parsedInput.data.lastName
+            });
+            const token = jwt.sign({ email: parsedInput.data.email, role: 'instructor' }, SECRET, { expiresIn: '1h' });
             res.status(201).json({ token });
         }
     } catch (error) {
@@ -44,16 +60,21 @@ router.post('/signup', async (req, res) => {
 
 router.post('/login', async (req, res) => {
     try {
-        const { email, password } = req.headers;
-        const instructor = await Instructor.findOne({ email });
+        const parsedInput = loginInput.safeParse(req.headers);
+        if (!parsedInput.success) {
+            return res.status(400).json({
+                message: parsedInput.error
+            })
+        }
+        const instructor = await Instructor.findOne({ email: parsedInput.data.email });
 
         if (!instructor) {
             res.status(403).json({ message: 'Invalid credentials' });
         } else {
-            if (instructor.password !== password) {
+            if (instructor.password !== parsedInput.data.password) {
                 return res.status(403).json({ message: 'Invalid credentials' });
             }
-            const token = jwt.sign({ email, role: 'instructor' }, SECRET, { expiresIn: '1h' });
+            const token = jwt.sign({ email: parsedInput.data.email, role: 'instructor' }, SECRET, { expiresIn: '1h' });
             res.status(200).json({ token });
         }
     } catch (error) {
@@ -63,7 +84,12 @@ router.post('/login', async (req, res) => {
 });
 
 router.post('/courses', authenticateInstructor, async (req, res) => {
-    const { title, description, price, published } = req.body;
+    const parsedInput = courseInput.safeParse(req.body);
+    if (!parsedInput.success) {
+        return res.status(400).json({
+            message: parsedInput.error
+        })
+    }
     const instructor = await Instructor.findOne({ email: req.instructor.email });
 
     if (!instructor) {
@@ -71,10 +97,16 @@ router.post('/courses', authenticateInstructor, async (req, res) => {
     }
 
     try {
-        const course = await Course.create({ title, description, price, published, instructor: instructor._id })
-        res.status(201).json({ message: "Course created successfully", courseId: course._id })
+        const course = await Course.create({
+            title: parsedInput.data.title,
+            description: parsedInput.data.description,
+            price: parsedInput.data.price,
+            published: parsedInput.data.published,
+            instructor: instructor._id
+        })
         instructor.createdCourses.push(course);
         await instructor.save();
+        res.status(201).json({ message: "Course created successfully", courseId: course._id })
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Internal server error" })
