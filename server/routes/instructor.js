@@ -4,15 +4,29 @@ const Instructor = require("../db/Instructor");
 const { Course, Module, Article } = require("../db/Course");
 const jwt = require('jsonwebtoken');
 const { authenticateInstructor } = require('../middleware/auth');
+const { z } = require('zod')
 require('dotenv').config;
 
 const SECRET = process.env.SECRET;
 
 const router = express.Router();
 
+const signupInput = z.object({
+    firstName: z.string().min(1),
+    lastName: z.string().min(1),
+    email: z.string().email(),
+    password: z.string().min(4),
+})
+
 router.post('/signup', async (req, res) => {
     try {
         const { firstName, lastName, email, password } = req.body;
+        const parsedInput = signupInput.safeParse({ firstName, lastName, email, password })
+        if (!parsedInput.success) {
+            return res.status(400).json({
+                message: parsedInput.error
+            })
+        }
         const instructor = await Instructor.findOne({ email });
 
         if (instructor) {
@@ -23,7 +37,8 @@ router.post('/signup', async (req, res) => {
             res.status(201).json({ token });
         }
     } catch (error) {
-        res.status(403).json({ error })
+        console.error(error);
+        res.status(500).json({ error: "Internal server error" })
     }
 });
 
@@ -42,7 +57,8 @@ router.post('/login', async (req, res) => {
             res.status(200).json({ token });
         }
     } catch (error) {
-        res.status(403).json({ error })
+        console.error(error);
+        res.status(500).json({ error: "Internal server error" })
     }
 });
 
@@ -71,7 +87,7 @@ router.get('/courses', authenticateInstructor, async (req, res) => {
         return res.status(401).json({ message: "Instructor not found" })
     }
 
-    const courses = await instructor.populate('createdCourses')
+    await instructor.populate('createdCourses')
     res.json({ courses: instructor.createdCourses })
 })
 

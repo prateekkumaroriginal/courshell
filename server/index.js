@@ -7,8 +7,8 @@ require('dotenv').config();
 
 const app = express();
 app.use(bodyParser.json());
-app.use("/instructor", instructorRouter)
-app.use("/user", userRouter)
+app.use("/instructor", instructorRouter);
+app.use("/user", userRouter);
 
 const port = process.env.PORT || 3000;
 const MONGODB_CONNECTION_STRING = process.env.MONGODB_CONNECTION_STRING;

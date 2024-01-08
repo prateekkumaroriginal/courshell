@@ -19,8 +19,14 @@ const moduleSchema = new Schema({
         required: true,
     },
     articles: [{
-        type: Schema.Types.ObjectId,
-        ref: 'Article',
+        article: {
+            type: Schema.Types.ObjectId,
+            ref: 'Article',
+        },
+        sequence: {
+            type: Number,
+            required: true,
+        }
     }],
 });
 
@@ -33,14 +39,29 @@ const courseSchema = new Schema({
         type: String,
         required: true,
     },
+    imageLink:{
+        type: String,
+        required: false
+    },
     price: {
         type: Number,
         required: true,
     },
     modules: [{
-        type: Schema.Types.ObjectId,
-        ref: 'Module'
+        module: {
+            type: Schema.Types.ObjectId,
+            ref: 'Module',
+        },
+        sequence: {
+            type: Number,
+            required: false,
+        },
     }],
+    published: {
+        type: Boolean,
+        required: true,
+        default: true
+    },
     instructor: {
         type: Schema.Types.ObjectId,
         ref: 'Instructor',
