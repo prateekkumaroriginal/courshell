@@ -28,10 +28,10 @@ module.exports.authenticateInstructor = async (req, res, next) => {
         const token = authHeader.split(' ')[1];
         jwt.verify(token, SECRET, (err, instructor) => {
             if (err) {
-                return res.sendStatus(403);
+                return res.status(403).json({ error: err });
             }
             if (instructor.role !== 'instructor') {
-                return res.sendStatus(403);
+                return res.status(403).json({ error: "You are not authorized as an instructor" });
             }
             req.instructor = instructor;
             next();

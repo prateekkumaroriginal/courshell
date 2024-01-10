@@ -3,12 +3,14 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const instructorRouter = require('./routes/instructor')
 const userRouter = require('./routes/user')
+const courseRouter = require('./routes/courses')
 require('dotenv').config();
 
 const app = express();
 app.use(bodyParser.json());
 app.use("/instructor", instructorRouter);
 app.use("/user", userRouter);
+app.use("/courses", courseRouter);
 
 const port = process.env.PORT || 3000;
 const MONGODB_CONNECTION_STRING = process.env.MONGODB_CONNECTION_STRING;

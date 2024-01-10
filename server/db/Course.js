@@ -30,6 +30,8 @@ const moduleSchema = new Schema({
     }],
 });
 
+moduleSchema.index({ 'articles.sequence': 1 }, { unique: true, sparse: true });
+
 const courseSchema = new Schema({
     title: {
         type: String,
@@ -39,7 +41,7 @@ const courseSchema = new Schema({
         type: String,
         required: true,
     },
-    imageLink:{
+    imageLink: {
         type: String,
         required: false
     },
@@ -55,7 +57,8 @@ const courseSchema = new Schema({
         },
         sequence: {
             type: Number,
-            required: false,
+            required: true,
+            unique: true,
         },
     }],
     published: {
@@ -77,6 +80,8 @@ const courseSchema = new Schema({
         default: Date.now,
     },
 });
+
+courseSchema.index({ 'modules.sequence': 1 }, { unique: true, sparse: true });
 
 const Article = mongoose.model('Article', articleSchema);
 const Module = model('Module', moduleSchema);
