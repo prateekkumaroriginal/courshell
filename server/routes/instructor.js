@@ -1,4 +1,3 @@
-const mongoose = require("mongoose");
 const express = require('express');
 const Instructor = require("../db/Instructor");
 const { Course, Module, Article } = require("../db/Course");
@@ -28,6 +27,15 @@ const courseInput = z.object({
     description: z.string().min(4),
     price: z.number(),
     published: z.boolean(),
+})
+
+const moduleInput = z.object({
+    title: z.string().min(4).max(200),
+})
+
+const articleInput = z.object({
+    title: z.string().min(4).max(200),
+    content: z.string().min(4),
 })
 
 router.post('/signup', async (req, res) => {
@@ -75,7 +83,7 @@ router.post('/login', async (req, res) => {
                 return res.status(403).json({ message: 'Invalid credentials' });
             }
             const token = jwt.sign({ email: parsedInput.data.email, role: 'instructor' }, SECRET, { expiresIn: '1h' });
-            res.status(200).json({ token });
+            res.json({ token });
         }
     } catch (error) {
         console.error(error);
@@ -104,9 +112,11 @@ router.post('/courses', authenticateInstructor, async (req, res) => {
             published: parsedInput.data.published,
             instructor: instructor._id
         })
-        instructor.createdCourses.push(course);
-        await instructor.save();
-        res.status(201).json({ message: "Course created successfully", courseId: course._id })
+        if (course) {
+            instructor.createdCourses.push(course);
+            await instructor.save();
+            res.status(201).json({ message: "Course created successfully", courseId: course._id })
+        }
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Internal server error" })
@@ -121,6 +131,93 @@ router.get('/courses', authenticateInstructor, async (req, res) => {
 
     await instructor.populate('createdCourses')
     res.json({ courses: instructor.createdCourses })
+})
+
+router.get('/me', authenticateInstructor, async (req, res) => {
+    const instructor = await Instructor.findOne({ email: req.instructor.email })
+    if (!instructor) {
+        return res.status(401).json({ message: "Instructor not found" })
+    }
+
+    await instructor.populate('createdCourses');
+    res.json({
+        email: instructor.email,
+        firstName: instructor.firstName,
+        lastName: instructor.lastName,
+        createdCourses: instructor.createdCourses,
+    })
+})
+
+router.post('/courses/:courseId/modules', authenticateInstructor, async (req, res) => {
+    const course = await Course.findById(req.params.courseId)
+    if (!course) {
+        return res.status(404).json({ message: "Course not found" })
+    }
+
+    const sequenceNumber = course.modules.length + 1;
+    const parsedInput = moduleInput.safeParse(req.body)
+
+    if (!parsedInput.success) {
+        return res.status(400).json({
+            message: parsedInput.error
+        })
+    }
+
+    try {
+        const module = await Module.create({
+            title: parsedInput.data.title
+        })
+        if (module) {
+            course.modules.push({
+                module: module._id,
+                sequence: sequenceNumber
+            })
+            await course.save()
+            res.status(201).json({ message: "Module created successfully", moduleId: module._id })
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Internal server error" })
+    }
+})
+
+router.post('/courses/:courseId/modules/:moduleId/articles', authenticateInstructor, async (req, res) => {
+    const course = await Course.findById(req.params.courseId)
+    if (!course) {
+        return res.status(404).json({ message: "Course not found" })
+    }
+
+    const module = await Module.findById(req.params.moduleId)
+    if (!module) {
+        return res.status(404).json({ message: "Module not found" })
+    }
+
+    const sequenceNumber = module.articles.length + 1;
+    const parsedInput = articleInput.safeParse(req.body)
+
+    if (!parsedInput.success) {
+        return res.status(400).json({
+            message: parsedInput.error
+        })
+    }
+
+    try {
+        const article = await Article.create({
+            title: parsedInput.data.title,
+            content: parsedInput.data.content
+        })
+        if (article) {
+            module.articles.push({
+                article: article._id,
+                sequence: sequenceNumber
+            })
+            await module.save()
+            res.status(201).json({ message: "Article created successfully", moduleId: article._id })
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Internal server error" })
+    }
 })
 
 module.exports = router;
