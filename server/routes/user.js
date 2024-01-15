@@ -3,7 +3,7 @@ const express = require('express');
 const User = require("../db/User");
 const { Course, Module, Article } = require("../db/Course");
 const jwt = require('jsonwebtoken');
-const { authenticateJwt } = require("../middleware/auth");
+const { authenticateUser } = require("../middleware/auth");
 const { z } = require('zod');
 require('dotenv').config();
 
@@ -75,5 +75,40 @@ router.post('/login', async (req, res) => {
         res.status(500).json({ error: "Internal server error" })
     }
 });
+
+router.get('/courses', authenticateUser, async (req, res) => {
+    const user = await User.findOne({ email: req.user.email });
+    if (!user) {
+        return res.status(401).json({ message: "User not found" })
+    }
+
+    await user.populate('enrolledCourses');
+    return res.json({ courses: user.enrolledCourses });
+})
+
+router.post('/courses/:courseId', authenticateUser, async (req, res) => {
+    const user = await User.findOne({ email: req.user.email })
+    if (!user) {
+        return res.status(401).json({ message: "user not found" })
+    }
+
+    const course = await Course.findById(req.params.courseId)
+    if (!course) {
+        return res.json.status(404).json({ message: "Course not found" })
+    }
+
+    if (user.enrolledCourses.includes(course._id)) {
+        return res.status(403).json({ message: "Course already enrolled" })
+    }
+
+    try {
+        user.enrolledCourses.push(course)
+        await user.save()
+        return res.json({ message: "Course successfully purchased" })
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({ error: "Internal server error" })
+    }
+})
 
 module.exports = router;

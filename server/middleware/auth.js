@@ -9,7 +9,7 @@ module.exports.authenticateUser = async (req, res, next) => {
         const token = authHeader.split(' ')[1];
         jwt.verify(token, SECRET, (err, user) => {
             if (err) {
-                return res.sendStatus(403);
+                return res.sendStatus(401);
             }
             if (user.role !== 'user') {
                 return res.sendStatus(403);
@@ -28,7 +28,7 @@ module.exports.authenticateInstructor = async (req, res, next) => {
         const token = authHeader.split(' ')[1];
         jwt.verify(token, SECRET, (err, instructor) => {
             if (err) {
-                return res.status(403).json({ error: err });
+                return res.status(401).json({ error: err });
             }
             if (instructor.role !== 'instructor') {
                 return res.status(403).json({ error: "You are not authorized as an instructor" });

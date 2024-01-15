@@ -10,6 +10,21 @@ const articleSchema = new Schema({
         type: String,
         required: true,
     },
+    module: {
+        type: Schema.Types.ObjectId,
+        ref: 'Module',
+    },
+    position: {
+        type: Number,
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now,
+    },
+    updatedAt: {
+        type: Date,
+        default: Date.now,
+    },
 });
 
 
@@ -19,15 +34,24 @@ const moduleSchema = new Schema({
         required: true,
     },
     articles: [{
-        article: {
-            type: Schema.Types.ObjectId,
-            ref: 'Article',
-        },
-        sequence: {
-            type: Number,
-            required: true,
-        }
+        type: Schema.Types.ObjectId,
+        ref: 'Article',
     }],
+    course: {
+        type: Schema.Types.ObjectId,
+        ref: 'Course',
+    },
+    position: {
+        type: Number,
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now,
+    },
+    updatedAt: {
+        type: Date,
+        default: Date.now,
+    },
 });
 
 const courseSchema = new Schema({
@@ -37,7 +61,8 @@ const courseSchema = new Schema({
     },
     description: {
         type: String,
-        required: true,
+        required: false,
+        default: "",
     },
     imageLink: {
         type: String,
@@ -45,24 +70,17 @@ const courseSchema = new Schema({
     },
     price: {
         type: Number,
-        required: true,
-        default: 0,
+        required: false,
+        default: null
     },
     modules: [{
-        module: {
-            type: Schema.Types.ObjectId,
-            ref: 'Module',
-        },
-        sequence: {
-            type: Number,
-            required: true,
-            unique: true,
-        },
+        type: Schema.Types.ObjectId,
+        ref: 'Module',
     }],
     published: {
         type: Boolean,
         required: true,
-        default: true
+        default: false
     },
     instructor: {
         type: Schema.Types.ObjectId,

@@ -22,11 +22,15 @@ const loginInput = z.object({
     password: z.string().min(4),
 })
 
-const courseInput = z.object({
+const courseTitleInput = z.object({
     title: z.string().min(4).max(200),
-    description: z.string().min(4),
-    price: z.number(),
-    published: z.boolean(),
+})
+
+const courseUpdateInput = z.object({
+    title: z.string().min(4).max(200).optional(),
+    description: z.string().optional(),
+    imageLink: z.string().url().optional(),
+    price: z.number().optional(),
 })
 
 const moduleInput = z.object({
@@ -92,7 +96,7 @@ router.post('/login', async (req, res) => {
 });
 
 router.post('/courses', authenticateInstructor, async (req, res) => {
-    const parsedInput = courseInput.safeParse(req.body);
+    const parsedInput = courseTitleInput.safeParse(req.body);
     if (!parsedInput.success) {
         return res.status(400).json({
             message: parsedInput.error
@@ -109,7 +113,6 @@ router.post('/courses', authenticateInstructor, async (req, res) => {
             title: parsedInput.data.title,
             description: parsedInput.data.description,
             price: parsedInput.data.price,
-            published: parsedInput.data.published,
             instructor: instructor._id
         })
         if (course) {
@@ -133,6 +136,48 @@ router.get('/courses', authenticateInstructor, async (req, res) => {
     res.json({ courses: instructor.createdCourses })
 })
 
+router.get('/courses/:courseId', authenticateInstructor, async (req, res) => {
+    const course = await Course.findById(req.params.courseId);
+    if (!course) {
+        return res.status(404).json({ message: "Course not found" });
+    }
+
+    const instructor = await Instructor.findOne({ email: req.instructor.email });
+    if (course.instructor.toString() !== instructor._id.toString()) {
+        return res.status(404).json({ message: "Course with this instructor not found" });
+    }
+
+    return res.json({ course })
+})
+
+router.patch('/courses/:courseId', authenticateInstructor, async (req, res) => {
+    const parsedInput = courseUpdateInput.safeParse(req.body);
+    if (!parsedInput.success) {
+        return res.status(400).json({
+            message: parsedInput.error
+        })
+    }
+
+    const course = await Course.findById(req.params.courseId);
+    if (!course) {
+        return res.status(404).json({ message: "Course not found" });
+    }
+
+    const instructor = await Instructor.findOne({ email: req.instructor.email });
+    if (course.instructor.toString() !== instructor._id.toString()) {
+        return res.status(403).json({ message: "Course with this instructor not found" });
+    }
+
+    try {
+        Object.assign(course, parsedInput.data);
+        const updatedCourse = await course.save();
+        return res.json({ course: updatedCourse });
+    } catch (error) {
+        console.error("Error updating course: ", error);
+        return res.status(500).json({ message: "Internal server error" });
+    }
+})
+
 router.get('/me', authenticateInstructor, async (req, res) => {
     const instructor = await Instructor.findOne({ email: req.instructor.email })
     if (!instructor) {
@@ -142,6 +187,7 @@ router.get('/me', authenticateInstructor, async (req, res) => {
     await instructor.populate('createdCourses');
     res.json({
         email: instructor.email,
+        role: 'instructor',
         firstName: instructor.firstName,
         lastName: instructor.lastName,
         createdCourses: instructor.createdCourses,
@@ -154,7 +200,6 @@ router.post('/courses/:courseId/modules', authenticateInstructor, async (req, re
         return res.status(404).json({ message: "Course not found" })
     }
 
-    const sequenceNumber = course.modules.length + 1;
     const parsedInput = moduleInput.safeParse(req.body)
 
     if (!parsedInput.success) {
@@ -163,15 +208,18 @@ router.post('/courses/:courseId/modules', authenticateInstructor, async (req, re
         })
     }
 
+    const lastModule = await Module.findOne({ course: req.params.courseId }).sort({ position: -1 }).limit(1);
+
+    const newPosition = lastModule ? lastModule.position + 1 : 1;
+
     try {
         const module = await Module.create({
-            title: parsedInput.data.title
+            title: parsedInput.data.title,
+            course: course._id,
+            position: newPosition,
         })
         if (module) {
-            course.modules.push({
-                module: module._id,
-                sequence: sequenceNumber
-            })
+            course.modules.push(module._id)
             await course.save()
             res.status(201).json({ message: "Module created successfully", moduleId: module._id })
         }
@@ -192,7 +240,6 @@ router.post('/courses/:courseId/modules/:moduleId/articles', authenticateInstruc
         return res.status(404).json({ message: "Module not found" })
     }
 
-    const sequenceNumber = module.articles.length + 1;
     const parsedInput = articleInput.safeParse(req.body)
 
     if (!parsedInput.success) {
@@ -201,16 +248,19 @@ router.post('/courses/:courseId/modules/:moduleId/articles', authenticateInstruc
         })
     }
 
+    const lastArticle = await Article.findOne({ module: req.params.moduleId }).sort({ position: -1 }).limit(1);
+
+    const newPosition = lastArticle ? lastArticle.position + 1 : 1;
+
     try {
         const article = await Article.create({
             title: parsedInput.data.title,
-            content: parsedInput.data.content
+            content: parsedInput.data.content,
+            module: module._id,
+            position: newPosition,
         })
         if (article) {
-            module.articles.push({
-                article: article._id,
-                sequence: sequenceNumber
-            })
+            module.articles.push(article._id)
             await module.save()
             res.status(201).json({ message: "Article created successfully", moduleId: article._id })
         }

@@ -4,10 +4,12 @@ const mongoose = require('mongoose');
 const instructorRouter = require('./routes/instructor')
 const userRouter = require('./routes/user')
 const courseRouter = require('./routes/courses')
+const cors = require('cors');
 require('dotenv').config();
 
 const app = express();
 app.use(bodyParser.json());
+app.use(cors());
 app.use("/instructor", instructorRouter);
 app.use("/user", userRouter);
 app.use("/courses", courseRouter);
