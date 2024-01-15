@@ -51,7 +51,7 @@ const Course = () => {
 
     useEffect(() => {
         fetchData();
-    }, [requiredFields]);
+    }, [course]);
 
 
     return (
