@@ -9,14 +9,14 @@ const formSchema = z.object({
     })
 })
 
-const DescriptionForm = ({ course, courseId }) => {
+const DescriptionForm = ({ course, courseId, fetchData }) => {
     const [isEditing, setIsEditing] = useState(false);
     const form = useForm({
         resolver: zodResolver(formSchema),
         defaultValues: course
     });
 
-    const { handleSubmit } = form;
+    const { handleSubmit, reset } = form;
     const { isSubmitting, isValid } = form.formState;
 
     const onSubmit = async (values) => {
@@ -30,6 +30,7 @@ const DescriptionForm = ({ course, courseId }) => {
                 },
                 body: JSON.stringify(values)
             });
+            fetchData();
         } catch (error) {
             console.log(error);
         }
@@ -45,6 +46,7 @@ const DescriptionForm = ({ course, courseId }) => {
                         className='px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md'
                         onClick={() => {
                             setIsEditing(false)
+                            reset(course)
                         }}>
                         Cancel
                     </button>

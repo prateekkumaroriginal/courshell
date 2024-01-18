@@ -7,11 +7,13 @@ const Course = () => {
     const { courseId } = useParams();
     const navigate = useNavigate()
     const [course, setCourse] = useState(null);
-    const [requiredFields, setRequiredFields] = useState([])
     const [totalFields, setTotalFields] = useState(0)
     const [completedFields, setCompletedFields] = useState(0)
-    const [completionText, setCompletionText] = useState("")
     const [isLoading, setIsLoading] = useState(true)
+
+    useEffect(() => {
+        fetchData();
+    }, []);
 
     const fetchData = async () => {
         try {
@@ -32,27 +34,21 @@ const Course = () => {
 
             const data = await response.json();
             setCourse(data.course);
-            setRequiredFields([
+            const updatedRequiredFields = [
                 data.course.title,
                 data.course.description,
                 data.course.imageLink,
                 data.course.price,
-            ]);
+            ];
 
-            setTotalFields(requiredFields.length);
-            setCompletedFields(requiredFields.filter(Boolean).length);
-            setCompletionText(`${completedFields}/${totalFields}`);
+            setTotalFields(updatedRequiredFields.length);
+            setCompletedFields(updatedRequiredFields.filter(Boolean).length);
             setIsLoading(false)
         } catch (error) {
             console.error('Error fetching course data:', error);
             setIsLoading(false)
         }
     };
-
-    useEffect(() => {
-        fetchData();
-    }, [course]);
-
 
     return (
         <div className='md:p-6'>
@@ -61,9 +57,9 @@ const Course = () => {
                     <h1 className='text-3xl font-semibold'>
                         Course Setup
                     </h1>
-                    <span className='text-sm text-zinc-600'>
-                        Completed Fields ({completionText})
-                    </span>
+                    {!isLoading && <span className='text-sm text-zinc-600'>
+                        Completed Fields ({completedFields}/{totalFields})
+                    </span>}
                 </div>
             </div>
 
@@ -73,8 +69,8 @@ const Course = () => {
                         <h2 className='text-xl font-semibold'>Customize Your Course</h2>
                     </div>
                     {!isLoading && <>
-                        <TitleForm course={course} courseId={courseId} />
-                        <DescriptionForm course={course} courseId={courseId} />
+                        <TitleForm course={course} fetchData={fetchData} courseId={courseId} />
+                        <DescriptionForm course={course} fetchData={fetchData} courseId={courseId} />
                     </>
                     }
                 </div>
