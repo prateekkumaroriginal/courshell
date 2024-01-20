@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import TitleForm from './TitleForm';
 import DescriptionForm from './DescriptionForm'
+import UploadImage from './UploadImage';
 
 const Course = () => {
     const { courseId } = useParams();
@@ -71,6 +72,7 @@ const Course = () => {
                     {!isLoading && <>
                         <TitleForm course={course} fetchData={fetchData} courseId={courseId} />
                         <DescriptionForm course={course} fetchData={fetchData} courseId={courseId} />
+                        <UploadImage course={course} fetchData={fetchData} courseId={courseId} />
                     </>
                     }
                 </div>
