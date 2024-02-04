@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 
 const UploadImage = ({ course, courseId }) => {
-    const [imageUrl, setImageUrl] = useState()
+    const [imageUrl, setImageUrl] = useState(null)
     const form = useForm();
 
-    const { handleSubmit} = form;
+    const { handleSubmit } = form;
     const { isSubmitting } = form.formState;
 
     useEffect(() => {

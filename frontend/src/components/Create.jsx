@@ -38,7 +38,6 @@ const Create = () => {
                 }
             })
             response.json().then((data) => {
-                console.log(data);
                 navigate(`/courses/${data.courseId}`)
             });
         } catch (error) {
