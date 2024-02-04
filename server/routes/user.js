@@ -42,7 +42,7 @@ router.post('/signup', async (req, res) => {
                 firstName: parsedInput.data.firstName,
                 lastName: parsedInput.data.lastName
             });
-            const token = jwt.sign({ email: parsedInput.data.email, role: 'user' }, SECRET, { expiresIn: '1h' });
+            const token = jwt.sign({ email: parsedInput.data.email, role: 'user' }, SECRET, { expiresIn: '1w' });
             res.status(201).json({ token });
         }
     } catch (error) {
@@ -67,7 +67,7 @@ router.post('/login', async (req, res) => {
             if (user.password !== parsedInput.data.password) {
                 return res.status(403).json({ message: 'Invalid credentials' });
             }
-            const token = jwt.sign({ email: parsedInput.data.email, role: 'user' }, SECRET, { expiresIn: '1h' });
+            const token = jwt.sign({ email: parsedInput.data.email, role: 'user' }, SECRET, { expiresIn: '1w' });
             res.json({ token });
         }
     } catch (error) {

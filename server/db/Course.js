@@ -64,9 +64,10 @@ const courseSchema = new Schema({
         required: false,
         default: "",
     },
-    imageLink: {
-        type: String,
-        required: false
+    imageId: {
+        type: Schema.Types.ObjectId,
+        required: false,
+        default: null
     },
     price: {
         type: Number,

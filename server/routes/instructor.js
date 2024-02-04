@@ -4,6 +4,7 @@ const { Course, Module, Article } = require("../db/Course");
 const jwt = require('jsonwebtoken');
 const { authenticateInstructor } = require('../middleware/auth');
 const { z } = require('zod')
+const upload = require('../middleware/upload')
 require('dotenv').config;
 
 const SECRET = process.env.SECRET;
@@ -29,7 +30,6 @@ const courseTitleInput = z.object({
 const courseUpdateInput = z.object({
     title: z.string().min(4).max(200).optional(),
     description: z.string().optional(),
-    imageLink: z.string().url().optional(),
     price: z.number().optional(),
 })
 
@@ -61,7 +61,7 @@ router.post('/signup', async (req, res) => {
                 firstName: parsedInput.data.firstName,
                 lastName: parsedInput.data.lastName
             });
-            const token = jwt.sign({ email: parsedInput.data.email, role: 'instructor' }, SECRET, { expiresIn: '1h' });
+            const token = jwt.sign({ email: parsedInput.data.email, role: 'instructor' }, SECRET, { expiresIn: '1w' });
             res.status(201).json({ token });
         }
     } catch (error) {
@@ -86,7 +86,7 @@ router.post('/login', async (req, res) => {
             if (instructor.password !== parsedInput.data.password) {
                 return res.status(403).json({ message: 'Invalid credentials' });
             }
-            const token = jwt.sign({ email: parsedInput.data.email, role: 'instructor' }, SECRET, { expiresIn: '1h' });
+            const token = jwt.sign({ email: parsedInput.data.email, role: 'instructor' }, SECRET, { expiresIn: '1w' });
             res.json({ token });
         }
     } catch (error) {
@@ -150,7 +150,12 @@ router.get('/courses/:courseId', authenticateInstructor, async (req, res) => {
     return res.json({ course })
 })
 
-router.patch('/courses/:courseId', authenticateInstructor, async (req, res) => {
+router.patch('/courses/:courseId', authenticateInstructor, upload.single('file'), async (req, res) => {
+    let imageId;
+    if (req.file) {
+        imageId = req.file.id
+    }
+
     const parsedInput = courseUpdateInput.safeParse(req.body);
     if (!parsedInput.success) {
         return res.status(400).json({
@@ -170,6 +175,9 @@ router.patch('/courses/:courseId', authenticateInstructor, async (req, res) => {
 
     try {
         Object.assign(course, parsedInput.data);
+        if (imageId) {
+            Object.assign(course, { imageId });
+        }
         const updatedCourse = await course.save();
         return res.json({ course: updatedCourse });
     } catch (error) {

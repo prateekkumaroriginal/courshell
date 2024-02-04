@@ -1,25 +1,44 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 
-const UploadImage = ({ course }) => {
-    const [image, setImage] = useState(course.imageLink)
+const UploadImage = ({ course, courseId }) => {
+    const [imageUrl, setImageUrl] = useState()
     const form = useForm();
 
-    const { handleSubmit, reset, setValue } = form;
-    const { isValid, isSubmitting } = form.formState;
+    const { handleSubmit} = form;
+    const { isSubmitting } = form.formState;
 
-    const onSubmit = () => {
-        console.log("Hello");
-        const file = form.getValues('imageLink');
-        console.log(file);
+    useEffect(() => {
+        fetchImage();
+    }, [])
+
+    const fetchImage = async () => {
+        const imageResponse = await fetch(`http://localhost:3000/files/images/${course.imageId}`)
+        setImageUrl(imageResponse.url)
+    }
+
+    const onSubmit = async () => {
+        try {
+            const file = form.getValues('imageLink')[0];
+            const formData = new FormData();
+            formData.append('file', file);
+
+            await fetch(`http://localhost:3000/instructor/courses/${courseId}`, {
+                method: 'PATCH',
+                body: formData,
+                headers: {
+                    authorization: `Bearer ${localStorage.getItem('token')}`,
+                },
+            });
+        } catch (error) {
+            console.error('Error while uploading image:', error);
+        }
     }
 
     const handleFileChange = (e) => {
         try {
             const file = e.target.files[0];
-            console.log(file);
-            setValue('imageLink', file)
-            setImage(URL.createObjectURL(file));
+            setImageUrl(URL.createObjectURL(file));
         } catch (error) {
             console.log(error);
         }
@@ -33,9 +52,8 @@ const UploadImage = ({ course }) => {
                     disabled={isSubmitting}
                     {...form.register('imageLink')}
                     type="file"
-                    accept="image/png, image/jpeg"
                     onChange={handleFileChange}
-                    id="image"
+                    id="imageUrl"
                 />
                 <button
                     type='submit'
@@ -44,7 +62,7 @@ const UploadImage = ({ course }) => {
                     Save
                 </button>
             </form>
-            <img src={image} alt="h2" />
+            <img src={imageUrl} alt="h2" />
         </div>
     )
 }

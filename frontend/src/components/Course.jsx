@@ -29,22 +29,20 @@ const Course = () => {
                 return navigate("/signin")
             }
 
-            if (!response.ok) {
-                throw new Error('Failed to fetch course data');
+            if (response.ok) {
+                const data = await response.json();
+                setCourse(data.course);
+                const updatedRequiredFields = [
+                    data.course.title,
+                    data.course.description,
+                    data.course.imageId,
+                    data.course.price,
+                ];
+
+                setTotalFields(updatedRequiredFields.length);
+                setCompletedFields(updatedRequiredFields.filter(Boolean).length);
+                setIsLoading(false)
             }
-
-            const data = await response.json();
-            setCourse(data.course);
-            const updatedRequiredFields = [
-                data.course.title,
-                data.course.description,
-                data.course.imageLink,
-                data.course.price,
-            ];
-
-            setTotalFields(updatedRequiredFields.length);
-            setCompletedFields(updatedRequiredFields.filter(Boolean).length);
-            setIsLoading(false)
         } catch (error) {
             console.error('Error fetching course data:', error);
             setIsLoading(false)
