@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import TitleForm from './TitleForm';
 import DescriptionForm from './DescriptionForm'
+import UploadImage from './UploadImage';
 
 const Course = () => {
     const { courseId } = useParams();
@@ -28,22 +29,20 @@ const Course = () => {
                 return navigate("/signin")
             }
 
-            if (!response.ok) {
-                throw new Error('Failed to fetch course data');
+            if (response.ok) {
+                const data = await response.json();
+                setCourse(data.course);
+                const updatedRequiredFields = [
+                    data.course.title,
+                    data.course.description,
+                    data.course.imageId,
+                    data.course.price,
+                ];
+
+                setTotalFields(updatedRequiredFields.length);
+                setCompletedFields(updatedRequiredFields.filter(Boolean).length);
+                setIsLoading(false)
             }
-
-            const data = await response.json();
-            setCourse(data.course);
-            const updatedRequiredFields = [
-                data.course.title,
-                data.course.description,
-                data.course.imageLink,
-                data.course.price,
-            ];
-
-            setTotalFields(updatedRequiredFields.length);
-            setCompletedFields(updatedRequiredFields.filter(Boolean).length);
-            setIsLoading(false)
         } catch (error) {
             console.error('Error fetching course data:', error);
             setIsLoading(false)
@@ -71,6 +70,7 @@ const Course = () => {
                     {!isLoading && <>
                         <TitleForm course={course} fetchData={fetchData} courseId={courseId} />
                         <DescriptionForm course={course} fetchData={fetchData} courseId={courseId} />
+                        <UploadImage course={course} fetchData={fetchData} courseId={courseId} />
                     </>
                     }
                 </div>
