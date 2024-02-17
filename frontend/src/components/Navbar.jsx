@@ -27,7 +27,7 @@ const Navbar = () => {
             console.log(err);
             setIsLoading(false)
         })
-    }, [])
+    })
 
     const routes = [
         {

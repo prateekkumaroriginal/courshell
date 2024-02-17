@@ -3,9 +3,10 @@ import { useForm } from 'react-hook-form'
 
 const UploadImage = ({ course, courseId }) => {
     const [imageUrl, setImageUrl] = useState(null)
+    const [isEditing, setIsEditing] = useState(false)
     const form = useForm();
 
-    const { handleSubmit } = form;
+    const { handleSubmit, reset } = form;
     const { isSubmitting } = form.formState;
 
     useEffect(() => {
@@ -19,7 +20,7 @@ const UploadImage = ({ course, courseId }) => {
 
     const onSubmit = async () => {
         try {
-            const file = form.getValues('imageLink')[0];
+            const file = form.getValues('image')[0];
             const formData = new FormData();
             formData.append('file', file);
 
@@ -30,6 +31,8 @@ const UploadImage = ({ course, courseId }) => {
                     authorization: `Bearer ${localStorage.getItem('token')}`,
                 },
             });
+            document.getElementById("imageUrl").value = "";
+            setIsEditing(false);
         } catch (error) {
             console.error('Error while uploading image:', error);
         }
@@ -39,30 +42,44 @@ const UploadImage = ({ course, courseId }) => {
         try {
             const file = e.target.files[0];
             setImageUrl(URL.createObjectURL(file));
+            setIsEditing(true);
         } catch (error) {
             console.log(error);
         }
     };
 
     return (
-        <div className='p-10'>
+        <div className='mt-6 border bg-slate-200 rounded-md p-4'>
+            <p className='text-zinc-600 pt-2 pb-4'>Course Cover Image</p>
             <form onSubmit={handleSubmit(onSubmit)}>
                 <input
-                    className='p-1 shadow-lg appearance-none rounded w-full'
+                    className='p-1 mb-6 shadow-lg bg-white appearance-none rounded w-full'
                     disabled={isSubmitting}
-                    {...form.register('imageLink')}
+                    {...form.register('image')}
                     type="file"
                     onChange={handleFileChange}
                     id="imageUrl"
                 />
-                <button
-                    type='submit'
-                    disabled={isSubmitting}
-                    className='px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md'>
-                    Save
-                </button>
+                {isEditing && <>
+                    <button
+                        className='px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md'
+                        onClick={() => {
+                            setIsEditing(false);
+                            reset(course);
+                            fetchImage();
+                            document.getElementById("imageUrl").value = "";
+                        }}>
+                        Cancel
+                    </button>
+                    <button
+                        type='submit'
+                        disabled={isSubmitting}
+                        className='px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md'>
+                        Save
+                    </button>
+                </>}
             </form>
-            <img src={imageUrl} alt="h2" />
+            <img className='rounded-md' src={imageUrl} alt="h2" />
         </div>
     )
 }

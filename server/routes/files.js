@@ -14,7 +14,7 @@ router.get('/images/:imageId', async (req, res) => {
 
         const downloadStream = bucket.openDownloadStream(new mongoose.Types.ObjectId(imageId));
 
-        res.set('Content-Type', 'image/jpeg');
+        res.set('Content-Type', 'image/*');
 
         downloadStream.on('error', (error) => {
             console.error('Error fetching image:', error);
