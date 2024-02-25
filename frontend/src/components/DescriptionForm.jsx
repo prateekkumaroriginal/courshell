@@ -69,7 +69,7 @@ const DescriptionForm = ({ course, courseId, fetchData }) => {
                 onSubmit={handleSubmit(onSubmit)}
             >
                 <textarea
-                    className='p-1 shadow-lg appearance-none rounded w-full min-h-14'
+                    className='p-1 shadow-lg appearance-none rounded w-full min-h-14 outline-none'
                     type="text"
                     id='description'
                     placeholder="e.g. 'This is the best course for full stack web development from beginner to advanced.'"

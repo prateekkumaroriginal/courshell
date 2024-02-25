@@ -71,7 +71,7 @@ const TitleForm = ({ course, courseId, fetchData }) => {
                 onSubmit={handleSubmit(onSubmit)}
             >
                 <input
-                    className='p-1 shadow-lg appearance-none rounded w-full'
+                    className='p-1 shadow-lg appearance-none rounded w-full outline-none'
                     type="text"
                     id='title'
                     placeholder="e.g. 'Full stack web development'"

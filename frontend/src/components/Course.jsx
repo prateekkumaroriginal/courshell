@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import TitleForm from './TitleForm';
 import DescriptionForm from './DescriptionForm'
 import UploadImage from './UploadImage';
+import CategoryForm from './CategoryForm';
 
 const Course = () => {
     const { courseId } = useParams();
@@ -62,17 +63,20 @@ const Course = () => {
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-16">
+            <div className='flex items-center mt-16'>
+                <h2 className='text-xl font-semibold'>Customize Your Course</h2>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                    <div className='flex items-center gap-2'>
-                        <h2 className='text-xl font-semibold'>Customize Your Course</h2>
-                    </div>
                     {!isLoading && <>
                         <TitleForm course={course} fetchData={fetchData} courseId={courseId} />
                         <DescriptionForm course={course} fetchData={fetchData} courseId={courseId} />
                         <UploadImage course={course} fetchData={fetchData} courseId={courseId} />
                     </>
                     }
+                </div>
+                <div>
+                    <CategoryForm course={course} fetchData={fetchData} courseId={courseId} />
                 </div>
             </div>
         </div>

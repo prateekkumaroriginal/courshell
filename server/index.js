@@ -5,6 +5,7 @@ const instructorRouter = require('./routes/instructor')
 const userRouter = require('./routes/user')
 const courseRouter = require('./routes/courses')
 const filesRouter = require('./routes/files')
+const categoriesRouter = require('./routes/category')
 const cors = require('cors');
 require('dotenv').config();
 
@@ -15,6 +16,7 @@ app.use("/instructor", instructorRouter);
 app.use("/user", userRouter);
 app.use("/courses", courseRouter);
 app.use("/files", filesRouter);
+app.use("/categories", categoriesRouter);
 
 const port = process.env.PORT || 3000;
 const MONGODB_CONNECTION_STRING = process.env.MONGODB_CONNECTION_STRING;

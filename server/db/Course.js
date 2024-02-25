@@ -69,6 +69,11 @@ const courseSchema = new Schema({
         required: false,
         default: null
     },
+    categoryId: {
+        type:Schema.Types.ObjectId,
+        required: false,
+        default: null
+    },
     price: {
         type: Number,
         required: false,
@@ -98,7 +103,7 @@ const courseSchema = new Schema({
     },
 });
 
-const Article = mongoose.model('Article', articleSchema);
+const Article = model('Article', articleSchema);
 const Module = model('Module', moduleSchema);
 const Course = model('Course', courseSchema);
 
