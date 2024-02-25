@@ -4,6 +4,7 @@ function CategoryForm({ course, courseId }) {
     const [isEditing, setIsEditing] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
     const [options, setOptions] = useState([]);
+    const [category, setCategory] = useState(null);
 
     const toggleDropdown = () => setIsEditing(!isEditing);
 
@@ -46,9 +47,7 @@ function CategoryForm({ course, courseId }) {
         getCategories();
         if (course && course.categoryId) {
             const defaultCategory = options.find(option => option.value === course.categoryId);
-            if (defaultCategory) {
-                document.getElementById("category").value = defaultCategory.label;
-            }
+            document.getElementById("category").value = defaultCategory.label || "";
         }
     }, [course]);
 
@@ -58,7 +57,7 @@ function CategoryForm({ course, courseId }) {
 
     return (
         <div className='relative mt-6 border bg-slate-200 rounded-md p-4'>
-            <p className='text-zinc-600 py-2'>Course Category</p>
+            <p className='text-zinc-600 py-3'>Course Category</p>
             <input
                 type="text"
                 id="category"

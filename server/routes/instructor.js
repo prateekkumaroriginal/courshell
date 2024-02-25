@@ -1,5 +1,6 @@
 const express = require('express');
 const Instructor = require("../db/Instructor");
+const Category = require("../db/Category");
 const { Course, Module, Article } = require("../db/Course");
 const jwt = require('jsonwebtoken');
 const { authenticateInstructor } = require('../middleware/auth');
@@ -178,6 +179,13 @@ router.patch('/courses/:courseId', authenticateInstructor, upload.single('file')
         Object.assign(course, parsedInput.data);
         if (imageId) {
             Object.assign(course, { imageId });
+        }
+        if (parsedInput.data.categoryId){
+            const category = await Category.findById(parsedInput.data.categoryId)
+            if (!category.courses.includes(course._id)){
+                category.courses.push(course)
+                category.save()
+            }
         }
         const updatedCourse = await course.save();
         return res.json({ course: updatedCourse });
