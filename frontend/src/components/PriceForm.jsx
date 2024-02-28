@@ -3,22 +3,14 @@ import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 
-const formSchema = z.object({
-    title: z.string().min(4, {
-        message: 'Title must have atleast 4 characters'
-    }).max(200, {
-        message: 'Title cannot exceed 200 characters'
-    })
-})
 
-const TitleForm = ({ course, courseId }) => {
+const PriceForm = ({ course, courseId }) => {
     const [isEditing, setIsEditing] = useState(false);
-    const [title, setTitle] = useState(course.title)
+    const [price, setPrice] = useState(course.price);
 
     const form = useForm({
-        resolver: zodResolver(formSchema),
         defaultValues: course
-    });
+    }, [course]);
 
     const { handleSubmit, reset } = form;
     const { isSubmitting, isValid } = form.formState;
@@ -32,9 +24,9 @@ const TitleForm = ({ course, courseId }) => {
                     authorization: `Bearer ${localStorage.getItem('token')}`,
                     'content-type': 'application/json'
                 },
-                body: JSON.stringify(values)
+                body: JSON.stringify({price: parseInt(values.price)})
             });
-            setTitle(values.title)
+            setPrice(parseInt(values.price));
         } catch (error) {
             console.log(error);
         }
@@ -43,7 +35,7 @@ const TitleForm = ({ course, courseId }) => {
     return (
         <div className='mt-6 border bg-slate-200 rounded-md p-4'>
             <div className='font-medium flex items-center justify-between'>
-                <p className='text-zinc-600 py-2'>Course Title</p>
+                <p className='text-zinc-600 py-2'>Course Price</p>
 
                 {isEditing ? <div className='flex gap-x-2'>
                     <button
@@ -74,20 +66,18 @@ const TitleForm = ({ course, courseId }) => {
             >
                 <input
                     className='p-1 shadow-lg appearance-none rounded w-full outline-none'
-                    type="text"
-                    id='title'
-                    placeholder="e.g. 'Full stack web development'"
+                    type="number"
+                    id='price'
+                    placeholder="Enter course selling price..."
                     disabled={isSubmitting}
-                    defaultValue={course.title}
-                    {...form.register('title')}
+                    defaultValue={course.price}
+                    {...form.register('price')}
                 />
-                <div className="flex items-center">
-                </div>
             </form> : <p className='text-md font-semibold mt-2 py-1'>
-                {title}
+                {price || "Not set"}
             </p>}
         </div>
     )
 }
 
-export default TitleForm
+export default PriceForm

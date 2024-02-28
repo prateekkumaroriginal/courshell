@@ -1,15 +1,15 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 
 function CategoryForm({ course, courseId }) {
     const [isEditing, setIsEditing] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
     const [options, setOptions] = useState([]);
-    const [category, setCategory] = useState(null);
+    const [selectedCategory, setSelectedCategory] = useState("");
 
     const toggleDropdown = () => setIsEditing(!isEditing);
 
     const handleSelect = async (option) => {
-        document.getElementById("category").value = option.label;
+        setSelectedCategory(option.label);
         setIsEditing(false);
         try {
             await fetch(`http://localhost:3000/instructor/courses/${courseId}`, {
@@ -45,11 +45,14 @@ function CategoryForm({ course, courseId }) {
 
     useEffect(() => {
         getCategories();
+    }, [])
+
+    useEffect(() => {
         if (course && course.categoryId) {
             const defaultCategory = options.find(option => option.value === course.categoryId);
-            document.getElementById("category").value = defaultCategory.label || "";
+            setSelectedCategory(defaultCategory ? defaultCategory.label : "");
         }
-    }, [course]);
+    });
 
     const filteredOptions = options.filter(option =>
         option.label.toLowerCase().includes(searchTerm.toLowerCase())
@@ -64,6 +67,7 @@ function CategoryForm({ course, courseId }) {
                 autoComplete="off"
                 className='p-1 shadow-lg appearance-none rounded w-full outline-none'
                 placeholder="Search category..."
+                value={selectedCategory}
                 onClick={toggleDropdown}
                 onChange={handleInputChange}
             />

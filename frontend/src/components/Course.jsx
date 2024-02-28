@@ -4,6 +4,7 @@ import TitleForm from './TitleForm';
 import DescriptionForm from './DescriptionForm'
 import UploadImage from './UploadImage';
 import CategoryForm from './CategoryForm';
+import PriceForm from './PriceForm';
 
 const Course = () => {
     const { courseId } = useParams();
@@ -38,6 +39,7 @@ const Course = () => {
                     data.course.description,
                     data.course.imageId,
                     data.course.price,
+                    data.course.categoryId,
                 ];
 
                 setTotalFields(updatedRequiredFields.length);
@@ -63,20 +65,26 @@ const Course = () => {
                 </div>
             </div>
 
-            <div className='flex items-center mt-16'>
-                <h2 className='text-xl font-semibold'>Customize Your Course</h2>
-            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
+                    <div className='flex items-center mt-16'>
+                        <h2 className='text-xl font-semibold'>Customize Your Course</h2>
+                    </div>
                     {!isLoading && <>
                         <TitleForm course={course} fetchData={fetchData} courseId={courseId} />
                         <DescriptionForm course={course} fetchData={fetchData} courseId={courseId} />
+                        <CategoryForm course={course} fetchData={fetchData} courseId={courseId} />
                         <UploadImage course={course} fetchData={fetchData} courseId={courseId} />
                     </>
                     }
                 </div>
                 <div>
-                    <CategoryForm course={course} fetchData={fetchData} courseId={courseId} />
+                    <div className='flex items-center mt-16'>
+                        <h2 className='text-xl font-semibold'>Course Content</h2>
+                    </div>
+                    {!isLoading && <>
+                        <PriceForm course={course} fetchData={fetchData} courseId={courseId} />
+                    </>}
                 </div>
             </div>
         </div>
