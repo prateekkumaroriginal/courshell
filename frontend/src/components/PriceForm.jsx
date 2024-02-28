@@ -3,12 +3,16 @@ import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 
+const priceSchema = z.object({
+    price: z.coerce.number().multipleOf(0.01)
+});
 
 const PriceForm = ({ course, courseId }) => {
     const [isEditing, setIsEditing] = useState(false);
     const [price, setPrice] = useState(course.price);
 
     const form = useForm({
+        resolver: zodResolver(priceSchema),
         defaultValues: course
     }, [course]);
 
@@ -24,13 +28,13 @@ const PriceForm = ({ course, courseId }) => {
                     authorization: `Bearer ${localStorage.getItem('token')}`,
                     'content-type': 'application/json'
                 },
-                body: JSON.stringify({price: parseInt(values.price)})
+                body: JSON.stringify(values)
             });
-            setPrice(parseInt(values.price));
+            setPrice(values.price);
         } catch (error) {
             console.log(error);
         }
-    }
+    };
 
     return (
         <div className='mt-6 border bg-slate-200 rounded-md p-4'>
