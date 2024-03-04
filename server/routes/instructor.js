@@ -2,10 +2,12 @@ const express = require('express');
 const Instructor = require("../db/Instructor");
 const Category = require("../db/Category");
 const { Course, Module, Article } = require("../db/Course");
+const Attachment = require("../db/Attachment");
 const jwt = require('jsonwebtoken');
 const { authenticateInstructor } = require('../middleware/auth');
 const { z } = require('zod')
-const upload = require('../middleware/upload')
+const uploadImage = require('../middleware/uploadImage');
+const uploadFiles = require('../middleware/uploadFiles');
 require('dotenv').config;
 
 const SECRET = process.env.SECRET;
@@ -152,7 +154,70 @@ router.get('/courses/:courseId', authenticateInstructor, async (req, res) => {
     return res.json({ course })
 })
 
-router.patch('/courses/:courseId', authenticateInstructor, upload.single('file'), async (req, res) => {
+router.get('/courses/:courseId/attachments', authenticateInstructor, async (req, res)=>{
+    const course = await Course.findById(req.params.courseId);
+    if (!course) {
+        return res.status(404).json({ message: "Course not found" });
+    }
+
+    const instructor = await Instructor.findOne({ email: req.instructor.email });
+    if (course.instructor.toString() !== instructor._id.toString()) {
+        return res.status(404).json({ message: "Course with this instructor not found" });
+    }
+
+    await course.populate('attachments');
+    const files = [];
+    for (const attachment of course.attachments){
+        const response = await fetch(`http://localhost:3000/files/${attachment.fileId}`)
+        files.push({
+            url: response.url,
+            name: attachment.name
+        })
+    }
+    res.json({ attachments: files })
+})
+
+router.post('/courses/:courseId/attachments', authenticateInstructor, async (req, res) => {
+    try {
+        const courseId = req.params.courseId;
+        const course = await Course.findById(courseId);
+
+        if (!course) {
+            return res.status(404).json({ message: 'Course not found' });
+        }
+
+        const instructor = await Instructor.findOne({ email: req.instructor.email });
+        if (course.instructor.toString() !== instructor._id.toString()) {
+            return res.status(403).json({ message: "Course with this instructor not found" });
+        }
+
+        uploadFiles.array('files', 5)(req, res, async (err) => {
+            if (err) {
+                console.error(err);
+                return res.status(400).json({ message: 'Error uploading files' });
+            }
+
+            const files = req.files;
+            console.log(files[0]);
+            for (const file of files) {
+                const attachment = await Attachment.create({
+                    name: file.originalname,
+                    fileId: file.id,
+                    courseId,
+                });
+                course.attachments.push(attachment);
+                course.save();
+            }
+            res.status(200).json({ message: 'Files uploaded successfully' });
+        });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+router.patch('/courses/:courseId', authenticateInstructor, uploadImage.single('file'), async (req, res) => {
     let imageId;
     if (req.file) {
         imageId = req.file.id
@@ -180,9 +245,9 @@ router.patch('/courses/:courseId', authenticateInstructor, upload.single('file')
         if (imageId) {
             Object.assign(course, { imageId });
         }
-        if (parsedInput.data.categoryId){
+        if (parsedInput.data.categoryId) {
             const category = await Category.findById(parsedInput.data.categoryId)
-            if (!category.courses.includes(course._id)){
+            if (!category.courses.includes(course._id)) {
                 category.courses.push(course)
                 category.save()
             }

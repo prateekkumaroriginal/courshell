@@ -60,7 +60,7 @@ function CategoryForm({ course, courseId }) {
 
     return (
         <div className='relative mt-6 border bg-slate-200 rounded-md p-4'>
-            <p className='text-zinc-600 py-3'>Course Category</p>
+            <p className='font-bold text-zinc-600 py-3'>Course Category</p>
             <input
                 type="text"
                 id="category"

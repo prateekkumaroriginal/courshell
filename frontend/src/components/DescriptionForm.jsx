@@ -39,7 +39,7 @@ const DescriptionForm = ({ course, courseId, fetchData }) => {
     return (
         <div className='mt-6 border bg-slate-200 rounded-md p-4'>
             <div className='font-medium flex items-center justify-between'>
-                <p className='text-zinc-600 py-2'>Course Description</p>
+                <p className='font-bold text-zinc-600 py-2'>Course Description</p>
 
                 {isEditing ? <div className='flex gap-x-2'>
                     <button

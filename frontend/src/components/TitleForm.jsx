@@ -18,7 +18,7 @@ const TitleForm = ({ course, courseId }) => {
     const form = useForm({
         resolver: zodResolver(formSchema),
         defaultValues: course
-    });
+    }, []);
 
     const { handleSubmit, reset } = form;
     const { isSubmitting, isValid } = form.formState;
@@ -43,7 +43,7 @@ const TitleForm = ({ course, courseId }) => {
     return (
         <div className='mt-6 border bg-slate-200 rounded-md p-4'>
             <div className='font-medium flex items-center justify-between'>
-                <p className='text-zinc-600 py-2'>Course Title</p>
+                <p className='font-bold text-zinc-600 py-2'>Course Title</p>
 
                 {isEditing ? <div className='flex gap-x-2'>
                     <button

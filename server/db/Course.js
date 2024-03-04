@@ -93,6 +93,10 @@ const courseSchema = new Schema({
         ref: 'Instructor',
         required: true,
     },
+    attachments:[{
+        type: Schema.Types.ObjectId,
+        ref: 'Attachment',
+    }],
     createdAt: {
         type: Date,
         default: Date.now,

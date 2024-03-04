@@ -39,7 +39,7 @@ const PriceForm = ({ course, courseId }) => {
     return (
         <div className='mt-6 border bg-slate-200 rounded-md p-4'>
             <div className='font-medium flex items-center justify-between'>
-                <p className='text-zinc-600 py-2'>Course Price</p>
+                <p className='font-bold text-zinc-600 py-2'>Course Price</p>
 
                 {isEditing ? <div className='flex gap-x-2'>
                     <button
@@ -78,6 +78,7 @@ const PriceForm = ({ course, courseId }) => {
                     {...form.register('price')}
                 />
             </form> : <p className='text-md font-semibold mt-2 py-1'>
+                <span className='text-zinc-600 py-2'>&#8377; </span>
                 {price || "Not set"}
             </p>}
         </div>

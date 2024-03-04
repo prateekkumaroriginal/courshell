@@ -10,11 +10,13 @@ const UploadImage = ({ course, courseId }) => {
     const { isSubmitting } = form.formState;
 
     useEffect(() => {
-        fetchImage();
+        if (course.imageId){
+            fetchImage();
+        }
     }, [])
 
     const fetchImage = async () => {
-        const imageResponse = await fetch(`http://localhost:3000/files/images/${course.imageId}`)
+        const imageResponse = await fetch(`http://localhost:3000/files/${course.imageId}`)
         setImageUrl(imageResponse.url)
     }
 
@@ -50,7 +52,7 @@ const UploadImage = ({ course, courseId }) => {
 
     return (
         <div className='mt-6 border bg-slate-200 rounded-md p-4'>
-            <p className='text-zinc-600 pt-2 pb-4'>Course Cover Image</p>
+            <p className='font-bold text-zinc-600 pt-2 pb-4'>Course Cover Image</p>
             <form onSubmit={handleSubmit(onSubmit)}>
                 <input
                     className='p-1 mb-6 shadow-lg bg-white appearance-none rounded w-full'
@@ -66,6 +68,7 @@ const UploadImage = ({ course, courseId }) => {
                         onClick={() => {
                             setIsEditing(false);
                             fetchImage();
+                            reset(form);
                             document.getElementById("imageUrl").value = "";
                         }}>
                         Cancel

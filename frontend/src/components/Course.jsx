@@ -5,6 +5,7 @@ import DescriptionForm from './DescriptionForm'
 import UploadImage from './UploadImage';
 import CategoryForm from './CategoryForm';
 import PriceForm from './PriceForm';
+import AttachmentsForm from './AttachmentsForm';
 
 const Course = () => {
     const { courseId } = useParams();
@@ -84,6 +85,7 @@ const Course = () => {
                     </div>
                     {!isLoading && <>
                         <PriceForm course={course} fetchData={fetchData} courseId={courseId} />
+                        <AttachmentsForm course={course} fetchData={fetchData} courseId={courseId} />
                     </>}
                 </div>
             </div>

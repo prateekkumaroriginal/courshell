@@ -4,21 +4,21 @@ const { GridFSBucket } = require('mongodb')
 
 const router = express.Router()
 
-router.get('/images/:imageId', async (req, res) => {
-    const { imageId } = req.params;
+router.get('/:fileId', async (req, res) => {
+    const { fileId } = req.params;
 
     try {
         const bucket = new GridFSBucket(mongoose.connection.db, {
-            bucketName: 'images'
+            bucketName: 'files'
         });
 
-        const downloadStream = bucket.openDownloadStream(new mongoose.Types.ObjectId(imageId));
+        const downloadStream = bucket.openDownloadStream(new mongoose.Types.ObjectId(fileId));
 
         res.set('Content-Type', 'image/*');
 
         downloadStream.on('error', (error) => {
-            console.error('Error fetching image:', error);
-            return res.status(404).send('Image not found');
+            console.error('Error fetching file:', error);
+            return res.status(404).send('File not found');
         });
 
         downloadStream.pipe(res);
