@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form'
 const AttachmentsForm = ({ course, courseId }) => {
     const [isEditing, setIsEditing] = useState(false);
     const [attachments, setAttachments] = useState([]);
+    const [deletingId, setDeletingId] = useState(null);
     const form = useForm();
     const { isSubmitting, handleSubmit, reset, formState: { isDirty } } = form;
 
@@ -19,7 +20,6 @@ const AttachmentsForm = ({ course, courseId }) => {
         })
         const data = await response.json();
         setAttachments(data.attachments);
-
     }
 
     const onSubmit = async () => {
@@ -31,13 +31,20 @@ const AttachmentsForm = ({ course, courseId }) => {
                 formData.append("files", files[i]);
             }
 
-            await fetch(`http://localhost:3000/instructor/courses/${courseId}/attachments`, {
+            const response = await fetch(`http://localhost:3000/instructor/courses/${courseId}/attachments`, {
                 method: 'POST',
                 headers: {
                     authorization: `Bearer ${localStorage.getItem('token')}`
                 },
                 body: formData
-            })
+            });
+            const data = await response.json();
+
+            const newAttachments = [];
+            for (let i = 0; i < data.attachments.length; i++) {
+                newAttachments.push(data.attachments[i]);
+            }
+            setAttachments(prev => [...prev, ...newAttachments])
         } catch (error) {
             console.error("Error while uploading files: ", error);
         }
@@ -45,6 +52,24 @@ const AttachmentsForm = ({ course, courseId }) => {
         setIsEditing(false);
     }
 
+    const onDelete = async (id) => {
+        try {
+            setDeletingId(id);
+            const response = await fetch(`http://localhost:3000/instructor/courses/${courseId}/attachments/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    authorization: `Bearer ${localStorage.getItem('token')}`
+                }
+            });
+            if (response.ok) {
+                setAttachments(prevAttachments => prevAttachments.filter(attachment => attachment.id !== id));
+            }
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setDeletingId(null);
+        }
+    }
 
     return (
         <div className='mt-6 border bg-slate-200 rounded-md p-4'>
@@ -86,8 +111,16 @@ const AttachmentsForm = ({ course, courseId }) => {
                     />
                 </form> : <div className='space-y-2'>
                     {attachments.map((attachment, index) => (
-                        <div key={index} className='flex items-center px-3 w-full bg-sky-100 border-sky-200 border rounded-md hover:bg-sky-300'>
-                            <a className='w-full py-3' href={attachment.url} rel='noreferrer'>{attachment.name}</a>
+                        <div key={index} className='flex items-center w-full bg-sky-200 rounded-md hover:bg-sky-300'>
+                            <a className='w-full p-3 line-clamp-1' href={attachment.url} rel='noreferrer'>{attachment.name}</a>
+                            <button
+                                className='p-2 hover:scale-125 transition'
+                                onClick={() => {
+                                    onDelete(attachment.id)
+                                }}
+                            >
+                                ❌
+                            </button>
                         </div>
                     ))}
                 </div>}

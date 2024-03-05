@@ -154,7 +154,7 @@ router.get('/courses/:courseId', authenticateInstructor, async (req, res) => {
     return res.json({ course })
 })
 
-router.get('/courses/:courseId/attachments', authenticateInstructor, async (req, res)=>{
+router.get('/courses/:courseId/attachments', authenticateInstructor, async (req, res) => {
     const course = await Course.findById(req.params.courseId);
     if (!course) {
         return res.status(404).json({ message: "Course not found" });
@@ -167,9 +167,10 @@ router.get('/courses/:courseId/attachments', authenticateInstructor, async (req,
 
     await course.populate('attachments');
     const files = [];
-    for (const attachment of course.attachments){
+    for (const attachment of course.attachments) {
         const response = await fetch(`http://localhost:3000/files/${attachment.fileId}`)
         files.push({
+            id: attachment._id,
             url: response.url,
             name: attachment.name
         })
@@ -198,17 +199,25 @@ router.post('/courses/:courseId/attachments', authenticateInstructor, async (req
             }
 
             const files = req.files;
-            console.log(files[0]);
+            const attachments = [];
             for (const file of files) {
                 const attachment = await Attachment.create({
                     name: file.originalname,
                     fileId: file.id,
                     courseId,
                 });
+                attachments.push({
+                    id: attachment._id,
+                    url: `http://localhost:3000/files/${attachment.fileId}`,
+                    name: attachment.name
+                });
                 course.attachments.push(attachment);
-                course.save();
             }
-            res.status(200).json({ message: 'Files uploaded successfully' });
+            course.save();
+            res.status(200).json({
+                message: 'Files uploaded successfully',
+                attachments
+            });
         });
 
     } catch (error) {
@@ -216,6 +225,48 @@ router.post('/courses/:courseId/attachments', authenticateInstructor, async (req
         res.status(500).json({ error: 'Internal server error' });
     }
 });
+
+router.delete('/courses/:courseId/attachments/:attachmentId', authenticateInstructor, async (req, res) => {
+    const { courseId, attachmentId } = req.params;
+
+    try {
+        const course = await Course.findById(courseId);
+        if (!course) {
+            return res.status(404).json({ message: "Course not found" });
+        }
+
+        const instructor = await Instructor.findOne({ email: req.instructor.email });
+        if (course.instructor.toString() !== instructor._id.toString()) {
+            return res.status(403).json({ message: "Course with this instructor not found" });
+        }
+
+        const deletedAttachment = await Attachment.findByIdAndDelete({
+            _id: attachmentId,
+            courseId: courseId
+        });
+        if (!deletedAttachment) {
+            return res.status(404).json({ message: "Attachment not found" });
+        }
+
+        const response = await fetch(`http://localhost:3000/files/${deletedAttachment.fileId}`, {
+            method: 'DELETE',
+            headers: {
+                authorization: `Bearer ${req.token}`
+            }
+        });
+        if (response.ok) {
+            course.attachments = course.attachments.filter(id => id != attachmentId)
+            course.save()
+            res.status(200).json({ message: "Attachment deleted successfully" });
+        } else {
+            res.status(500).json({ error: "Internal Server Error" });
+            console.log(await response.json());
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+})
 
 router.patch('/courses/:courseId', authenticateInstructor, uploadImage.single('file'), async (req, res) => {
     let imageId;

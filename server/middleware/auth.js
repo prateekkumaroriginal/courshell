@@ -34,6 +34,7 @@ module.exports.authenticateInstructor = async (req, res, next) => {
                 return res.status(403).json({ error: "You are not authorized as an instructor" });
             }
             req.instructor = instructor;
+            req.token = token;
             next();
         });
     } else {
