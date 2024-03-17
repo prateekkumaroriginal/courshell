@@ -6,11 +6,15 @@ const storage = new GridFsStorage({
     file: (req, file) => {
         return {
             filename: `${Date.now()}-${file.originalname}`,
-            bucketName: 'files'
+            bucketName: 'files',
+            // TODO add other fields like courseId, isAttachment, isCoverImg, etc. to bypass Attachment schema and finally remove Attachment schema.
+            // metadata: {
+            //     courseId: req.params.courseId,
+            // }
         }
     }
 });
 
-const upload = multer({storage});
+const upload = multer({ storage });
 
 module.exports = upload;

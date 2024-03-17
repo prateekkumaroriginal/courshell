@@ -192,10 +192,15 @@ router.post('/courses/:courseId/attachments', authenticateInstructor, async (req
             return res.status(403).json({ message: "Course with this instructor not found" });
         }
 
+
         uploadFiles.array('files', 5)(req, res, async (err) => {
             if (err) {
                 console.error(err);
                 return res.status(400).json({ message: 'Error uploading files' });
+            }
+
+            if (req.files.some(file => file.size > (5 * 1024 * 1024))) {
+                return res.status(400).json({ message: 'File size exceeds the limit' });
             }
 
             const files = req.files;
