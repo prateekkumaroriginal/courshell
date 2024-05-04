@@ -6,6 +6,7 @@ import UploadImage from './UploadImage';
 import CategoryForm from './CategoryForm';
 import PriceForm from './PriceForm';
 import AttachmentsForm from './AttachmentsForm';
+import ModulesForm from './ModulesForm';
 
 const Course = () => {
     const { courseId } = useParams();
@@ -35,12 +36,21 @@ const Course = () => {
             if (response.ok) {
                 const data = await response.json();
                 setCourse(data.course);
+                console.log("MODULES", data.course.modules);
+                console.log("MODULES", data.course.categoryId);
+                if (data.course.modules[0]){
+                    console.log("ARTICLES", data.course.modules[0].articles);
+                    console.log("ARTICLES [0]", data.course.modules[0].articles[0]);
+                }
                 const updatedRequiredFields = [
                     data.course.title,
                     data.course.description,
                     data.course.imageId,
                     data.course.price,
                     data.course.categoryId,
+                    data.course.modules.some(module =>{
+                        return module.articles.some(article => article.published)
+                    })
                 ];
 
                 setTotalFields(updatedRequiredFields.length);
@@ -84,8 +94,9 @@ const Course = () => {
                         <h2 className='text-xl font-semibold'>Course Content</h2>
                     </div>
                     {!isLoading && <>
+                        <ModulesForm course={course} fetchData={fetchData} courseId={courseId} />
                         <PriceForm course={course} fetchData={fetchData} courseId={courseId} />
-                        <AttachmentsForm course={course} fetchData={fetchData} courseId={courseId} />
+                        <AttachmentsForm course={course} courseId={courseId} />
                     </>}
                 </div>
             </div>

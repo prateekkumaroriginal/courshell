@@ -10,6 +10,18 @@ const articleSchema = new Schema({
         type: String,
         required: true,
     },
+    published: {
+        type: Boolean,
+        default: false,
+    },
+    isFree: {
+        type: Boolean,
+        default: false,
+    },
+    notionData: {
+        type: String,
+        required: true,
+    },
     module: {
         type: Schema.Types.ObjectId,
         ref: 'Module',
@@ -70,7 +82,7 @@ const courseSchema = new Schema({
         default: null
     },
     categoryId: {
-        type:Schema.Types.ObjectId,
+        type: Schema.Types.ObjectId,
         required: false,
         default: null
     },
@@ -93,10 +105,37 @@ const courseSchema = new Schema({
         ref: 'Instructor',
         required: true,
     },
-    attachments:[{
+    attachments: [{
         type: Schema.Types.ObjectId,
         ref: 'Attachment',
     }],
+    purchases: [{
+        type: Schema.Types.ObjectId,
+        ref: 'Purchase'
+    }],
+    createdAt: {
+        type: Date,
+        default: Date.now,
+    },
+    updatedAt: {
+        type: Date,
+        default: Date.now,
+    },
+});
+
+const userProgressSchema = new Schema({
+    userId: {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+    },
+    articleId: {
+        type: Schema.Types.ObjectId,
+        ref: 'Article',
+    },
+    isCompleted: {
+        type: Boolean,
+        default: false,
+    },
     createdAt: {
         type: Date,
         default: Date.now,
@@ -110,5 +149,6 @@ const courseSchema = new Schema({
 const Article = model('Article', articleSchema);
 const Module = model('Module', moduleSchema);
 const Course = model('Course', courseSchema);
+const UserProgress = model('UserProgress', userProgressSchema);
 
-module.exports = { Course, Module, Article };
+module.exports = { Course, Module, Article, UserProgress };

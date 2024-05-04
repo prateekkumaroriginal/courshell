@@ -95,7 +95,7 @@ const AttachmentsForm = ({ course, courseId }) => {
                 </div> : <button onClick={() => {
                     setIsEditing(true)
                 }}>
-                    ⬆ Add a File
+                    ➕ Add a File
                 </button>}
             </div>
 
@@ -109,7 +109,7 @@ const AttachmentsForm = ({ course, courseId }) => {
                         type="file"
                         id='file'
                     />
-                </form> : <div className='space-y-2'>
+                </form> : <div className='space-y-1 p-1 rounded-md bg-background'>
                     {attachments.map((attachment, index) => (
                         <div key={index} className='flex items-center w-full bg-sky-200 rounded-md hover:bg-sky-300'>
                             <a className='w-full p-3 line-clamp-1' href={attachment.url} rel='noreferrer'>{attachment.name}</a>

@@ -46,6 +46,13 @@ const articleInput = z.object({
     content: z.string().min(4),
 })
 
+const reorderInput = z.object({
+    list: z.array(z.object({
+        _id: z.string().length(24),
+        position: z.number(),
+    }))
+})
+
 router.post('/signup', async (req, res) => {
     try {
         const parsedInput = signupInput.safeParse(req.body);
@@ -151,6 +158,10 @@ router.get('/courses/:courseId', authenticateInstructor, async (req, res) => {
         return res.status(404).json({ message: "Course with this instructor not found" });
     }
 
+    await course.populate({
+        path: 'modules',
+        options: { sort: { position: 1 } }
+    });
     return res.json({ course })
 })
 
@@ -365,6 +376,35 @@ router.post('/courses/:courseId/modules', authenticateInstructor, async (req, re
         console.error(error);
         res.status(500).json({ error: "Internal server error" })
     }
+})
+
+router.put('/courses/:courseId/modules/reorder', authenticateInstructor, async (req, res) => {
+    const course = await Course.findById(req.params.courseId);
+    if (!course) {
+        return res.status(404).json({ message: "Course not found" });
+    }
+
+    const instructor = await Instructor.findOne({ email: req.instructor.email });
+    if (course.instructor.toString() !== instructor._id.toString()) {
+        return res.status(403).json({ message: "Course with this instructor not found" });
+    }
+
+    const parsedInput = reorderInput.safeParse(req.body);
+    if (!parsedInput.success) {
+        return res.status(400).json({
+            message: parsedInput.error
+        });
+    }
+
+    const list = parsedInput.data.list;
+    for (const item of list) {
+        const module = await Module.findById(item._id);
+        module.position = item.position;
+        module.save();
+    }
+    course.save()
+
+    res.json({ message: "DONE" })
 })
 
 router.post('/courses/:courseId/modules/:moduleId/articles', authenticateInstructor, async (req, res) => {

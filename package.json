@@ -11,6 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@hello-pangea/dnd": "^16.6.0",
     "concurrently": "^8.2.2"
   }
 }

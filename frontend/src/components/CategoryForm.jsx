@@ -1,8 +1,7 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 
-function CategoryForm({ course, courseId }) {
+function CategoryForm({ course, courseId, fetchData }) {
     const [isEditing, setIsEditing] = useState(false);
-    const [searchTerm, setSearchTerm] = useState("");
     const [options, setOptions] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState("");
 
@@ -22,13 +21,10 @@ function CategoryForm({ course, courseId }) {
                     categoryId: option.value
                 })
             });
+            fetchData();
         } catch (error) {
             console.log(error);
         }
-    };
-
-    const handleInputChange = (event) => {
-        setSearchTerm(event.target.value);
     };
 
     const getCategories = async () => {
@@ -54,10 +50,6 @@ function CategoryForm({ course, courseId }) {
         }
     });
 
-    const filteredOptions = options.filter(option =>
-        option.label.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-
     return (
         <div className='relative mt-6 border bg-slate-200 rounded-md p-4'>
             <p className='font-bold text-zinc-600 py-3'>Course Category</p>
@@ -69,11 +61,10 @@ function CategoryForm({ course, courseId }) {
                 placeholder="Search category..."
                 value={selectedCategory}
                 onClick={toggleDropdown}
-                onChange={handleInputChange}
             />
             {isEditing && (
                 <ul className="absolute top-full left-0 bg-white shadow-md w-full">
-                    {filteredOptions.map((option) => (
+                    {options.map((option) => (
                         <li
                             className="px-4 py-2 hover:bg-gray-200 cursor-pointer"
                             onClick={() => handleSelect(option)}

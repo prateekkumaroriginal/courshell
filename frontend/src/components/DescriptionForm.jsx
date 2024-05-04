@@ -46,7 +46,7 @@ const DescriptionForm = ({ course, courseId, fetchData }) => {
                         className='px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md'
                         onClick={() => {
                             setIsEditing(false)
-                            reset(course)
+                            reset(form)
                         }}>
                         Cancel
                     </button>
