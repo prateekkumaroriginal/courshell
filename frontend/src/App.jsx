@@ -7,6 +7,7 @@ import Signup from './components/Signup'
 import Courses from './components/Courses'
 import Create from './components/Create'
 import Course from './components/Course'
+import Module from './components/Module'
 
 function App() {
 
@@ -20,6 +21,7 @@ function App() {
                 <Route path='/signup' element={<Signup/>} />
                 <Route path='/courses' element={<Courses/>} />
                 <Route path='/courses/:courseId' element={<Course/>} />
+                <Route path='/courses/:courseId/:moduleId' element={<Module/>} />
                 <Route path='/create' element={<Create/>} />
             </Routes>
         </Router>

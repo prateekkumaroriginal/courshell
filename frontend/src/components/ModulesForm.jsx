@@ -37,7 +37,7 @@ const ModulesForm = ({ course, courseId, fetchData }) => {
                 body: JSON.stringify(values)
             });
             setIsCreating(false);
-            reset(form);
+            reset();
             fetchData();
         } catch (e) {
             console.log(e);
@@ -73,7 +73,7 @@ const ModulesForm = ({ course, courseId, fetchData }) => {
                         className='px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md'
                         onClick={() => {
                             setIsCreating(false)
-                            reset(form)
+                            reset()
                         }}>
                         Cancel
                     </button>

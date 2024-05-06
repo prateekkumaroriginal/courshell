@@ -38,7 +38,7 @@ const ModulesList = ({ items, onReorder, onEdit }) => {
 
         const bulkUpdateData = updatedModules.map(module => ({
             _id: module._id,
-            position: items.findIndex(item => item._id === module._id)
+            position: items.findIndex(item => item._id === module._id) + 1
         }));
 
         onReorder(bulkUpdateData);
@@ -65,7 +65,7 @@ const ModulesList = ({ items, onReorder, onEdit }) => {
                                             {...provided.draggableProps}
                                         >
                                             <div
-                                                className={`px-2 py-3 border-r border-r-slate-200 hover:bg-slate-400 active:bg-slate-400 rounded-l-md transition ${published && "hover:bg-sky-200 border-r-sky-200"}`}
+                                                className={`px-2 py-3 cursor-grab border-r border-r-slate-200 hover:bg-slate-400 active:bg-slate-400 rounded-l-md transition ${published && "hover:bg-sky-200 border-r-sky-200"}`}
                                                 {...provided.dragHandleProps}
                                             >
                                                 <Grip className='h-5 w-5' />

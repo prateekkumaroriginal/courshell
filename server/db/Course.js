@@ -6,10 +6,6 @@ const articleSchema = new Schema({
         type: String,
         required: true,
     },
-    content: {
-        type: String,
-        required: true,
-    },
     published: {
         type: Boolean,
         default: false,
@@ -20,7 +16,7 @@ const articleSchema = new Schema({
     },
     notionData: {
         type: String,
-        required: true,
+        required: false,
     },
     module: {
         type: Schema.Types.ObjectId,

@@ -43,7 +43,6 @@ const moduleInput = z.object({
 
 const articleInput = z.object({
     title: z.string().min(4).max(200),
-    content: z.string().min(4),
 })
 
 const reorderInput = z.object({
@@ -378,6 +377,60 @@ router.post('/courses/:courseId/modules', authenticateInstructor, async (req, re
     }
 })
 
+router.get('/courses/:courseId/modules/:moduleId', authenticateInstructor, async (req, res) => {
+    const { courseId, moduleId } = req.params;
+    const course = await Course.findById(courseId);
+    if (!course) {
+        return res.status(404).json({ message: "Course not found" });
+    }
+
+    const instructor = await Instructor.findOne({ email: req.instructor.email });
+    if (course.instructor.toString() !== instructor._id.toString()) {
+        return res.status(403).json({ message: "Course with this instructor not found" });
+    }
+
+    const module = await Module.findById(moduleId);
+    if (!module) {
+        return res.status(404).json({ message: "Module not found" });
+    }
+
+    await module.populate({
+        path: 'articles',
+        options: { sort: { position: 1 } }
+    });
+    return res.json({ module });
+})
+
+router.patch('/courses/:courseId/modules/:moduleId', authenticateInstructor, async (req, res) => {
+    const { courseId, moduleId } = req.params;
+    const course = await Course.findById(courseId);
+    if (!course) {
+        return res.status(404).json({ message: "Course not found" });
+    }
+
+    const instructor = await Instructor.findOne({ email: req.instructor.email });
+    if (course.instructor.toString() !== instructor._id.toString()) {
+        return res.status(403).json({ message: "Course with this instructor not found" });
+    }
+
+    const module = await Module.findById(moduleId);
+    if (!module) {
+        return res.status(404).json({ message: "Module not found" });
+    }
+
+    const parsedInput = moduleInput.safeParse(req.body);
+    if (!parsedInput.success) {
+        return res.status(400).json({
+            message: parsedInput.error
+        });
+    }
+
+    module.title = parsedInput.data.title;
+    const updatedModule = await module.save();
+
+    return res.json({ module: updatedModule });
+})
+
 router.put('/courses/:courseId/modules/reorder', authenticateInstructor, async (req, res) => {
     const course = await Course.findById(req.params.courseId);
     if (!course) {
@@ -402,9 +455,8 @@ router.put('/courses/:courseId/modules/reorder', authenticateInstructor, async (
         module.position = item.position;
         module.save();
     }
-    course.save()
 
-    res.json({ message: "DONE" })
+    res.json({ message: "Reorder modules DONE" });
 })
 
 router.post('/courses/:courseId/modules/:moduleId/articles', authenticateInstructor, async (req, res) => {
@@ -433,7 +485,6 @@ router.post('/courses/:courseId/modules/:moduleId/articles', authenticateInstruc
     try {
         const article = await Article.create({
             title: parsedInput.data.title,
-            content: parsedInput.data.content,
             module: module._id,
             position: newPosition,
         })
@@ -446,6 +497,40 @@ router.post('/courses/:courseId/modules/:moduleId/articles', authenticateInstruc
         console.error(error);
         res.status(500).json({ error: "Internal server error" })
     }
+})
+
+router.put('/courses/:courseId/modules/:moduleId/articles/reorder', authenticateInstructor, async (req, res) => {
+    const { courseId, moduleId } = req.params;
+    const course = await Course.findById(courseId);
+    if (!course) {
+        return res.status(404).json({ message: "Course not found" });
+    }
+
+    const instructor = await Instructor.findOne({ email: req.instructor.email });
+    if (course.instructor.toString() !== instructor._id.toString()) {
+        return res.status(403).json({ message: "Course with this instructor not found" });
+    }
+
+    const module = await Module.findById(moduleId);
+    if (!module) {
+        return res.json({ message: "Module not found" });
+    }
+
+    const parsedInput = reorderInput.safeParse(req.body);
+    if (!parsedInput.success) {
+        return res.status(400).json({
+            message: parsedInput.error
+        });
+    }
+
+    const list = parsedInput.data.list;
+    for (const item of list) {
+        const article = await Article.findById(item._id);
+        article.position = item.position;
+        article.save();
+    }
+
+    res.json({ message: "Reorder articles DONE" });
 })
 
 module.exports = router;
