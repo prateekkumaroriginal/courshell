@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import ModulesList from './ModulesList';
+import { Loader, Loader2 } from 'lucide-react';
 
 const formSchema = z.object({
     title: z.string().min(4).max(200)
@@ -11,10 +12,6 @@ const formSchema = z.object({
 const ModulesForm = ({ course, courseId, fetchData }) => {
     const [isCreating, setIsCreating] = useState(false);
     const [isUpdating, setIsUpdating] = useState(false);
-
-    const toggleCreating = () => {
-        setIsCreating(curr => !curr);
-    }
 
     const form = useForm({
         resolver: zodResolver(formSchema),
@@ -65,7 +62,11 @@ const ModulesForm = ({ course, courseId, fetchData }) => {
     }
 
     return (
-        <div className='mt-6 border bg-slate-200 rounded-md p-4'>
+        <div className='relative mt-6 border bg-slate-200 rounded-md p-4'>
+            {isUpdating && <div className='absolute h-full w-full bg-slate-500/20 top-0 right-0 rounded-md flex items-center justify-center'>
+                <Loader2 className='animate-spin' />
+            </div>}
+
             <div className='font-medium flex items-center justify-between'>
                 <p className='font-bold text-zinc-600 pt-2 pb-4'>Modules</p>
                 {isCreating ? <div className='flex gap-x-2'>
@@ -107,7 +108,6 @@ const ModulesForm = ({ course, courseId, fetchData }) => {
                 <div className={!course.modules.length ? 'text-zinc-600 text-sm font-semibold mt-2 italic' : 'mt-2'}>
                     {!course.modules.length && "No Modules"}
                     <ModulesList
-                        onEdit={() => { }}
                         onReorder={onReorder}
                         items={course.modules || []}
                     />

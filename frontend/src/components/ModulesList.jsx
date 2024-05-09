@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import {
     DragDropContext,
     Draggable,
@@ -70,17 +71,20 @@ const ModulesList = ({ items, onReorder, onEdit }) => {
                                             >
                                                 <Grip className='h-5 w-5' />
                                             </div>
-                                            {module.title}
+
+                                            <Link to={module._id} className='px-2 py-1 hover:underline'>
+                                                {module.title}
+                                            </Link>
+
                                             <div className='ml-auto pr-2 flex items-center gap-x-2'>
                                                 <div
                                                     className={`text-white px-2 py-1 font-semibold rounded-full text-xs cursor-default ${published ? "bg-sky-700 hover:bg-sky-800" : "bg-slate-600 hover:bg-slate-700"}`}
                                                 >
                                                     {published ? "Published" : "Draft"}
                                                 </div>
-                                                <Pencil
-                                                    className='w-4 h-4 cursor-pointer hover:opacity-75 transition'
-                                                    onClick={() => onEdit(module._id)}
-                                                />
+                                                <Link to={module._id} className='hover:underline py-1 cursor-pointer hover:opacity-75 transition'>
+                                                    <Pencil className='w-4 h-4' />
+                                                </Link>
                                             </div>
                                         </div>
                                     )}

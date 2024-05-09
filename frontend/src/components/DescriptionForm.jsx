@@ -9,8 +9,9 @@ const formSchema = z.object({
     })
 })
 
-const DescriptionForm = ({ course, courseId, fetchData }) => {
+const DescriptionForm = ({ course, courseId }) => {
     const [isEditing, setIsEditing] = useState(false);
+    const [description, setDescription] = useState(course.description);
     const form = useForm({
         resolver: zodResolver(formSchema),
         defaultValues: course
@@ -30,7 +31,7 @@ const DescriptionForm = ({ course, courseId, fetchData }) => {
                 },
                 body: JSON.stringify(values)
             });
-            fetchData();
+            setDescription(values.description);
         } catch (error) {
             console.log(error);
         }
@@ -80,7 +81,7 @@ const DescriptionForm = ({ course, courseId, fetchData }) => {
                 <div className="flex items-center">
                 </div>
             </form> : <p className='text-md font-semibold mt-2 py-1'>
-                {course.description || <span className='text-sm italic text-zinc-600'>No Description</span>}
+                {description || <span className='text-sm italic text-zinc-600'>No Description</span>}
             </p>}
         </div>
     )

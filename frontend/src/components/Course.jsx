@@ -12,8 +12,7 @@ const Course = () => {
     const { courseId } = useParams();
     const navigate = useNavigate()
     const [course, setCourse] = useState(null);
-    const [totalFields, setTotalFields] = useState(0)
-    const [completedFields, setCompletedFields] = useState(0)
+    const [completionText, setCompletionText] = useState();
     const [isLoading, setIsLoading] = useState(true)
 
     useEffect(() => {
@@ -38,7 +37,7 @@ const Course = () => {
                 setCourse(data.course);
                 console.log("MODULES", data.course.modules);
                 console.log("MODULES", data.course.categoryId);
-                if (data.course.modules[0]){
+                if (data.course.modules[0]) {
                     console.log("ARTICLES", data.course.modules[0].articles);
                     console.log("ARTICLES [0]", data.course.modules[0].articles[0]);
                 }
@@ -48,13 +47,15 @@ const Course = () => {
                     data.course.imageId,
                     data.course.price,
                     data.course.categoryId,
-                    data.course.modules.some(module =>{
+                    data.course.modules.some(module => {
                         return module.articles.some(article => article.published)
                     })
                 ];
 
-                setTotalFields(updatedRequiredFields.length);
-                setCompletedFields(updatedRequiredFields.filter(Boolean).length);
+                const totalFields = updatedRequiredFields.length;
+                const completedFields = updatedRequiredFields.filter(Boolean).length;
+
+                setCompletionText(`${completedFields}/${totalFields}`);
                 setIsLoading(false)
             }
         } catch (error) {
@@ -71,7 +72,7 @@ const Course = () => {
                         Course Setup
                     </h1>
                     {!isLoading && <span className='text-sm text-zinc-600'>
-                        Completed Fields ({completedFields}/{totalFields})
+                        Completed Fields ({completionText})
                     </span>}
                 </div>
             </div>

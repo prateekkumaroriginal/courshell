@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import { useParams } from 'react-router-dom';
 import { z } from 'zod';
 import ArticlesList from './ArticlesList';
+import { Loader2 } from 'lucide-react';
 
 const formSchema = z.object({
     title: z.string().min(4).max(200),
@@ -90,16 +91,17 @@ const Module = () => {
                 },
                 body: JSON.stringify(values)
             });
-            articleReset(articleForm);
+            setIsCreating(false);
+            articleReset();
             fetchModule();
         } catch (error) {
             console.log(error);
         }
-        setIsCreating(false);
     }
 
     const onReorder = async (updateData) => {
         try {
+            setIsUpdating(true);
             const response = await fetch(`http://localhost:3000/instructor/courses/${courseId}/modules/${moduleId}/articles/reorder`, {
                 method: 'PUT',
                 headers: {
@@ -170,7 +172,11 @@ const Module = () => {
                 </div>
 
                 <div>
-                    <div className='mt-6 border bg-slate-200 rounded-md p-4'>
+                    <div className='relative mt-6 border bg-slate-200 rounded-md p-4'>
+                        {isUpdating && <div className='absolute h-full w-full bg-slate-500/20 top-0 right-0 rounded-md flex items-center justify-center'>
+                            <Loader2 className='animate-spin' />
+                        </div>}
+
                         <div className='font-medium flex items-center justify-between'>
                             <p className='font-bold text-zinc-600 pt-2 pb-4'>Articles</p>
                             {isCreating ? <div className='flex gap-x-2'>
@@ -210,9 +216,8 @@ const Module = () => {
                             />
                         </form> : !isLoading && <>
                             <div className={!module.articles.length ? 'text-zinc-600 text-sm font-semibold mt-2 italic' : 'mt-2'}>
-                                {!module.articles.length && "No Modules"}
+                                {!module.articles.length && "No Articles"}
                                 <ArticlesList
-                                    onEdit={() => { }}
                                     onReorder={onReorder}
                                     items={module.articles || []}
                                 />

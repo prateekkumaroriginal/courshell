@@ -8,6 +8,7 @@ import Courses from './components/Courses'
 import Create from './components/Create'
 import Course from './components/Course'
 import Module from './components/Module'
+import Article from './components/Article'
 
 function App() {
 
@@ -22,6 +23,7 @@ function App() {
                 <Route path='/courses' element={<Courses/>} />
                 <Route path='/courses/:courseId' element={<Course/>} />
                 <Route path='/courses/:courseId/:moduleId' element={<Module/>} />
+                <Route path='/courses/:courseId/:moduleId/:articleId' element={<Article/>} />
                 <Route path='/create' element={<Create/>} />
             </Routes>
         </Router>

@@ -45,6 +45,10 @@ const articleInput = z.object({
     title: z.string().min(4).max(200),
 })
 
+const articleUpdateInput = z.object({
+    title: z.string().min(4).max(200).optional(),
+})
+
 const reorderInput = z.object({
     list: z.array(z.object({
         _id: z.string().length(24),
@@ -499,6 +503,71 @@ router.post('/courses/:courseId/modules/:moduleId/articles', authenticateInstruc
     }
 })
 
+router.get('/courses/:courseId/modules/:moduleId/articles/:articleId', authenticateInstructor, async (req, res) => {
+    const { courseId, moduleId, articleId } = req.params;
+    const course = await Course.findById(courseId);
+    if (!course) {
+        return res.status(404).json({ message: "Course not found" });
+    }
+
+    const instructor = await Instructor.findOne({ email: req.instructor.email });
+    if (course.instructor.toString() !== instructor._id.toString()) {
+        return res.status(403).json({ message: "Course with this instructor not found" });
+    }
+
+    const module = await Module.findById(moduleId);
+    if (!module) {
+        return res.status(404).json({ message: "Module not found" });
+    }
+
+    const article = await Article.findById(articleId);
+    if (!article) {
+        return res.status(404).json({ message: "Article not found" });
+    }
+
+    return res.json({ article });
+})
+
+router.patch('/courses/:courseId/modules/:moduleId/articles/:articleId', authenticateInstructor, async (req, res) => {
+    const { courseId, moduleId, articleId } = req.params;
+    const course = await Course.findById(courseId);
+    if (!course) {
+        return res.status(404).json({ message: "Course not found" });
+    }
+
+    const instructor = await Instructor.findOne({ email: req.instructor.email });
+    if (course.instructor.toString() !== instructor._id.toString()) {
+        return res.status(403).json({ message: "Course with this instructor not found" });
+    }
+
+    const module = await Module.findById(moduleId);
+    if (!module) {
+        return res.status(404).json({ message: "Module not found" });
+    }
+
+    const article = await Article.findById(articleId);
+    if (!article) {
+        return res.status(404).json({ message: "Article not found" });
+    }
+
+    console.log(req.body);
+    const parsedInput = articleUpdateInput.safeParse(req.body);
+    if (!parsedInput.success) {
+        return res.status(400).json({
+            message: parsedInput.error
+        })
+    }
+
+    // TODO Handle notionData
+    try {
+        const article = await Article.findByIdAndUpdate(articleId, { title: parsedInput.data.title });
+        return res.json({ article });
+    } catch (e) {
+        console.log(e);
+        res.status(500).json({ error: "Internal server error" });
+    }
+})
+
 router.put('/courses/:courseId/modules/:moduleId/articles/reorder', authenticateInstructor, async (req, res) => {
     const { courseId, moduleId } = req.params;
     const course = await Course.findById(courseId);
@@ -513,7 +582,7 @@ router.put('/courses/:courseId/modules/:moduleId/articles/reorder', authenticate
 
     const module = await Module.findById(moduleId);
     if (!module) {
-        return res.json({ message: "Module not found" });
+        return res.status(404).json({ message: "Module not found" });
     }
 
     const parsedInput = reorderInput.safeParse(req.body);
