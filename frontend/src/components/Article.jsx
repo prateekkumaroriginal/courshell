@@ -2,8 +2,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { ArrowLeft } from 'lucide-react';
 import React, { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form';
-import { Link, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { z } from 'zod';
+import Editor from './Editor';
 
 const formSchema = z.object({
     title: z.string().min(4).max(200),
@@ -15,6 +16,7 @@ const Article = () => {
     const [completionText, setCompletionText] = useState("");
     const [isLoading, setIsLoading] = useState(true);
     const [isEditing, setIsEditing] = useState(false);
+    const navigate = useNavigate();
 
     const form = useForm({
         resolver: zodResolver(formSchema),
@@ -30,6 +32,11 @@ const Article = () => {
                 authorization: `Bearer ${localStorage.getItem('token')}`
             }
         });
+
+        if (response.status === 401) {
+            return navigate("/signin");
+        }
+
         if (response.ok) {
             const data = await response.json();
             setArticle(data.article);
@@ -89,7 +96,7 @@ const Article = () => {
                 </div>
             </div>
 
-            <div className='border bg-slate-200 rounded-md p-4 w-1/2'>
+            <div className='border bg-slate-200 rounded-md p-4 w-1/2 mb-8'>
                 <div className='font-medium flex items-center justify-between'>
                     <p className='font-bold text-zinc-600 py-2'>Article Title</p>
 
@@ -134,6 +141,10 @@ const Article = () => {
                 </form> : !isLoading && <p className='text-md font-semibold mt-2 py-1'>
                     {article.title}
                 </p>}
+            </div>
+
+            <div>
+                <Editor />
             </div>
         </div>
     )
