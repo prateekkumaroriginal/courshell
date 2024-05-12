@@ -1,7 +1,9 @@
 import React, { useState, useRef, useMemo, useEffect, useCallback } from 'react';
 import JoditEditor from 'jodit-react';
+import { useParams } from 'react-router-dom';
 
 const Editor = () => {
+    const {courseId, moduleId, articleId} = useParams();
     const editor = useRef(null);
     const [content, setContent] = useState('');
     const [placeholder, setPlaceholder] = useState('Start typing...');
@@ -35,15 +37,43 @@ const Editor = () => {
         };
     }, []);
 
+    const handleSubmit = async () => {
+        try {
+            const response = await fetch(`http://localhost:3000/instructor/courses/${courseId}/modules/${moduleId}/articles/${articleId}`, {
+                method: 'PATCH',
+                headers: {
+                    authorization: `Bearer ${localStorage.getItem('token')}`,
+                    'content-type': 'application/json'
+                },
+                body: JSON.stringify({
+                    content
+                })
+            });
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
     return (
         // TODO Click save button to get html content and save to db
-        <JoditEditor
-            ref={editor}
-            value={content}
-            config={config}
-            tabIndex={1}
-            onChange={newContent => { setContent(newContent) }}
-        />
+        <div className='flex flex-col relative'>
+            <div className="z-10 absolute bottom-20 right-20">
+                <button
+                    onClick={handleSubmit}
+                    className='px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md'
+                >
+                    Save
+                </button>
+            </div>
+
+            <JoditEditor
+                ref={editor}
+                value={content}
+                config={config}
+                tabIndex={1}
+                onChange={newContent => { setContent(newContent) }}
+            />
+        </div>
     );
 }
 

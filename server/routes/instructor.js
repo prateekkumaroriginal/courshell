@@ -47,6 +47,7 @@ const articleInput = z.object({
 
 const articleUpdateInput = z.object({
     title: z.string().min(4).max(200).optional(),
+    content: z.string().min(4).optional(),
 })
 
 const reorderInput = z.object({
@@ -550,7 +551,6 @@ router.patch('/courses/:courseId/modules/:moduleId/articles/:articleId', authent
         return res.status(404).json({ message: "Article not found" });
     }
 
-    console.log(req.body);
     const parsedInput = articleUpdateInput.safeParse(req.body);
     if (!parsedInput.success) {
         return res.status(400).json({
@@ -558,9 +558,10 @@ router.patch('/courses/:courseId/modules/:moduleId/articles/:articleId', authent
         })
     }
 
-    // TODO Handle notionData
     try {
-        const article = await Article.findByIdAndUpdate(articleId, { title: parsedInput.data.title });
+        const article = await Article.findById(articleId);
+        Object.assign(article, parsedInput.data);
+        await article.save();
         return res.json({ article });
     } catch (e) {
         console.log(e);
