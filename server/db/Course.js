@@ -14,7 +14,7 @@ const articleSchema = new Schema({
         type: Boolean,
         default: false,
     },
-    notionData: {
+    content: {
         type: String,
         required: false,
     },
