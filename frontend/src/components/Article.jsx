@@ -42,7 +42,7 @@ const Article = () => {
             setArticle(data.article);
             const requiredFields = [
                 data.article.title,
-                data.article.notionData
+                data.article.content
             ];
             const totalFields = requiredFields.length;
             const completedFields = requiredFields.filter(Boolean).length;
