@@ -48,6 +48,7 @@ const articleInput = z.object({
 const articleUpdateInput = z.object({
     title: z.string().min(4).max(200).optional(),
     content: z.string().min(4).optional(),
+    isFree: z.boolean().optional()
 })
 
 const reorderInput = z.object({
@@ -55,6 +56,10 @@ const reorderInput = z.object({
         _id: z.string().length(24),
         position: z.number(),
     }))
+})
+
+const articleAccessInput = z.object({
+    isFree: z.boolean().default(false)
 })
 
 router.post('/signup', async (req, res) => {

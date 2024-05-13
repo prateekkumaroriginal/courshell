@@ -55,7 +55,6 @@ const Editor = () => {
     }
 
     return (
-        // TODO Click save button to get html content and save to db
         <div className='flex flex-col relative'>
             <div className="z-10 absolute bottom-20 right-20">
                 <button

@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { z } from 'zod';
 import Editor from './Editor';
+import ArticleAccessForm from './ArticleAccessForm';
 
 const formSchema = z.object({
     title: z.string().min(4).max(200),
@@ -88,60 +89,80 @@ const Article = () => {
             </div>
 
             <div className='flex items-center justify-between w-full mb-8'>
-                <div className='flex flex-col gap-y-2'>
-                    <h1 className='text-2xl font-semibold'>Article Creation</h1>
+                <div className='flex flex-col'>
+                    <h1 className='text-2xl font-semibold'>Article Access Settings</h1>
                     <span className='text-sm text-zinc-600'>
                         Completed Fields {!isLoading && <>({completionText})</>}
                     </span>
                 </div>
             </div>
 
-            <div className='border bg-slate-200 rounded-md p-4 w-1/2 mb-8'>
-                <div className='font-medium flex items-center justify-between'>
-                    <p className='font-bold text-zinc-600 py-2'>Article Title</p>
+            <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mb-8'>
+                {!isLoading && <ArticleAccessForm
+                    article={article}
+                    courseId={courseId}
+                    moduleId={moduleId}
+                    articleId={articleId}
+                />}
+            </div>
 
-                    {isEditing ? <div className='flex gap-x-2'>
-                        <button
-                            className='px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md'
-                            onClick={() => {
-                                setIsEditing(false)
-                                reset()
-                            }}>
-                            Cancel
-                        </button>
-                        <button
-                            type='submit'
-                            disabled={!isValid || isSubmitting}
-                            onClick={handleSubmit(onSubmit)}
-                            className='px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md'>
-                            Save
-                        </button>
-                    </div> : <button onClick={() => {
-                        setIsEditing(true)
-                    }}>
-                        🖋 Edit
-                    </button>}
+            <div className='flex items-center justify-between w-full mb-8'>
+                <div className='flex flex-col gap-y-2'>
+                    <h1 className='text-2xl font-semibold'>Article Creation</h1>
+                </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                <div className='border bg-slate-200 rounded-md p-4'>
+                    <div className='font-medium flex items-center justify-between'>
+                        <p className='font-bold text-zinc-600 py-2'>Article Title</p>
+
+                        {isEditing ? <div className='flex gap-x-2'>
+                            <button
+                                className='px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md'
+                                onClick={() => {
+                                    setIsEditing(false)
+                                    reset()
+                                }}>
+                                Cancel
+                            </button>
+                            <button
+                                type='submit'
+                                disabled={!isValid || isSubmitting}
+                                onClick={handleSubmit(onSubmit)}
+                                className='px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md'>
+                                Save
+                            </button>
+                        </div> : <button onClick={() => {
+                            setIsEditing(true)
+                        }}>
+                            🖋 Edit
+                        </button>}
+                    </div>
+
+                    {isEditing ? <form
+                        className='mt-2'
+                        onSubmit={handleSubmit(onSubmit)}
+                    >
+                        <input
+                            className='p-1 shadow-lg appearance-none rounded w-full outline-none'
+                            type="text"
+                            id='title'
+                            placeholder="e.g. 'Full stack web development'"
+                            disabled={isSubmitting}
+                            defaultValue={article.title}
+                            {...form.register('title')}
+                        />
+                        <div className="flex items-center">
+                        </div>
+                    </form> : !isLoading && <p className='text-md font-semibold mt-2 py-1'>
+                        {article.title}
+                    </p>}
                 </div>
 
-                {isEditing ? <form
-                    className='mt-2'
-                    onSubmit={handleSubmit(onSubmit)}
-                >
-                    <input
-                        className='p-1 shadow-lg appearance-none rounded w-full outline-none'
-                        type="text"
-                        id='title'
-                        placeholder="e.g. 'Full stack web development'"
-                        disabled={isSubmitting}
-                        defaultValue={article.title}
-                        {...form.register('title')}
-                    />
-                    <div className="flex items-center">
-                    </div>
-                </form> : !isLoading && <p className='text-md font-semibold mt-2 py-1'>
-                    {article.title}
-                </p>}
+
             </div>
+
 
             <div>
                 <Editor />
