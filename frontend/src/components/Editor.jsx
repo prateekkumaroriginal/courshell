@@ -2,10 +2,10 @@ import React, { useState, useRef, useMemo, useEffect, useCallback } from 'react'
 import JoditEditor from 'jodit-react';
 import { useParams } from 'react-router-dom';
 
-const Editor = () => {
-    const {courseId, moduleId, articleId} = useParams();
+const Editor = ({ defaultContent }) => {
+    const { courseId, moduleId, articleId } = useParams();
     const editor = useRef(null);
-    const [content, setContent] = useState('');
+    const [content, setContent] = useState(defaultContent || '');
     const [placeholder, setPlaceholder] = useState('Start typing...');
 
     const config = useMemo(() => ({
@@ -30,11 +30,13 @@ const Editor = () => {
     }, [saveContent]);
 
     useEffect(() => {
-        const data = localStorage.getItem('joditContent');
-        if (data) {
-            setPlaceholder("");
-            setContent(data);
-        };
+        if (!defaultContent) {
+            const data = localStorage.getItem('joditContent');
+            if (data) {
+                setPlaceholder("");
+                setContent(data);
+            };
+        }
     }, []);
 
     const handleSubmit = async () => {
