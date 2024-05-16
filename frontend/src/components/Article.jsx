@@ -6,6 +6,8 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { z } from 'zod';
 import Editor from './Editor';
 import ArticleAccessForm from './ArticleAccessForm';
+import Banner from './Banner';
+import ArticleActions from './ArticleActions';
 
 const formSchema = z.object({
     title: z.string().min(4).max(200),
@@ -15,6 +17,7 @@ const Article = () => {
     const { courseId, moduleId, articleId } = useParams();
     const [article, setArticle] = useState();
     const [completionText, setCompletionText] = useState("");
+    const [isComplete, setIsComplete] = useState();
     const [isLoading, setIsLoading] = useState(true);
     const [isEditing, setIsEditing] = useState(false);
     const navigate = useNavigate();
@@ -47,6 +50,7 @@ const Article = () => {
             ];
             const totalFields = requiredFields.length;
             const completedFields = requiredFields.filter(Boolean).length;
+            setIsComplete(requiredFields.every(Boolean));
 
             setCompletionText(`${completedFields}/${totalFields}`);
         }
@@ -77,6 +81,11 @@ const Article = () => {
 
     return (
         <div className='md:p-6'>
+            {!isLoading && !article.published && <Banner
+                label={"This article is unpublished. It will not be visible in the course."}
+                variant={"WARNING"}
+            />}
+
             <div className='flex items-center justify-center mb-8'>
                 <div className='w-full'>
                     <Link
@@ -88,31 +97,25 @@ const Article = () => {
                 </div>
             </div>
 
-            <div className='flex items-center justify-between w-full mb-8'>
+
+            <div className='flex items-center gap-x-8 w-full mb-8'>
                 <div className='flex flex-col'>
-                    <h1 className='text-2xl font-semibold'>Article Access Settings</h1>
+                    <h1 className='text-2xl font-semibold'>Article Settings</h1>
                     <span className='text-sm text-zinc-600'>
                         Completed Fields {!isLoading && <>({completionText})</>}
                     </span>
                 </div>
-            </div>
 
-            <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mb-8'>
-                {!isLoading && <ArticleAccessForm
-                    article={article}
+                {!isLoading && <ArticleActions
+                    disabled={!isComplete}
                     courseId={courseId}
                     moduleId={moduleId}
                     articleId={articleId}
+                    isPublished={article.published}
                 />}
             </div>
 
-            <div className='flex items-center justify-between w-full mb-8'>
-                <div className='flex flex-col gap-y-2'>
-                    <h1 className='text-2xl font-semibold'>Article Creation</h1>
-                </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+            <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mb-12'>
                 <div className='border bg-slate-200 rounded-md p-4'>
                     <div className='font-medium flex items-center justify-between'>
                         <p className='font-bold text-zinc-600 py-2'>Article Title</p>
@@ -160,12 +163,22 @@ const Article = () => {
                     </p>}
                 </div>
 
-
+                {!isLoading && <ArticleAccessForm
+                    article={article}
+                    courseId={courseId}
+                    moduleId={moduleId}
+                    articleId={articleId}
+                />}
             </div>
 
+            <div className='flex items-center justify-between w-full mb-8'>
+                <div className='flex flex-col gap-y-2'>
+                    <h1 className='text-2xl font-semibold'>Article Creation</h1>
+                </div>
+            </div>
 
             <div>
-                <Editor />
+                {!isLoading && <Editor defaultContent={article.content} />}
             </div>
         </div>
     )
