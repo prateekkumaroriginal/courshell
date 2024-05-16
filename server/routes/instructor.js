@@ -574,6 +574,37 @@ router.patch('/courses/:courseId/modules/:moduleId/articles/:articleId', authent
     }
 })
 
+router.delete('/courses/:courseId/modules/:moduleId/articles/:articleId', authenticateInstructor, async (req, res) => {
+    const { courseId, moduleId, articleId } = req.params;
+    const course = await Course.findById(courseId);
+    if (!course) {
+        return res.status(404).json({ message: "Course not found" });
+    }
+
+    const instructor = await Instructor.findOne({ email: req.instructor.email });
+    if (course.instructor.toString() !== instructor._id.toString()) {
+        return res.status(403).json({ message: "Course with this instructor not found" });
+    }
+
+    const module = await Module.findById(moduleId);
+    if (!module) {
+        return res.status(404).json({ message: "Module not found" });
+    }
+
+    const article = await Article.findById(articleId);
+    if (!article) {
+        return res.status(404).json({ message: "Article not found" });
+    }
+
+    try {
+        await article.deleteOne();
+        res.status(200).json({ message: "Article deleted successfully" });
+    } catch (e) {
+        console.log(e);
+        res.status(500).json({ error: "Internal server error" });
+    }
+})
+
 router.put('/courses/:courseId/modules/:moduleId/articles/reorder', authenticateInstructor, async (req, res) => {
     const { courseId, moduleId } = req.params;
     const course = await Course.findById(courseId);
