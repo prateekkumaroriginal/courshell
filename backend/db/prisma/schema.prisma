@@ -1,0 +1,87 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              String       @id @default(uuid())
+  email           String       @unique
+  password        String
+  role            Role
+  createdCourses  Course[]     @relation("UserCourses")
+  enrolledCourses Enrollment[] @relation("UserEnrollments")
+}
+
+enum Role {
+  SUPERADMIN
+  ADMIN
+  INSTRUCTOR
+  USER
+}
+
+model Course {
+  id           String @id @default(uuid())
+  instructorId String
+  instructor   User   @relation("UserCourses", fields: [instructorId], references: [id])
+
+  enrolledUsers Enrollment[] @relation("CourseEnrollments")
+
+  title       String  @db.Text
+  description String? @db.Text
+  imageUrl    String? @db.Text
+  price       Float?
+  isPublished Boolean @default(false)
+
+  categoryId String?
+  category   Category? @relation(fields: [categoryId], references: [id])
+  modules    Module[]
+
+  attachments Attachment[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Module {
+  id       String @id @default(uuid())
+  title    String @db.Text
+  courseId String
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Attachment {
+  id   String @id @default(uuid())
+  name String
+  url  String @db.Text
+
+  courseId String
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Category {
+  id      String   @id @default(uuid())
+  name    String   @unique
+  courses Course[]
+}
+
+model Enrollment {
+  id        String   @id @default(uuid())
+  userId    String
+  courseId  String
+  user      User     @relation("UserEnrollments", fields: [userId], references: [id], onDelete: Cascade)
+  course    Course   @relation("CourseEnrollments", fields: [courseId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, courseId])
+}
