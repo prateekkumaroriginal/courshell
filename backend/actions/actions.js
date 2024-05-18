@@ -1,13 +1,14 @@
 import { db } from '../db/index.js';
+import { SUPERADMIN, ADMIN, INSTRUCTOR } from '../constants.js';
 
 const getInstructorOrAbove = async (email) => {
     return await db.user.findUnique({
         where: {
             email,
             OR: [
-                { role: 'INSTRUCTOR' },
-                { role: 'ADMIN' },
-                { role: 'SUPERADMIN' }
+                { role: SUPERADMIN },
+                { role: ADMIN },
+                { role: INSTRUCTOR }
             ]
         }
     });
@@ -23,11 +24,30 @@ const createCourse = async (title, instructorId) => {
 }
 
 const getCreatedCourses = async (instructorId) => {
-    const courses = await db.course.findMany({
+    return await db.course.findMany({
         where: {
             instructorId
+        },
+        orderBy: {
+            createdAt: 'desc'
         }
     });
 }
 
-export { getInstructorOrAbove, createCourse, getCreatedCourses }
+const getCourse = async (courseId) => {
+    return await db.course.findUnique({
+        where: {
+            id: courseId
+        },
+        include: {
+            instructor: true,
+            modules: {
+                orderBy: {
+                    createdAt: 'desc'
+                }
+            },
+        }
+    });
+}
+
+export { getInstructorOrAbove, createCourse, getCreatedCourses, getCourse }

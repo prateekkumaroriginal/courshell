@@ -12,7 +12,6 @@ const authenticateToken = async (req, res, next) => {
                 return res.status(401).json({ error: err });
             }
             req.user = user;
-            req.token = token;
             next();
         });
     } else {
