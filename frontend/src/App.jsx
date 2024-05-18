@@ -30,10 +30,24 @@ function App() {
 
     return (
         <div>
-            {!isLoading &&
+            {/* {!isLoading &&
                 <img className='h-40 w-40' src={`data:image/jpeg;base64, ${file}`} alt="" />
-            }
+            } */}
 
+
+            {/* {!isLoading && <div className='space-y-1 p-1 rounded-md bg-background'>
+                <div className='flex items-center w-full bg-sky-200 rounded-md hover:bg-sky-300'>
+                    <a className='w-full p-3 line-clamp-1' rel='noreferrer'>{file.name}</a>
+                    <button
+                        className='p-2 hover:scale-125 transition'
+                        onClick={() => {
+                            handleClick(getDataUrl(file.data))
+                        }}
+                    >
+                        ❌
+                    </button>
+                </div>
+            </div>} */}
         </div>
     )
 }
