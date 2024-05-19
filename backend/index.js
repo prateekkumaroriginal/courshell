@@ -37,18 +37,15 @@ app.post('/login', async (req, res) => {
         });
         console.log(user);
 
-        if (!user) {
-            res.status(403).json({ message: 'Invalid credentials' });
-        } else {
-            if (user.password !== parsedInput.data.password) {
-                return res.status(403).json({ message: 'Invalid credentials' });
-            }
-            const token = jwt.sign({ email: parsedInput.data.email, role: user.role }, SECRET, { expiresIn: '4w' });
-            res.json({ token });
+        if (!user || user.password !== parsedInput.data.password) {
+            return res.status(403).json({ message: 'Invalid credentials' });
         }
+
+        const token = jwt.sign({ email: parsedInput.data.email, role: user.role }, SECRET, { expiresIn: '4w' });
+        return res.json({ token });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: "Internal server error" });
+        return res.status(500).json({ error: "Internal server error" });
     }
 });
 

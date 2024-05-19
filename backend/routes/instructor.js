@@ -31,11 +31,11 @@ router.post('/courses', authenticateToken, authorizeRoles(SUPERADMIN, ADMIN, INS
         const course = await createCourse(parsedInput.data.title, instructor.id);
 
         if (course) {
-            res.status(201).json({ message: "Course created successfully", courseId: course.id })
+            return res.status(201).json({ message: "Course created successfully", courseId: course.id });
         }
     } catch (error) {
         console.error("[INSTRUCTOR -> COURSES]", error);
-        res.status(500).json({ error: "Internal server error" })
+        return res.status(500).json({ error: "Internal server error" });
     }
 });
 
@@ -47,6 +47,7 @@ router.get('/courses', authenticateToken, authorizeRoles(SUPERADMIN, ADMIN, INST
         return res.json({ courses });
     } catch (error) {
         console.log("[INSTRUCTOR -> COURSES]", error);
+        return res.status(500).json({ error: "Internal server error" });
     }
 });
 
@@ -60,7 +61,7 @@ router.get('/courses/:courseId', authenticateToken, authorizeRoles(SUPERADMIN, A
         return res.json({ course });
     } catch (error) {
         console.log("[INSTRUCTOR -> COURSES]", error);
-        res.status(500).json({ error: "Internal server error" });
+        return res.status(500).json({ error: "Internal server error" });
     }
 });
 
