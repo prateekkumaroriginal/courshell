@@ -35,7 +35,6 @@ app.post('/login', async (req, res) => {
                 email: parsedInput.data.email
             }
         });
-        console.log(user);
 
         if (!user || user.password !== parsedInput.data.password) {
             return res.status(403).json({ message: 'Invalid credentials' });
