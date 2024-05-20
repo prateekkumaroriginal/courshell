@@ -46,7 +46,7 @@ const Navbar = () => {
     ];
 
     return (
-        <div className='absolute bg-gray-200 px-4 py-2 flex w-full justify-between items-center shadow-lg'>
+        <div className='bg-gray-200 px-4 py-2 flex w-full justify-between items-center shadow-lg'>
             <div>
                 <button onClick={() => {
                     navigate("/")
