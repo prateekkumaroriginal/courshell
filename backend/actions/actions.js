@@ -1,6 +1,20 @@
 import { db } from '../db/index.js';
 import { SUPERADMIN, ADMIN, INSTRUCTOR } from '../constants.js';
 
+const getUser = async (email) => {
+    return await db.user.findUnique({
+        where: {
+            email,
+        },
+        select: {
+            email: true,
+            role: true,
+            createdCourses: true,
+            enrolledCourses: true
+        }
+    });
+}
+
 const getInstructorOrAbove = async (email) => {
     return await db.user.findUnique({
         where: {
@@ -50,4 +64,4 @@ const getCourse = async (courseId) => {
     });
 }
 
-export { getInstructorOrAbove, createCourse, getCreatedCourses, getCourse }
+export { getInstructorOrAbove, createCourse, getCreatedCourses, getCourse, getUser }

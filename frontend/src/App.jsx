@@ -3,11 +3,12 @@ import './App.css'
 import Create from './components/Create';
 import Course from './components/Course';
 import Signin from './components/Signin';
+import Navbar from './components/Navbar';
 
 function App() {
     return (
         <Router>
-            {/* <Navbar /> */}
+            <Navbar />
             <Routes>
                 <Route path='/signin' element={<Signin />} />
                 <Route path='/create' element={<Create />} />
