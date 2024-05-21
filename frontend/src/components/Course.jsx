@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-// import TitleForm from './TitleForm';
+import TitleForm from './TitleForm';
 // import DescriptionForm from './DescriptionForm'
 // import UploadImage from './UploadImage';
 // import CategoryForm from './CategoryForm';
@@ -81,6 +81,7 @@ const Course = () => {
                         <h2 className='text-xl font-semibold'>Customize Your Course</h2>
                     </div>
                     {!isLoading && <>
+                        <TitleForm course={course} courseId={courseId} />
                         {/* <TitleForm course={course} fetchData={fetchData} courseId={courseId} />
                         <DescriptionForm course={course} fetchData={fetchData} courseId={courseId} />
                         <CategoryForm course={course} fetchData={fetchData} courseId={courseId} />
