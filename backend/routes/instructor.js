@@ -15,6 +15,13 @@ const courseTitleInput = z.object({
     title: z.string().min(4).max(200),
 });
 
+const courseUpdateInput = z.object({
+    title: z.string().min(4).max(200).optional(),
+    description: z.string().optional(),
+    price: z.number().optional(),
+    categoryId: z.string().min(1).optional(),
+});
+
 const isValidInstructorOrAbove = (user, email) => {
     return user.role === SUPERADMIN || user.role === ADMIN || user.email === email;
 }
@@ -69,6 +76,60 @@ router.get('/courses/:courseId', authenticateToken, authorizeRoles(SUPERADMIN, A
         }
 
         return res.json({ course });
+    } catch (error) {
+        console.log("[INSTRUCTOR -> COURSES]", error);
+        return res.status(500).json({ error: "Internal server error" });
+    }
+});
+
+router.patch('/courses/:courseId', authenticateToken, authorizeRoles(SUPERADMIN, ADMIN, INSTRUCTOR), upload.single('file'), async (req, res) => {
+    try {
+        const course = await getCourse(req.params.courseId);
+        if (!course || !isValidInstructorOrAbove(req.user, course.instructor.email)) {
+            return res.status(404).json({ message: "Course not found" });
+        }
+
+        let updatedCourse;
+        if (req.file) {
+            if (req.file.mimetype.startsWith('image/')) {
+                const attachment = await db.attachment.create({
+                    data: {
+                        isCoverImage: true,
+                        name: req.file.originalname,
+                        data: req.file.buffer,
+                        type: req.file.mimetype,
+                        courseId: course.id,
+                    }
+                });
+
+                updatedCourse = await db.course.update({
+                    where: {
+                        id: course.id
+                    },
+                    data: {
+                        coverImageId: attachment.id
+                    }
+                });
+            } else {
+                return res.status(400).json({ message: "Uploaded file was not an image" });
+            }
+        }
+
+        const parsedInput = courseUpdateInput.safeParse(req.body);
+        if (!parsedInput.success) {
+            return res.status(400).json({
+                message: parsedInput.error
+            });
+        }
+
+        updatedCourse = await db.course.update({
+            where: {
+                id: course.id
+            },
+            data: parsedInput.data
+        });
+
+        return res.json({ message: "Course updated successfully", course: updatedCourse })
     } catch (error) {
         console.log("[INSTRUCTOR -> COURSES]", error);
         return res.status(500).json({ error: "Internal server error" });
