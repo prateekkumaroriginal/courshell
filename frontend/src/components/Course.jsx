@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import TitleForm from './TitleForm';
+import DescriptionForm from './DescriptionForm';
 // import DescriptionForm from './DescriptionForm'
 // import UploadImage from './UploadImage';
 // import CategoryForm from './CategoryForm';
@@ -82,8 +83,8 @@ const Course = () => {
                     </div>
                     {!isLoading && <>
                         <TitleForm course={course} courseId={courseId} />
+                        <DescriptionForm course={course} courseId={courseId} />
                         {/* <TitleForm course={course} fetchData={fetchData} courseId={courseId} />
-                        <DescriptionForm course={course} fetchData={fetchData} courseId={courseId} />
                         <CategoryForm course={course} fetchData={fetchData} courseId={courseId} />
                         <UploadImage course={course} fetchData={fetchData} courseId={courseId} /> */}
                     </>}
