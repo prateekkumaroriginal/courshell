@@ -3,6 +3,7 @@ import { z } from 'zod'
 import { useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { VITE_APP_BACKEND_URL } from '../constants'
 
 const formSchema = z.object({
     title: z.string().min(4).max(200)
@@ -22,7 +23,7 @@ const Create = () => {
 
     const onSubmit = async (values) => {
         try {
-            const response = await fetch('http://localhost:3000/instructor/courses', {
+            const response = await fetch(`${VITE_APP_BACKEND_URL}/instructor/courses`, {
                 method: 'POST',
                 body: JSON.stringify(values),
                 headers: {
@@ -62,7 +63,12 @@ const Create = () => {
                         />
                     </div>
                     <div className='flex gap-2 mt-8'>
-                        <button className='bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600'>Cancel</button>
+                        <button
+                            className='bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600'
+                            onClick={() => navigate('/')}
+                        >
+                            Cancel
+                        </button>
                         <button
                             type='submit'
                             className={!isValid || isSubmitting ? 'px-4 py-2 text-white font-semibold bg-gray-300 rounded-md' : 'px-4 py-2 text-white font-semibold bg-gradient-to-r from-indigo-500 to-purple-500 hover:bg-gradient-to-r hover:from-indigo-700 hover:to-purple-600 rounded-md'}
