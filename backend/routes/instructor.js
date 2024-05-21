@@ -2,7 +2,7 @@ import express from 'express';
 import { z } from 'zod';
 import { db } from '../db/index.js';
 import { authenticateToken, authorizeRoles } from '../middleware/auth.js'
-import { getInstructorOrAbove, createCourse, getCreatedCourses, getCourse, getUser } from '../actions/actions.js';
+import { getInstructorOrAbove, createCourse, getCreatedCourses, getCourse, getUser, createModule } from '../actions/actions.js';
 import { SUPERADMIN, ADMIN, INSTRUCTOR, USER } from '../constants.js';
 import 'dotenv/config';
 import multer from 'multer';
@@ -11,7 +11,7 @@ const upload = multer({ storage: storage });
 
 const router = express.Router();
 
-const courseTitleInput = z.object({
+const titleInput = z.object({
     title: z.string().min(4).max(200),
 });
 
@@ -38,7 +38,7 @@ router.get('/me', authenticateToken, async (req, res) => {
 
 router.post('/courses', authenticateToken, authorizeRoles(SUPERADMIN, ADMIN, INSTRUCTOR), async (req, res) => {
     try {
-        const parsedInput = courseTitleInput.safeParse(req.body);
+        const parsedInput = titleInput.safeParse(req.body);
         if (!parsedInput.success) {
             return res.status(400).json({
                 message: parsedInput.error
@@ -50,6 +50,7 @@ router.post('/courses', authenticateToken, authorizeRoles(SUPERADMIN, ADMIN, INS
         if (course) {
             return res.status(201).json({ message: "Course created successfully", courseId: course.id });
         }
+        return res.status(500).json({ error: "Internal server error" });
     } catch (error) {
         console.error("[INSTRUCTOR -> COURSES]", error);
         return res.status(500).json({ error: "Internal server error" });
@@ -232,5 +233,40 @@ router.delete('/courses/:courseId/attachments/:attachmentId', authenticateToken,
         return res.status(500).json({ error: "Internal server error" });
     }
 });
+
+router.post('/courses/:coursedId/modules', authenticateToken, authorizeRoles(SUPERADMIN, ADMIN, INSTRUCTOR), async (req, res) => {
+    try {
+        const course = await getCourse(req.params.coursedId);
+        if (!course || !isValidInstructorOrAbove(req.user, course.instructor.email)) {
+            return res.status(404).json({ message: "Course not found" });
+        }
+
+        const parsedInput = titleInput.safeParse(req.body);
+        if (!parsedInput.success) {
+            return res.status(400).json({
+                message: parsedInput.error
+            });
+        }
+
+        const module = await createModule(parsedInput.data.title);
+        if (module) {
+            return res.status(201).json({ message: "Module created successfully", moduleId: module.id });
+        }
+        return res.status(500).json({ error: "Internal server error" });
+    } catch (error) {
+        console.error("[INSTRUCTOR -> COURSES -> MODULES]", error);
+        return res.status(500).json({ error: "Internal server error" });
+    }
+});
+
+router.get('/categories', authenticateToken, authorizeRoles(SUPERADMIN, ADMIN, INSTRUCTOR), async (req, res) => {
+    try {
+        const categories = await db.category.findMany();
+        return res.json({ categories });
+    } catch (error) {
+        console.log("INSTRUCTOR -> CATEGORIES");
+        return res.status(500).json({ error: "Internal server error" });
+    }
+})
 
 export default router;

@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import TitleForm from './TitleForm';
-import DescriptionForm from './DescriptionForm';
+import TitleForm from '@/components/TitleForm';
+import DescriptionForm from '@/components/DescriptionForm';
+import CategoryForm from '@/components/CategoryForm';
+import ToastProvider from '@/components/ui/ToastProvider';
+import ModulesForm from '@/components/ModulesForm';
 // import DescriptionForm from './DescriptionForm'
 // import UploadImage from './UploadImage';
 // import CategoryForm from './CategoryForm';
 // import PriceForm from './PriceForm';
 // import AttachmentsForm from './AttachmentsForm';
-// import ModulesForm from './ModulesForm';
 
 const Course = () => {
     const { courseId } = useParams();
@@ -65,6 +67,7 @@ const Course = () => {
 
     return (
         <div className='md:p-6'>
+            <ToastProvider />
             <div className='flex items-center justify-between'>
                 <div className="flex flex-col gap-y-2">
                     <h1 className='text-3xl font-semibold'>
@@ -84,8 +87,8 @@ const Course = () => {
                     {!isLoading && <>
                         <TitleForm course={course} courseId={courseId} />
                         <DescriptionForm course={course} courseId={courseId} />
+                        <CategoryForm course={course} courseId={courseId} />
                         {/* <TitleForm course={course} fetchData={fetchData} courseId={courseId} />
-                        <CategoryForm course={course} fetchData={fetchData} courseId={courseId} />
                         <UploadImage course={course} fetchData={fetchData} courseId={courseId} /> */}
                     </>}
                 </div>
@@ -94,6 +97,7 @@ const Course = () => {
                         <h2 className='text-xl font-semibold'>Course Content</h2>
                     </div>
                     {!isLoading && <>
+                        <ModulesForm course={course} courseId={courseId} />
                         {/* <ModulesForm course={course} fetchData={fetchData} courseId={courseId} />
                         <PriceForm course={course} fetchData={fetchData} courseId={courseId} />
                         <AttachmentsForm course={course} courseId={courseId} /> */}

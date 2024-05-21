@@ -3,7 +3,7 @@ import { z } from 'zod'
 import { useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { VITE_APP_BACKEND_URL } from '../constants'
+import { VITE_APP_BACKEND_URL } from '@/constants'
 
 const formSchema = z.object({
     title: z.string().min(4).max(200)

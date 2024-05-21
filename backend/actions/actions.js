@@ -64,4 +64,13 @@ const getCourse = async (courseId) => {
     });
 }
 
-export { getInstructorOrAbove, createCourse, getCreatedCourses, getCourse, getUser }
+const createModule = async (title, position) => {
+    return await db.module.create({
+        data: {
+            title,
+            position
+        }
+    });
+}
+
+export { getInstructorOrAbove, createCourse, getCreatedCourses, getCourse, getUser, createModule }

@@ -2,10 +2,9 @@ import React, { useState } from 'react';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { VITE_APP_BACKEND_URL } from '../constants';
-import Input from './Input';
+import { VITE_APP_BACKEND_URL } from '@/constants';
+import Input from '@/components/ui/Input';
 import toast from 'react-hot-toast';
-import ToastProvider from './providers/ToastProvider';
 
 const formSchema = z.object({
     description: z.string().min(4)

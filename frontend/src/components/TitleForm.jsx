@@ -2,10 +2,9 @@ import React, { useState } from 'react';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { VITE_APP_BACKEND_URL } from '../constants';
-import Input from './Input';
+import { VITE_APP_BACKEND_URL } from '@/constants';
+import Input from '@/components/ui/Input';
 import toast from 'react-hot-toast';
-import ToastProvider from './providers/ToastProvider';
 
 const formSchema = z.object({
     title: z.string().min(4).max(200)
@@ -50,7 +49,6 @@ const TitleForm = ({ course, courseId }) => {
 
     return (
         <div className='mt-6 border bg-slate-200 rounded-md p-4'>
-            <ToastProvider />
             <div className='font-medium flex items-center justify-between'>
                 <p className='font-bold text-zinc-600 py-2'>Course Title</p>
 

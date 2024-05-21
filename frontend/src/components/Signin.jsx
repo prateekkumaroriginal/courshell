@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import Input from './Input';
-import { VITE_APP_BACKEND_URL } from '../constants';
+import Input from '@/components/ui/Input';
+import { VITE_APP_BACKEND_URL } from '@/constants';
 
 const formSchema = z.object({
     email: z.string().email(),
