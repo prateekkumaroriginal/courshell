@@ -87,7 +87,7 @@ const Course = () => {
                     {!isLoading && <>
                         <TitleForm course={course} courseId={courseId} />
                         <DescriptionForm course={course} courseId={courseId} />
-                        <CategoryForm course={course} courseId={courseId} />
+                        {/* <CategoryForm course={course} courseId={courseId} /> */}
                         {/* <TitleForm course={course} fetchData={fetchData} courseId={courseId} />
                         <UploadImage course={course} fetchData={fetchData} courseId={courseId} /> */}
                     </>}
