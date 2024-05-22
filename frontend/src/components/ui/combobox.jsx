@@ -16,8 +16,10 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover"
 
-export const Combobox = ({options, value, onChange}) => {
+
+export const Combobox = ({ options, onChange }) => {
     const [open, setOpen] = React.useState(false)
+    const [searchQuery, setSearchQuery] = React.useState("")
 
     return (
         <Popover open={open} onOpenChange={setOpen}>
@@ -26,32 +28,33 @@ export const Combobox = ({options, value, onChange}) => {
                     variant="outline"
                     role="combobox"
                     aria-expanded={open}
-                    className="w-[200px] justify-between"
+                    className="w-full justify-between"
                 >
-                    {value
-                        ? options?.find((option) => option.value === value)?.label
+                    {searchQuery
+                        ? options.find((option) => option.label === searchQuery)?.label
                         : "Select option..."}
                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-[200px] p-0">
-                <Command>
+            <PopoverContent className="p-0">
+                <Command className='w-full'>
                     <CommandInput placeholder="Search option..." />
                     <CommandEmpty>No option found.</CommandEmpty>
                     <CommandGroup>
-                        {options?.map((option) => (
+                        {options.map((option) => (
                             <CommandItem
                                 key={option.value}
-                                value={option.value}
+                                value={option.label}
                                 onSelect={() => {
-                                    onChange(option.value === value ? "" : option.value)
+                                    setSearchQuery(option.label === searchQuery ? "" : option.label)
                                     setOpen(false)
+                                    onChange(option.value)
                                 }}
                             >
                                 <Check
                                     className={cn(
                                         "mr-2 h-4 w-4",
-                                        value === option.value ? "opacity-100" : "opacity-0"
+                                        searchQuery === option.label ? "opacity-100" : "opacity-0"
                                     )}
                                 />
                                 {option.label}
