@@ -55,8 +55,8 @@ const ModulesForm = ({ course, courseId, fetchData }) => {
     const onReorder = async (updateData) => {
         try {
             setIsUpdating(true);
-            await fetch(`http://localhost:3000/instructor/courses/${courseId}/modules/reorder`, {
-                method: 'PUT',
+            await fetch(`${VITE_APP_BACKEND_URL}/instructor/courses/${courseId}/modules/reorder`, {
+                method: 'PATCH',
                 headers: {
                     authorization: `Bearer ${localStorage.getItem('token')}`,
                     'content-type': 'application/json'

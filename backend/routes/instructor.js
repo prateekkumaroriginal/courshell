@@ -22,6 +22,13 @@ const courseUpdateInput = z.object({
     categoryId: z.string().min(1).optional(),
 });
 
+const reorderInput = z.object({
+    list: z.object({
+        id: z.string().length(36),
+        position: z.number().int()
+    }).array()
+});
+
 const isValidInstructorOrAbove = (user, email) => {
     return user.role === SUPERADMIN || user.role === ADMIN || user.email === email;
 }
@@ -270,6 +277,39 @@ router.post('/courses/:coursedId/modules', authenticateToken, authorizeRoles(SUP
     }
 });
 
+router.patch('/courses/:coursedId/modules/reorder', authenticateToken, authorizeRoles(SUPERADMIN, ADMIN, INSTRUCTOR), async (req, res) => {
+    try {
+        const course = await getCourse(req.params.coursedId);
+        if (!course || !isValidInstructorOrAbove(req.user, course.instructor.email)) {
+            return res.status(404).json({ message: "Course not found" });
+        }
+
+        const parsedInput = reorderInput.safeParse(req.body);
+        if (!parsedInput.success) {
+            return res.status(400).json({
+                message: parsedInput.error
+            });
+        }
+
+        for (const module of parsedInput.data.list) {
+            await db.module.update({
+                where: {
+                    id: module.id
+                },
+                data: {
+                    position: module.position
+                }
+            });
+        }
+
+        return res.json({ message: "Reorder modules DONE" });
+    } catch (error) {
+        console.error("[INSTRUCTOR -> COURSES -> MODULES -> REORDER]", error);
+        return res.status(500).json({ error: "Internal server error" });
+    }
+
+});
+
 router.get('/categories', authenticateToken, authorizeRoles(SUPERADMIN, ADMIN, INSTRUCTOR), async (req, res) => {
     try {
         const categories = await db.category.findMany();
@@ -278,6 +318,6 @@ router.get('/categories', authenticateToken, authorizeRoles(SUPERADMIN, ADMIN, I
         console.log("INSTRUCTOR -> CATEGORIES");
         return res.status(500).json({ error: "Internal server error" });
     }
-})
+});
 
 export default router;

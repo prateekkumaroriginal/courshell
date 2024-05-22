@@ -46,6 +46,8 @@ model Course {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([categoryId])
 }
 
 model Module {
@@ -58,7 +60,7 @@ model Module {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@unique([position, courseId])
+  @@index([courseId])
 }
 
 model Attachment {
@@ -75,6 +77,8 @@ model Attachment {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([courseId])
 }
 
 model Category {

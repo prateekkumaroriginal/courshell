@@ -57,7 +57,7 @@ const getCourse = async (courseId) => {
             instructor: true,
             modules: {
                 orderBy: {
-                    createdAt: 'desc'
+                    position: 'asc'
                 }
             },
         }
