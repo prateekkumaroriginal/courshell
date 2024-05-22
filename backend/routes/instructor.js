@@ -248,7 +248,18 @@ router.post('/courses/:coursedId/modules', authenticateToken, authorizeRoles(SUP
             });
         }
 
-        const module = await createModule(parsedInput.data.title);
+        const lastModule = await db.module.findFirst({
+            where: {
+                courseId: req.params.coursedId
+            },
+            orderBy: {
+                position: "desc"
+            }
+        });
+
+        const newPosition = lastModule ? lastModule.position + 1 : 1
+
+        const module = await createModule(parsedInput.data.title, newPosition, req.params.coursedId);
         if (module) {
             return res.status(201).json({ message: "Module created successfully", moduleId: module.id });
         }

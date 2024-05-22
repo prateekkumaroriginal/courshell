@@ -64,11 +64,12 @@ const getCourse = async (courseId) => {
     });
 }
 
-const createModule = async (title, position) => {
+const createModule = async (title, position, courseId) => {
     return await db.module.create({
         data: {
             title,
-            position
+            position,
+            courseId
         }
     });
 }

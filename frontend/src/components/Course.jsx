@@ -97,7 +97,7 @@ const Course = () => {
                         <h2 className='text-xl font-semibold'>Course Content</h2>
                     </div>
                     {!isLoading && <>
-                        <ModulesForm course={course} courseId={courseId} />
+                        <ModulesForm course={course} courseId={courseId} fetchData={fetchData} />
                         {/* <ModulesForm course={course} fetchData={fetchData} courseId={courseId} />
                         <PriceForm course={course} fetchData={fetchData} courseId={courseId} />
                         <AttachmentsForm course={course} courseId={courseId} /> */}

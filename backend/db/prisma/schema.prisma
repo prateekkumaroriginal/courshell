@@ -51,11 +51,14 @@ model Course {
 model Module {
   id       String @id @default(uuid())
   title    String @db.Text
+  position Int    @db.Integer
   courseId String
   course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@unique([position, courseId])
 }
 
 model Attachment {
