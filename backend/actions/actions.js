@@ -74,4 +74,22 @@ const createModule = async (title, position, courseId) => {
     });
 }
 
-export { getInstructorOrAbove, createCourse, getCreatedCourses, getCourse, getUser, createModule }
+const getModule = async (courseId, moduleId) => {
+    return await db.module.findUnique({
+        where: {
+            courseId,
+            id: moduleId
+        }
+    });
+}
+
+const updateModule = async (moduleId, data) => {
+    return await db.module.update({
+        where: {
+            id: moduleId
+        },
+        data
+    });
+}
+
+export { getInstructorOrAbove, createCourse, getCreatedCourses, getCourse, getUser, createModule, getModule, updateModule }

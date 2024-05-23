@@ -56,7 +56,7 @@ const ModulesForm = ({ course, courseId, fetchData }) => {
         try {
             setIsUpdating(true);
             const reorderToast = toast.loading("Reordering...");
-            const response = await fetch(`${VITE_APP_BACKEND_URL}/instructor/courses/${courseId}/modules/reorder`, {
+            const response = await fetch(`${VITE_APP_BACKEND_URL}/instructor/courses/${courseId}/reorder`, {
                 method: 'PATCH',
                 headers: {
                     authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -75,9 +75,9 @@ const ModulesForm = ({ course, courseId, fetchData }) => {
             }
         } catch (e) {
             console.log(e);
+            toast.error("Something went wrong");
         } finally {
             setIsUpdating(false);
-            toast.error("Something went wrong");
         }
     }
 
