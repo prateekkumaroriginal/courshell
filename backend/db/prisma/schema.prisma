@@ -57,6 +57,8 @@ model Module {
   courseId String
   course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
+  articles Article[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -97,4 +99,18 @@ model Enrollment {
   updatedAt DateTime @updatedAt
 
   @@unique([userId, courseId])
+}
+
+model Article {
+  id          String  @id @default(uuid())
+  title       String
+  content     String?
+  position    Int     @db.Integer
+  isFree      Boolean @default(false)
+  isPublished Boolean @default(false)
+
+  moduleId String
+  module   Module @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+
+  @@index([moduleId])
 }
