@@ -42,15 +42,15 @@ const Course = () => {
                 console.log("MODULES", data.course.categoryId);
                 if (data.course.modules[0]) {
                     console.log("ARTICLES", data.course.modules[0].articles);
-                    console.log("ARTICLES [0]", data.course.modules[0].articles[0]);
+                    // console.log("ARTICLES [0]", data.course.modules[0].articles[0]);
                 }
                 const requiredFields = [
                     data.course.title,
                     data.course.description,
-                    data.course.imageUrl,
+                    data.course.coverImageId,
                     data.course.price,
                     data.course.categoryId,
-                    data.course.modules.some(module => module.articles.some(article => article.isPublished))
+                    // data.course.modules.some(module => module.articles.some(article => article.isPublished))
                 ];
 
                 const totalFields = requiredFields.length;
