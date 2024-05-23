@@ -38,10 +38,10 @@ const ModulesForm = ({ course, courseId, fetchData }) => {
             });
             toast.dismiss(creatingToast);
 
-            if (response.ok){
+            if (response.ok) {
                 fetchData();
                 toast.success("Module Created");
-            } else{
+            } else {
                 toast.error("Something went wrong");
             }
             setIsCreating(false);
@@ -55,7 +55,8 @@ const ModulesForm = ({ course, courseId, fetchData }) => {
     const onReorder = async (updateData) => {
         try {
             setIsUpdating(true);
-            await fetch(`${VITE_APP_BACKEND_URL}/instructor/courses/${courseId}/modules/reorder`, {
+            const reorderToast = toast.loading("Reordering...");
+            const response = await fetch(`${VITE_APP_BACKEND_URL}/instructor/courses/${courseId}/modules/reorder`, {
                 method: 'PATCH',
                 headers: {
                     authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -65,10 +66,18 @@ const ModulesForm = ({ course, courseId, fetchData }) => {
                     list: updateData
                 })
             });
+            toast.dismiss(reorderToast);
+
+            if (response.ok) {
+                toast.success("Modules Reorder Successfull");
+            } else {
+                toast.error("Something went wrong");
+            }
         } catch (e) {
             console.log(e);
         } finally {
             setIsUpdating(false);
+            toast.error("Something went wrong");
         }
     }
 
@@ -116,12 +125,12 @@ const ModulesForm = ({ course, courseId, fetchData }) => {
                 />
             </form> : <>
                 <div className={!course.modules.length ? 'text-zinc-600 text-sm font-semibold mt-2 italic' : 'mt-2'}>
-                    {!course.modules.length ? "No Modules":
-                    <ModulesList
-                    onReorder={onReorder}
-                    items={course.modules || []}
-                    />
-                }
+                    {!course.modules.length ? "No Modules" :
+                        <ModulesList
+                            onReorder={onReorder}
+                            items={course.modules || []}
+                        />
+                    }
                 </div>
                 <div>
                     {course.modules.length !== 0 && <p className='text-xs text-slate-600 mt-4'>
