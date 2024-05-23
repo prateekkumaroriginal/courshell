@@ -64,6 +64,15 @@ const getCourse = async (courseId) => {
     });
 }
 
+const updateCourse = async (courseId, data) => {
+    return await db.course.update({
+        where: {
+            id: courseId
+        },
+        data
+    });
+}
+
 const createModule = async (title, position, courseId) => {
     return await db.module.create({
         data: {
@@ -83,6 +92,17 @@ const getModule = async (courseId, moduleId) => {
     });
 }
 
+const getLastModule = async (courseId) => {
+    return await db.module.findFirst({
+        where: {
+            courseId
+        },
+        orderBy: {
+            position: "desc"
+        }
+    });
+}
+
 const updateModule = async (moduleId, data) => {
     return await db.module.update({
         where: {
@@ -92,4 +112,43 @@ const updateModule = async (moduleId, data) => {
     });
 }
 
-export { getInstructorOrAbove, createCourse, getCreatedCourses, getCourse, getUser, createModule, getModule, updateModule }
+const createAttachment = async (file, courseId, isCoverImage = false) => {
+    const timestamp = Date.now();
+    return await db.attachment.create({
+        data: {
+            name: `${file.originalname}-${timestamp}`,
+            data: file.buffer,
+            type: file.mimetype,
+            courseId,
+            isCoverImage
+        }
+    });
+}
+
+const getAttachment = async (courseId, attachmentId) => {
+    return await db.attachment.findUnique({
+        where: {
+            courseId,
+            id: attachmentId,
+        }
+    });
+}
+
+const getAttachments = async (courseId) => {
+    return await db.attachment.findMany({
+        where: {
+            courseId
+        }
+    });
+}
+
+const deleteAttachment = async (courseId, attachmentId) => {
+    return await db.attachment.delete({
+        where: {
+            courseId,
+            id: attachmentId,
+        }
+    });
+}
+
+export { getInstructorOrAbove, createCourse, getCreatedCourses, getCourse, getUser, createModule, getModule, updateModule, getLastModule, deleteAttachment, getAttachment, getAttachments, createAttachment, updateCourse }

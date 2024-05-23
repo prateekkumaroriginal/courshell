@@ -2,7 +2,7 @@ import express from 'express';
 import { z } from 'zod';
 import { db } from '../db/index.js';
 import { authenticateToken, authorizeRoles } from '../middleware/auth.js'
-import { getInstructorOrAbove, createCourse, getCreatedCourses, getCourse, getUser, createModule, getModule, updateModule } from '../actions/actions.js';
+import { getInstructorOrAbove, createCourse, getCreatedCourses, getCourse, getUser, createModule, getModule, updateModule, getLastModule, deleteAttachment, getAttachment, getAttachments, createAttachment, updateCourse } from '../actions/actions.js';
 import { SUPERADMIN, ADMIN, INSTRUCTOR, USER } from '../constants.js';
 import 'dotenv/config';
 import multer from 'multer';
@@ -100,24 +100,8 @@ router.patch('/courses/:courseId', authenticateToken, authorizeRoles(SUPERADMIN,
         let updatedCourse;
         if (req.file) {
             if (req.file.mimetype.startsWith('image/')) {
-                const attachment = await db.attachment.create({
-                    data: {
-                        isCoverImage: true,
-                        name: req.file.originalname,
-                        data: req.file.buffer,
-                        type: req.file.mimetype,
-                        courseId: course.id,
-                    }
-                });
-
-                updatedCourse = await db.course.update({
-                    where: {
-                        id: course.id
-                    },
-                    data: {
-                        coverImageId: attachment.id
-                    }
-                });
+                const attachment = await createAttachment(req.file, course.id, true);
+                updatedCourse = await updateCourse(course.id, { coverImageId: attachment.id });
             } else {
                 return res.status(400).json({ message: "Uploaded file was not an image" });
             }
@@ -130,12 +114,7 @@ router.patch('/courses/:courseId', authenticateToken, authorizeRoles(SUPERADMIN,
             });
         }
 
-        updatedCourse = await db.course.update({
-            where: {
-                id: course.id
-            },
-            data: parsedInput.data
-        });
+        updatedCourse = await updateCourse(course.id, parsedInput.data);
 
         return res.json({ message: "Course updated successfully", course: updatedCourse })
     } catch (error) {
@@ -151,14 +130,7 @@ router.post('/courses/:courseId/attachments', authenticateToken, authorizeRoles(
             return res.status(404).json({ message: "Course not found" });
         }
 
-        const attachment = await db.attachment.create({
-            data: {
-                name: req.file.originalname,
-                data: req.file.buffer,
-                type: req.file.mimetype,
-                courseId: course.id,
-            }
-        });
+        const attachment = await createAttachment(req.file, course.id);
         return res.status(201).json({ attachment });
     } catch (error) {
         console.log("[INSTRUCTOR -> COURSES -> ATTACHMENTS]", error);
@@ -173,11 +145,7 @@ router.get('/courses/:courseId/attachments', authenticateToken, authorizeRoles(S
             return res.status(404).json({ message: "Course not found" });
         }
 
-        const attachments = await db.attachment.findMany({
-            where: {
-                courseId: course.id
-            }
-        });
+        const attachments = await getAttachments(course.id);
         attachments.map(attachment => {
             attachment.data = attachment.data.toString('base64');
         });
@@ -191,17 +159,13 @@ router.get('/courses/:courseId/attachments', authenticateToken, authorizeRoles(S
 
 router.get('/courses/:courseId/attachments/:attachmentId', authenticateToken, authorizeRoles(SUPERADMIN, ADMIN, INSTRUCTOR), async (req, res) => {
     try {
-        const course = await getCourse(req.params.courseId);
+        const { courseId, attachmentId } = req.params;
+        const course = await getCourse(courseId);
         if (!course || !isValidInstructorOrAbove(req.user, course.instructor.email)) {
             return res.status(404).json({ message: "Course not found" });
         }
 
-        const attachment = await db.attachment.findUnique({
-            where: {
-                courseId: course.id,
-                id: req.params.attachmentId,
-            }
-        });
+        const attachment = await getAttachment(courseId, attachmentId);
 
         if (!attachment) {
             return res.status(404).json({ message: "Attachment not found" });
@@ -218,17 +182,13 @@ router.get('/courses/:courseId/attachments/:attachmentId', authenticateToken, au
 
 router.delete('/courses/:courseId/attachments/:attachmentId', authenticateToken, authorizeRoles(SUPERADMIN, ADMIN, INSTRUCTOR), async (req, res) => {
     try {
-        const course = await getCourse(req.params.courseId);
+        const { courseId, attachmentId } = req.params;
+        const course = await getCourse(courseId);
         if (!course || !isValidInstructorOrAbove(req.user, course.instructor.email)) {
             return res.status(404).json({ message: "Course not found" });
         }
 
-        const attachment = await db.attachment.delete({
-            where: {
-                courseId: course.id,
-                id: req.params.attachmentId,
-            }
-        });
+        const attachment = await deleteAttachment(courseId, attachmentId);
 
         if (!attachment) {
             return res.status(404).json({ message: "Attachment not found" });
@@ -255,16 +215,9 @@ router.post('/courses/:courseId/modules', authenticateToken, authorizeRoles(SUPE
             });
         }
 
-        const lastModule = await db.module.findFirst({
-            where: {
-                courseId: req.params.courseId
-            },
-            orderBy: {
-                position: "desc"
-            }
-        });
+        const lastModule = await getLastModule(req.params.courseId);
 
-        const newPosition = lastModule ? lastModule.position + 1 : 1
+        const newPosition = lastModule ? lastModule.position + 1 : 1;
 
         const module = await createModule(parsedInput.data.title, newPosition, req.params.courseId);
         if (module) {
@@ -318,9 +271,7 @@ router.patch('/courses/:courseId/modules/:moduleId', authenticateToken, authoriz
             });
         }
 
-        await updateModule(module.id, {
-            title: parsedInput.data.title
-        });
+        await updateModule(module.id, parsedInput.data);
 
         return res.json({ module });
     } catch (error) {
