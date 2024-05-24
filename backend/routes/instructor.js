@@ -2,7 +2,7 @@ import express from 'express';
 import { z } from 'zod';
 import { db } from '../db/index.js';
 import { authenticateToken, authorizeRoles } from '../middleware/auth.js'
-import { getInstructorOrAbove, createCourse, getCreatedCourses, getCourse, getUser, createModule, getModule, updateModule, getLastModule, deleteAttachment, getAttachment, getAttachments, createAttachment, updateCourse } from '../actions/actions.js';
+import { getInstructorOrAbove, createCourse, getCreatedCourses, getCourse, getUser, createModule, getModule, updateModule, getLastModule, deleteAttachment, getAttachment, getAttachments, createAttachment, updateCourse, createArticle, getLastArticle, getArticle } from '../actions/actions.js';
 import { SUPERADMIN, ADMIN, INSTRUCTOR, USER } from '../constants.js';
 import 'dotenv/config';
 import multer from 'multer';
@@ -216,10 +216,9 @@ router.post('/courses/:courseId/modules', authenticateToken, authorizeRoles(SUPE
         }
 
         const lastModule = await getLastModule(req.params.courseId);
-
         const newPosition = lastModule ? lastModule.position + 1 : 1;
 
-        const module = await createModule(parsedInput.data.title, newPosition, req.params.courseId);
+        const module = await createModule(parsedInput.data.title, newPosition, course.id);
         if (module) {
             return res.status(201).json({ message: "Module created successfully", moduleId: module.id });
         }
@@ -263,7 +262,6 @@ router.patch('/courses/:courseId/modules/:moduleId', authenticateToken, authoriz
             return res.status(404).json({ message: "Module not found" });
         }
 
-        console.log(req.body);
         const parsedInput = titleInput.safeParse(req.body);
         if (!parsedInput.success) {
             return res.status(400).json({
@@ -305,7 +303,65 @@ router.patch('/courses/:courseId/reorder', authenticateToken, authorizeRoles(SUP
         console.error("[INSTRUCTOR -> COURSES -> MODULES -> REORDER]", error);
         return res.status(500).json({ error: "Internal server error" });
     }
+});
 
+router.post('/courses/:courseId/modules/:moduleId/articles', authenticateToken, authorizeRoles(SUPERADMIN, ADMIN, INSTRUCTOR), async (req, res) => {
+    try {
+        const { courseId, moduleId } = req.params;
+        const course = await getCourse(courseId);
+        if (!course || !isValidInstructorOrAbove(req.user, course.instructor.email)) {
+            return res.status(404).json({ message: "Course not found" });
+        }
+
+        const module = await getModule(course.id, moduleId);
+        if (!module) {
+            return res.status(404).json({ message: "Module not found" });
+        }
+
+        const parsedInput = titleInput.safeParse(req.body);
+        if (!parsedInput.success) {
+            return res.status(400).json({
+                message: parsedInput.error
+            });
+        }
+
+        const lastArticle = await getLastArticle(module.id);
+        const newPosition = lastArticle ? lastArticle.position + 1 : 1;
+
+        const article = await createArticle(parsedInput.data.title, newPosition, module.id);
+        if (article) {
+            return res.status(201).json({ message: "Article created successfully", articleId: article.id });
+        }
+        return res.status(500).json({ error: "Internal server error" });
+    } catch (error) {
+        console.error("[INSTRUCTOR -> COURSES -> MODULES -> ARTICLES]", error);
+        return res.status(500).json({ error: "Internal server error" });
+    }
+});
+
+router.get('/courses/:courseId/modules/:moduleId/articles/:articleId', authenticateToken, authorizeRoles(SUPERADMIN, ADMIN, INSTRUCTOR), async (req, res) => {
+    try {
+        const { courseId, moduleId, articleId } = req.params;
+        const course = await getCourse(courseId);
+        if (!course || !isValidInstructorOrAbove(req.user, course.instructor.email)) {
+            return res.status(404).json({ message: "Course not found" });
+        }
+
+        const module = await getModule(course.id, moduleId);
+        if (!module) {
+            return res.status(404).json({ message: "Module not found" });
+        }
+
+        const article = await getArticle(module.id, articleId);
+        if (!article) {
+            return res.status(404).json({ message: "Article not found" });
+        }
+
+        return res.json({ article });
+    } catch (error) {
+        console.log("[INSTRUCTOR -> COURSES -> MODULES -> ARTICLES]", error);
+        return res.status(500).json({error: "Internal server error"});
+    }
 });
 
 router.get('/categories', authenticateToken, authorizeRoles(SUPERADMIN, ADMIN, INSTRUCTOR), async (req, res) => {
