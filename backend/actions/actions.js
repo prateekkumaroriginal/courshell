@@ -88,6 +88,13 @@ const getModule = async (courseId, moduleId) => {
         where: {
             courseId,
             id: moduleId
+        },
+        include: {
+            articles: {
+                orderBy: {
+                    position: 'asc'
+                }
+            }
         }
     });
 }
@@ -109,6 +116,45 @@ const updateModule = async (moduleId, data) => {
             id: moduleId
         },
         data
+    });
+}
+
+const createArticle = async (title, position, moduleId) => {
+    return await db.article.create({
+        data: {
+            title,
+            position,
+            moduleId
+        }
+    });
+}
+
+const getArticle = async (moduleId, articleId) => {
+    return await db.article.findUnique({
+        where: {
+            moduleId,
+            id: articleId
+        }
+    });
+}
+
+const updateArticle = async (articleId, data) => {
+    return await db.article.update({
+        where: {
+            id: articleId
+        },
+        data
+    });
+}
+
+const getLastArticle = async (moduleId) => {
+    return await db.article.findFirst({
+        where: {
+            moduleId
+        },
+        orderBy: {
+            position: "desc"
+        }
     });
 }
 
@@ -151,4 +197,4 @@ const deleteAttachment = async (courseId, attachmentId) => {
     });
 }
 
-export { getInstructorOrAbove, createCourse, getCreatedCourses, getCourse, getUser, createModule, getModule, updateModule, getLastModule, deleteAttachment, getAttachment, getAttachments, createAttachment, updateCourse }
+export { getInstructorOrAbove, createCourse, getCreatedCourses, getCourse, getUser, createModule, getModule, updateModule, getLastModule, deleteAttachment, getAttachment, getAttachments, createAttachment, updateCourse, getArticle, createArticle, updateArticle, getLastArticle }
