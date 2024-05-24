@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useParams } from 'react-router-dom';
 import { z } from 'zod';
-// import ArticlesList from './ArticlesList';
+import ArticlesList from '@/components/ArticlesList';
 import { Loader2 } from 'lucide-react';
 import { VITE_APP_BACKEND_URL } from '@/constants';
 import toast from 'react-hot-toast';
@@ -121,8 +121,9 @@ const Module = () => {
     const onReorder = async (updateData) => {
         try {
             setIsUpdating(true);
-            const response = await fetch(`${VITE_APP_BACKEND_URL}/instructor/courses/${courseId}/modules/${moduleId}/articles/reorder`, {
-                method: 'PUT',
+            const reorderToast = toast.loading("Reordering..");
+            const response = await fetch(`${VITE_APP_BACKEND_URL}/instructor/courses/${courseId}/modules/${moduleId}/reorder`, {
+                method: 'PATCH',
                 headers: {
                     authorization: `Bearer ${localStorage.getItem('token')}`,
                     'content-type': 'application/json'
@@ -131,8 +132,16 @@ const Module = () => {
                     list: updateData
                 })
             });
+            toast.dismiss(reorderToast);
+
+            if (response.ok) {
+                toast.success("Articles Reorder Successfull");
+            } else {
+                toast.error("Something went wrong");
+            }
         } catch (e) {
             console.log(e);
+            toast.error("Something went wrong");
         } finally {
             setIsUpdating(false);
         }
@@ -237,10 +246,10 @@ const Module = () => {
                         </form> : !isLoading && <>
                             <div className={!module.articles.length ? 'text-zinc-600 text-sm font-semibold mt-2 italic' : 'mt-2'}>
                                 {!module.articles.length && "No Articles"}
-                                {/* <ArticlesList
+                                <ArticlesList
                                     onReorder={onReorder}
                                     items={module.articles || []}
-                                /> */}
+                                />
                             </div>
                             <div>
                                 {module.articles.length !== 0 && <p className='text-xs text-slate-600 mt-4'>

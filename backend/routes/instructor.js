@@ -2,7 +2,7 @@ import express from 'express';
 import { z } from 'zod';
 import { db } from '../db/index.js';
 import { authenticateToken, authorizeRoles } from '../middleware/auth.js'
-import { getInstructorOrAbove, createCourse, getCreatedCourses, getCourse, getUser, createModule, getModule, updateModule, getLastModule, deleteAttachment, getAttachment, getAttachments, createAttachment, updateCourse, createArticle, getLastArticle, getArticle } from '../actions/actions.js';
+import { getInstructorOrAbove, createCourse, getCreatedCourses, getCourse, getUser, createModule, getModule, updateModule, getLastModule, deleteAttachment, getAttachment, getAttachments, createAttachment, updateCourse, createArticle, getLastArticle, getArticle, updateArticle } from '../actions/actions.js';
 import { SUPERADMIN, ADMIN, INSTRUCTOR, USER } from '../constants.js';
 import 'dotenv/config';
 import multer from 'multer';
@@ -361,6 +361,39 @@ router.get('/courses/:courseId/modules/:moduleId/articles/:articleId', authentic
     } catch (error) {
         console.log("[INSTRUCTOR -> COURSES -> MODULES -> ARTICLES]", error);
         return res.status(500).json({error: "Internal server error"});
+    }
+});
+
+router.patch('/courses/:courseId/modules/:moduleId/reorder', authenticateToken, authorizeRoles(SUPERADMIN, ADMIN, INSTRUCTOR), async (req, res) => {
+    try {
+        const { courseId, moduleId } = req.params;
+        const course = await getCourse(courseId);
+        if (!course || !isValidInstructorOrAbove(req.user, course.instructor.email)) {
+            return res.status(404).json({ message: "Course not found" });
+        }
+
+        const module = await getModule(course.id, moduleId);
+        if (!module) {
+            return res.status(404).json({ message: "Module not found" });
+        }
+
+        const parsedInput = reorderInput.safeParse(req.body);
+        if (!parsedInput.success) {
+            return res.status(400).json({
+                message: parsedInput.error
+            });
+        }
+
+        for (const article of parsedInput.data.list) {
+            await updateArticle(article.id, {
+                position: article.position
+            });
+        }
+
+        return res.json({ message: "Reorder articles DONE" });
+    } catch (error) {
+        console.error("[INSTRUCTOR -> COURSES -> MODULES -> ARTICLES -> REORDER]", error);
+        return res.status(500).json({ error: "Internal server error" });
     }
 });
 
