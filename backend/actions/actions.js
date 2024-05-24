@@ -161,6 +161,15 @@ const getLastArticle = async (moduleId) => {
     });
 }
 
+const deleteArticle = async (moduleId, articleId) => {
+    return await db.article.delete({
+        where: {
+            moduleId,
+            id: articleId
+        },
+    });
+}
+
 const createAttachment = async (file, courseId, isCoverImage = false) => {
     const timestamp = Date.now();
     return await db.attachment.create({
@@ -200,4 +209,4 @@ const deleteAttachment = async (courseId, attachmentId) => {
     });
 }
 
-export { getInstructorOrAbove, createCourse, getCreatedCourses, getCourse, getUser, createModule, getModule, updateModule, getLastModule, deleteAttachment, getAttachment, getAttachments, createAttachment, updateCourse, getArticle, createArticle, updateArticle, getLastArticle }
+export { getInstructorOrAbove, createCourse, getCreatedCourses, getCourse, getUser, createModule, getModule, updateModule, getLastModule, deleteAttachment, getAttachment, getAttachments, createAttachment, updateCourse, getArticle, createArticle, updateArticle, getLastArticle, deleteArticle }
