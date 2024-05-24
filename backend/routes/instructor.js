@@ -458,7 +458,7 @@ router.delete('/courses/:courseId/modules/:moduleId/articles/:articleId', authen
             return res.status(404).json({ message: "Article not found" });
         }
 
-        let unpublishCourse;
+        let unpublishCourse = true;
         for (const module of course.modules) {
             const results = await db.article.findMany({
                 where: {
