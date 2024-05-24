@@ -458,6 +458,25 @@ router.delete('/courses/:courseId/modules/:moduleId/articles/:articleId', authen
             return res.status(404).json({ message: "Article not found" });
         }
 
+        let unpublishCourse;
+        for (const module of course.modules) {
+            const results = await db.article.findMany({
+                where: {
+                    moduleId: module.id,
+                    isPublished: true
+                }
+            });
+            if (results.length > 0) {
+                unpublishCourse = false;
+                break;
+            }
+        }
+        if (unpublishCourse) {
+            await updateCourse(course.id, {
+                isPublished: false
+            });
+        }
+
         return res.status(200).json({ message: "Article deleted successfully" });
     } catch (error) {
         console.log("[INSTRUCTOR -> COURSES -> MODULES -> ARTICLES]", error);
