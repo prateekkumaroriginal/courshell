@@ -58,6 +58,9 @@ const getCourse = async (courseId) => {
             modules: {
                 orderBy: {
                     position: 'asc'
+                },
+                include: {
+                    articles: true
                 }
             },
         }

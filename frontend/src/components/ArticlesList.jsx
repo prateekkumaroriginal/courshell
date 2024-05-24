@@ -73,7 +73,12 @@ const ArticlesList = ({ items, onReorder }) => {
                                             {article.title}
                                         </Link>
 
-                                        <div className='ml-auto pr-2 flex items-center gap-x-2'>
+                                        <div className='ml-auto pr-2 flex items-center gap-x-1'>
+                                            {article.isFree && <div
+                                                className={`text-white px-2 py-1 font-semibold rounded-full text-xs cursor-default bg-emerald-500 hover:bg-emerald-600`}
+                                            >
+                                                Free
+                                            </div>}
                                             <div
                                                 className={`text-white px-2 py-1 font-semibold rounded-full text-xs cursor-default ${article.isPublished ? "bg-sky-700 hover:bg-sky-800" : "bg-slate-600 hover:bg-slate-700"}`}
                                             >

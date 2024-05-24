@@ -29,6 +29,12 @@ const reorderInput = z.object({
     }).array()
 });
 
+const articleUpdateInput = z.object({
+    title: z.string().min(4).max(200).optional(),
+    content: z.string().min(1).optional(),
+    isFree: z.boolean().optional()
+});
+
 const isValidInstructorOrAbove = (user, email) => {
     return user.role === SUPERADMIN || user.role === ADMIN || user.email === email;
 }
@@ -257,11 +263,6 @@ router.patch('/courses/:courseId/modules/:moduleId', authenticateToken, authoriz
             return res.status(404).json({ message: "Course not found" });
         }
 
-        const module = await getModule(courseId, moduleId);
-        if (!module) {
-            return res.status(404).json({ message: "Module not found" });
-        }
-
         const parsedInput = titleInput.safeParse(req.body);
         if (!parsedInput.success) {
             return res.status(400).json({
@@ -269,7 +270,10 @@ router.patch('/courses/:courseId/modules/:moduleId', authenticateToken, authoriz
             });
         }
 
-        await updateModule(module.id, parsedInput.data);
+        const module = await updateModule(moduleId, parsedInput.data);
+        if (!module) {
+            return res.status(404).json({ message: "Module not found" });
+        }
 
         return res.json({ module });
     } catch (error) {
@@ -360,7 +364,7 @@ router.get('/courses/:courseId/modules/:moduleId/articles/:articleId', authentic
         return res.json({ article });
     } catch (error) {
         console.log("[INSTRUCTOR -> COURSES -> MODULES -> ARTICLES]", error);
-        return res.status(500).json({error: "Internal server error"});
+        return res.status(500).json({ error: "Internal server error" });
     }
 });
 
@@ -393,6 +397,38 @@ router.patch('/courses/:courseId/modules/:moduleId/reorder', authenticateToken, 
         return res.json({ message: "Reorder articles DONE" });
     } catch (error) {
         console.error("[INSTRUCTOR -> COURSES -> MODULES -> ARTICLES -> REORDER]", error);
+        return res.status(500).json({ error: "Internal server error" });
+    }
+});
+
+router.patch('/courses/:courseId/modules/:moduleId/articles/:articleId', authenticateToken, authorizeRoles(SUPERADMIN, ADMIN, INSTRUCTOR), async (req, res) => {
+    try {
+        const { courseId, moduleId, articleId } = req.params;
+        const course = await getCourse(courseId);
+        if (!course || !isValidInstructorOrAbove(req.user, course.instructor.email)) {
+            return res.status(404).json({ message: "Course not found" });
+        }
+
+        const module = await getModule(course.id, moduleId);
+        if (!module) {
+            return res.status(404).json({ message: "Module not found" });
+        }
+
+        const parsedInput = articleUpdateInput.safeParse(req.body);
+        if (!parsedInput.success) {
+            return res.status(400).json({
+                message: parsedInput.error
+            });
+        }
+
+        const article = await updateArticle(articleId, parsedInput.data);
+        if (!article) {
+            return res.status(404).json({ message: "Article not found" });
+        }
+
+        return res.json({ article });
+    } catch (error) {
+        console.log("[INSTRUCTOR -> COURSES -> MODULES -> ARTICLES]", error);
         return res.status(500).json({ error: "Internal server error" });
     }
 });

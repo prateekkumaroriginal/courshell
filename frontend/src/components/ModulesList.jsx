@@ -51,8 +51,7 @@ const ModulesList = ({ items, onReorder }) => {
                 {(provided) => (
                     <div {...provided.droppableProps} ref={provided.innerRef}>
                         {modules.map((module, index) => {
-                            // const published = module.articles.some(article => article.published);
-                            const published = false;
+                            const published = module.articles.some(article => article.published);
 
                             return (
                                 <Draggable

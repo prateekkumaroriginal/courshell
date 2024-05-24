@@ -5,6 +5,7 @@ import DescriptionForm from '@/components/DescriptionForm';
 import CategoryForm from '@/components/CategoryForm';
 import ToastProvider from '@/components/ui/ToastProvider';
 import ModulesForm from '@/components/ModulesForm';
+import { VITE_APP_BACKEND_URL } from '@/constants';
 // import DescriptionForm from './DescriptionForm'
 // import UploadImage from './UploadImage';
 // import CategoryForm from './CategoryForm';
@@ -24,7 +25,7 @@ const Course = () => {
 
     const fetchData = async () => {
         try {
-            const response = await fetch(`http://localhost:3000/instructor/courses/${courseId}`, {
+            const response = await fetch(`${VITE_APP_BACKEND_URL}/instructor/courses/${courseId}`, {
                 method: 'GET',
                 headers: {
                     authorization: `Bearer ${localStorage.getItem('token')}`
@@ -42,7 +43,7 @@ const Course = () => {
                 console.log("MODULES", data.course.categoryId);
                 if (data.course.modules[0]) {
                     console.log("ARTICLES", data.course.modules[0].articles);
-                    // console.log("ARTICLES [0]", data.course.modules[0].articles[0]);
+                    console.log("ARTICLES [0]", data.course.modules[0].articles[0]);
                 }
                 const requiredFields = [
                     data.course.title,
@@ -50,7 +51,7 @@ const Course = () => {
                     data.course.coverImageId,
                     data.course.price,
                     data.course.categoryId,
-                    // data.course.modules.some(module => module.articles.some(article => article.isPublished))
+                    data.course.modules.some(module => module.articles.some(article => article.isPublished))
                 ];
 
                 const totalFields = requiredFields.length;
