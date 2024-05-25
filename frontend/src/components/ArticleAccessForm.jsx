@@ -3,6 +3,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod'
 import { VITE_APP_BACKEND_URL } from '@/constants';
+import toast from 'react-hot-toast';
 
 const formSchema = z.object({
     isFree: z.boolean().default(false)
@@ -15,17 +16,16 @@ const ArticleAccessForm = ({ article, courseId, moduleId, articleId }) => {
     const form = useForm({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            isFree: !!article.isFree
+            isFree
         }
     });
 
     const { handleSubmit, reset, formState: { isSubmitting, isValid } } = form;
 
     const onSubmit = async (values) => {
-        console.log(values);
         try {
             setIsEditing(false);
-            setIsFree(values.isFree);
+            const updatingToast = toast.loading("Updating...");
             const response = await fetch(`${VITE_APP_BACKEND_URL}/instructor/courses/${courseId}/modules/${moduleId}/articles/${articleId}`, {
                 method: 'PATCH',
                 headers: {
@@ -34,8 +34,17 @@ const ArticleAccessForm = ({ article, courseId, moduleId, articleId }) => {
                 },
                 body: JSON.stringify(values)
             });
+            toast.dismiss(updatingToast);
+
+            if (response.ok) {
+                setIsFree(values.isFree);
+                toast.success("Article Updated");
+            } else {
+                toast.error("Something went wrong");
+            }
         } catch (e) {
             console.log(e);
+            toast.error("Something went wrong");
         }
     }
 

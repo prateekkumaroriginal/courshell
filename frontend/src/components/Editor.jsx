@@ -2,6 +2,7 @@ import React, { useState, useRef, useMemo, useEffect, useCallback } from 'react'
 import JoditEditor from 'jodit-react';
 import { useParams } from 'react-router-dom';
 import { VITE_APP_BACKEND_URL } from '@/constants';
+import toast from 'react-hot-toast';
 
 const Editor = ({ defaultContent }) => {
     const { courseId, moduleId, articleId } = useParams();
@@ -41,6 +42,7 @@ const Editor = ({ defaultContent }) => {
 
     const handleSubmit = async () => {
         try {
+            const updatingToast = toast.loading("Updating...");
             const response = await fetch(`${VITE_APP_BACKEND_URL}/instructor/courses/${courseId}/modules/${moduleId}/articles/${articleId}`, {
                 method: 'PATCH',
                 headers: {
@@ -51,8 +53,16 @@ const Editor = ({ defaultContent }) => {
                     content
                 })
             });
+            toast.dismiss(updatingToast);
+
+            if (response.ok) {
+                toast.success("Article Updated");
+            } else {
+                toast.error("Something went wrong");
+            }
         } catch (error) {
             console.log(error);
+            toast.error("Something went wrong");
         }
     }
 

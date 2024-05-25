@@ -10,6 +10,7 @@ import Banner from '@/components/ui/Banner';
 import ArticleActions from '@/components/ArticleActions';
 import { VITE_APP_BACKEND_URL } from '@/constants';
 import ToastProvider from './ui/ToastProvider';
+import toast from 'react-hot-toast';
 
 const formSchema = z.object({
     title: z.string().min(4).max(200),
@@ -66,9 +67,9 @@ const Article = () => {
     }
 
     const onSubmit = async (values) => {
-        console.log(values);
         try {
             setIsEditing(false);
+            const updatingToast = toast.loading("Updating...");
             const response = await fetch(`${VITE_APP_BACKEND_URL}/instructor/courses/${courseId}/modules/${moduleId}/articles/${articleId}`, {
                 method: 'PATCH',
                 headers: {
@@ -77,11 +78,17 @@ const Article = () => {
                 },
                 body: JSON.stringify(values)
             });
+            toast.dismiss(updatingToast);
+
             if (response.ok) {
                 setTitle(values.title);
+                toast.success("Article Updated");
+            } else {
+                toast.error("Something went wrong");
             }
         } catch (e) {
             console.log(e);
+            toast.error("Something went wrong");
         }
     }
 
