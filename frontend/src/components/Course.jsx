@@ -8,6 +8,7 @@ import ModulesForm from '@/components/ModulesForm';
 import { VITE_APP_BACKEND_URL } from '@/constants';
 import Banner from './ui/Banner';
 import CourseActions from './CourseActions';
+import PriceForm from './PriceForm';
 // import DescriptionForm from './DescriptionForm'
 // import UploadImage from './UploadImage';
 // import CategoryForm from './CategoryForm';
@@ -110,8 +111,8 @@ const Course = () => {
                     </div>
                     {!isLoading && <>
                         <ModulesForm course={course} courseId={courseId} fetchData={fetchData} />
+                        <PriceForm course={course} courseId={courseId} />
                         {/* <ModulesForm course={course} fetchData={fetchData} courseId={courseId} />
-                        <PriceForm course={course} fetchData={fetchData} courseId={courseId} />
                         <AttachmentsForm course={course} courseId={courseId} /> */}
                     </>}
                 </div>
