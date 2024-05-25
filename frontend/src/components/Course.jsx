@@ -6,6 +6,8 @@ import CategoryForm from '@/components/CategoryForm';
 import ToastProvider from '@/components/ui/ToastProvider';
 import ModulesForm from '@/components/ModulesForm';
 import { VITE_APP_BACKEND_URL } from '@/constants';
+import Banner from './ui/Banner';
+import CourseActions from './CourseActions';
 // import DescriptionForm from './DescriptionForm'
 // import UploadImage from './UploadImage';
 // import CategoryForm from './CategoryForm';
@@ -14,10 +16,12 @@ import { VITE_APP_BACKEND_URL } from '@/constants';
 
 const Course = () => {
     const { courseId } = useParams();
-    const navigate = useNavigate()
+    const navigate = useNavigate();
     const [course, setCourse] = useState(null);
     const [completionText, setCompletionText] = useState();
-    const [isLoading, setIsLoading] = useState(true)
+    const [isLoading, setIsLoading] = useState(true);
+    const [isComplete, setIsComplete] = useState();
+    const [isPublished, setIsPublished] = useState();
 
     useEffect(() => {
         fetchData();
@@ -39,12 +43,7 @@ const Course = () => {
             if (response.ok) {
                 const data = await response.json();
                 setCourse(data.course);
-                console.log("MODULES", data.course.modules);
-                console.log("MODULES", data.course.categoryId);
-                if (data.course.modules[0]) {
-                    console.log("ARTICLES", data.course.modules[0].articles);
-                    console.log("ARTICLES [0]", data.course.modules[0].articles[0]);
-                }
+                setIsPublished(data.course.isPublished);
                 const requiredFields = [
                     data.course.title,
                     data.course.description,
@@ -69,16 +68,28 @@ const Course = () => {
     return (
         <div className='md:p-6'>
             <ToastProvider />
-            <div className='flex items-center justify-between'>
-                <div className="flex flex-col gap-y-2">
+            {!isLoading && !isPublished && <Banner
+                label={"This course is unpublished. It will not be visible to the students."}
+            />}
+
+            <div className='flex items-center w-full gap-x-8'>
+                <div className="flex flex-col">
                     <h1 className='text-3xl font-semibold'>
-                        Course Setup
+                        Course Settings
                     </h1>
                     {!isLoading && <span className='text-sm text-zinc-600'>
                         Completed Fields ({completionText})
                     </span>}
                 </div>
+
+                {!isLoading && <CourseActions
+                    disabled={!isComplete}
+                    courseId={courseId}
+                    isPublished={isPublished}
+                    setIsPublished={setIsPublished}
+                />}
             </div>
+
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
