@@ -6,9 +6,10 @@ import CategoryForm from '@/components/CategoryForm';
 import ToastProvider from '@/components/ui/ToastProvider';
 import ModulesForm from '@/components/ModulesForm';
 import { VITE_APP_BACKEND_URL } from '@/constants';
-import Banner from './ui/Banner';
-import CourseActions from './CourseActions';
-import PriceForm from './PriceForm';
+import Banner from '@/components/ui/Banner';
+import CourseActions from '@/components/CourseActions';
+import PriceForm from '@/components/PriceForm';
+import CoverImage from '@/components/CoverImage';
 // import DescriptionForm from './DescriptionForm'
 // import UploadImage from './UploadImage';
 // import CategoryForm from './CategoryForm';
@@ -101,8 +102,7 @@ const Course = () => {
                         <TitleForm course={course} courseId={courseId} />
                         <DescriptionForm course={course} courseId={courseId} />
                         <CategoryForm course={course} courseId={courseId} />
-                        {/* <TitleForm course={course} fetchData={fetchData} courseId={courseId} />
-                        <UploadImage course={course} fetchData={fetchData} courseId={courseId} /> */}
+                        <CoverImage course={course} fetchData={fetchData} courseId={courseId} />
                     </>}
                 </div>
                 <div>
@@ -112,8 +112,7 @@ const Course = () => {
                     {!isLoading && <>
                         <ModulesForm course={course} courseId={courseId} fetchData={fetchData} />
                         <PriceForm course={course} courseId={courseId} />
-                        {/* <ModulesForm course={course} fetchData={fetchData} courseId={courseId} />
-                        <AttachmentsForm course={course} courseId={courseId} /> */}
+                        {/* <AttachmentsForm course={course} courseId={courseId} /> */}
                     </>}
                 </div>
             </div>

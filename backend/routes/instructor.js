@@ -89,6 +89,11 @@ router.get('/courses/:courseId', authenticateToken, authorizeRoles(SUPERADMIN, A
             return res.status(404).json({ message: "Course not found" });
         }
 
+        if (course.coverImageId){
+            const coverImage = await getAttachment(course.id, course.coverImageId);
+            course.coverImage = coverImage.data.toString('base64');
+        }
+
         return res.json({ course });
     } catch (error) {
         console.log("[INSTRUCTOR -> COURSES]", error);
