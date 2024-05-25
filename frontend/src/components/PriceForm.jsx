@@ -3,6 +3,8 @@ import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import Input from '@/components/ui/Input';
+import toast from 'react-hot-toast';
+import { VITE_APP_BACKEND_URL } from '@/constants';
 
 const priceSchema = z.object({
     price: z.coerce.number().multipleOf(0.01)
@@ -22,7 +24,8 @@ const PriceForm = ({ course, courseId }) => {
     const onSubmit = async (values) => {
         try {
             setIsEditing(false);
-            await fetch(`http://localhost:3000/instructor/courses/${courseId}`, {
+            const updatingToast = toast.loading("Updating...");
+            const response = await fetch(`${VITE_APP_BACKEND_URL}/instructor/courses/${courseId}`, {
                 method: 'PATCH',
                 headers: {
                     authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -30,9 +33,18 @@ const PriceForm = ({ course, courseId }) => {
                 },
                 body: JSON.stringify(values)
             });
-            setPrice(values.price);
+
+            toast.dismiss(updatingToast);
+
+            if (response.ok) {
+                setPrice(values.price);
+                toast.success("Course Price Updated");
+            } else {
+                toast.error("Something went wrong");
+            }
         } catch (error) {
             console.log(error);
+            toast.error("Something went wrong");
         }
     };
 
