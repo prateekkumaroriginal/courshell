@@ -532,6 +532,25 @@ router.patch('/courses/:courseId/modules/:moduleId/articles/:articleId/unpublish
             return res.status(404).json({ message: "Article not found" });
         }
 
+        let unpublishCourse = true;
+        for (const module of course.modules) {
+            const results = await db.article.findMany({
+                where: {
+                    moduleId: module.id,
+                    isPublished: true
+                }
+            });
+            if (results.length > 0) {
+                unpublishCourse = false;
+                break;
+            }
+        }
+        if (unpublishCourse) {
+            await updateCourse(course.id, {
+                isPublished: false
+            });
+        }
+
         return res.json({ message: "Article unpublished successfully" });
     } catch (error) {
         console.log("[INSTRUCTOR -> COURSES -> MODULES -> ARTICLES -> UNPUBLISH]", error);
