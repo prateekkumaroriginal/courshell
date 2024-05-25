@@ -9,6 +9,7 @@ import ArticleAccessForm from '@/components/ArticleAccessForm';
 import Banner from '@/components/ui/Banner';
 import ArticleActions from '@/components/ArticleActions';
 import { VITE_APP_BACKEND_URL } from '@/constants';
+import ToastProvider from './ui/ToastProvider';
 
 const formSchema = z.object({
     title: z.string().min(4).max(200),
@@ -22,6 +23,7 @@ const Article = () => {
     const [isComplete, setIsComplete] = useState();
     const [isLoading, setIsLoading] = useState(true);
     const [isEditing, setIsEditing] = useState(false);
+    const [isPublished, setIsPublished] = useState();
     const navigate = useNavigate();
 
     const form = useForm({
@@ -49,6 +51,7 @@ const Article = () => {
             const data = await response.json();
             setArticle(data.article);
             setTitle(data.article.title);
+            setIsPublished(data.article.isPublished);
             const requiredFields = [
                 data.article.title,
                 data.article.content
@@ -88,7 +91,8 @@ const Article = () => {
 
     return (
         <div className='md:p-6'>
-            {!isLoading && !article.published && <Banner
+            <ToastProvider />
+            {!isLoading && !isPublished && <Banner
                 label={"This article is unpublished. It will not be visible in the course."}
                 variant={"WARNING"}
             />}
@@ -118,7 +122,8 @@ const Article = () => {
                     courseId={courseId}
                     moduleId={moduleId}
                     articleId={articleId}
-                    isPublished={article.published}
+                    isPublished={isPublished}
+                    setIsPublished={setIsPublished}
                 />}
             </div>
 

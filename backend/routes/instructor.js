@@ -2,7 +2,7 @@ import express from 'express';
 import { z } from 'zod';
 import { db } from '../db/index.js';
 import { authenticateToken, authorizeRoles } from '../middleware/auth.js'
-import { getInstructorOrAbove, createCourse, getCreatedCourses, getCourse, getUser, createModule, getModule, updateModule, getLastModule, deleteAttachment, getAttachment, getAttachments, createAttachment, updateCourse, createArticle, getLastArticle, getArticle, updateArticle, deleteArticle } from '../actions/actions.js';
+import { getInstructorOrAbove, createCourse, getCreatedCourses, getCourse, getUser, createModule, getModule, updateModule, getLastModule, deleteAttachment, getAttachment, getAttachments, createAttachment, updateCourse, createArticle, getLastArticle, getArticle, updateArticle, deleteArticle, publishArticle, unpublishArticle } from '../actions/actions.js';
 import { SUPERADMIN, ADMIN, INSTRUCTOR, USER } from '../constants.js';
 import 'dotenv/config';
 import multer from 'multer';
@@ -480,6 +480,61 @@ router.delete('/courses/:courseId/modules/:moduleId/articles/:articleId', authen
         return res.status(200).json({ message: "Article deleted successfully" });
     } catch (error) {
         console.log("[INSTRUCTOR -> COURSES -> MODULES -> ARTICLES]", error);
+        return res.status(500).json({ error: "Internal server error" });
+    }
+});
+
+router.patch('/courses/:courseId/modules/:moduleId/articles/:articleId/publish', authenticateToken, authorizeRoles(SUPERADMIN, ADMIN, INSTRUCTOR), async (req, res) => {
+    try {
+        const { courseId, moduleId, articleId } = req.params;
+        const course = await getCourse(courseId);
+        if (!course || !isValidInstructorOrAbove(req.user, course.instructor.email)) {
+            return res.status(404).json({ message: "Course not found" });
+        }
+
+        const module = await getModule(course.id, moduleId);
+        if (!module) {
+            return res.status(404).json({ message: "Module not found" });
+        }
+
+        const article = await getArticle(module.id, articleId);
+        if (!article) {
+            return res.status(404).json({ message: "Article not found" });
+        }
+
+        const publishedArticle = await publishArticle(module.id, article);
+        if (!publishedArticle) {
+            return res.status(400).json({ message: "All fields must be filled" });
+        }
+
+        return res.json({ message: "Article published successfully" });
+    } catch (error) {
+        console.log("[INSTRUCTOR -> COURSES -> MODULES -> ARTICLES -> PUBLISH]", error);
+        return res.status(500).json({ error: "Internal server error" });
+    }
+});
+
+router.patch('/courses/:courseId/modules/:moduleId/articles/:articleId/unpublish', authenticateToken, authorizeRoles(SUPERADMIN, ADMIN, INSTRUCTOR), async (req, res) => {
+    try {
+        const { courseId, moduleId, articleId } = req.params;
+        const course = await getCourse(courseId);
+        if (!course || !isValidInstructorOrAbove(req.user, course.instructor.email)) {
+            return res.status(404).json({ message: "Course not found" });
+        }
+
+        const module = await getModule(course.id, moduleId);
+        if (!module) {
+            return res.status(404).json({ message: "Module not found" });
+        }
+
+        const article = await unpublishArticle(module.id, articleId);
+        if (!article) {
+            return res.status(404).json({ message: "Article not found" });
+        }
+
+        return res.json({ message: "Article unpublished successfully" });
+    } catch (error) {
+        console.log("[INSTRUCTOR -> COURSES -> MODULES -> ARTICLES -> UNPUBLISH]", error);
         return res.status(500).json({ error: "Internal server error" });
     }
 });

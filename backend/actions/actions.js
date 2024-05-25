@@ -170,6 +170,39 @@ const deleteArticle = async (moduleId, articleId) => {
     });
 }
 
+const allFieldsHaveValue = (obj) => {
+    return Object.values(obj).every(value => value !== null && value !== undefined);
+}
+
+const publishArticle = async (moduleId, article) => {
+    const allFieldsFilled = allFieldsHaveValue(article);
+    if (!allFieldsFilled) {
+        return false;
+    }
+
+    return await db.article.update({
+        where: {
+            moduleId,
+            id: article.id
+        },
+        data: {
+            isPublished: true
+        }
+    });
+}
+
+const unpublishArticle = async (moduleId, articleId) => {
+    return await db.article.update({
+        where: {
+            moduleId,
+            id: articleId
+        },
+        data: {
+            isPublished: false
+        }
+    });
+}
+
 const createAttachment = async (file, courseId, isCoverImage = false) => {
     const timestamp = Date.now();
     return await db.attachment.create({
@@ -209,4 +242,4 @@ const deleteAttachment = async (courseId, attachmentId) => {
     });
 }
 
-export { getInstructorOrAbove, createCourse, getCreatedCourses, getCourse, getUser, createModule, getModule, updateModule, getLastModule, deleteAttachment, getAttachment, getAttachments, createAttachment, updateCourse, getArticle, createArticle, updateArticle, getLastArticle, deleteArticle }
+export { getInstructorOrAbove, createCourse, getCreatedCourses, getCourse, getUser, createModule, getModule, updateModule, getLastModule, deleteAttachment, getAttachment, getAttachments, createAttachment, updateCourse, getArticle, createArticle, updateArticle, getLastArticle, deleteArticle, publishArticle, unpublishArticle }

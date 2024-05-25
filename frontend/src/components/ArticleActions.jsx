@@ -3,8 +3,9 @@ import { Trash2 } from 'lucide-react'
 import ConfirmModal from '@/components/ui/ConfirmModal'
 import { useNavigate } from 'react-router-dom';
 import { VITE_APP_BACKEND_URL } from '@/constants';
+import toast from 'react-hot-toast';
 
-const ArticleActions = ({ disabled, courseId, moduleId, articleId, isPublished }) => {
+const ArticleActions = ({ disabled, courseId, moduleId, articleId, isPublished, setIsPublished }) => {
     const [open, setOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
@@ -22,7 +23,33 @@ const ArticleActions = ({ disabled, courseId, moduleId, articleId, isPublished }
             navigate(`/courses/${courseId}/${moduleId}`);
         } catch (e) {
             console.log(e);
-        } finally{
+        } finally {
+            setIsLoading(false);
+        }
+    }
+
+    const onClick = async () => {
+        try {
+            setIsLoading(true);
+            const publishToast = toast.loading(`${isPublished ? 'Unpublishing' : 'Publishing'} Article...`);
+            const response = await fetch(`${VITE_APP_BACKEND_URL}/instructor/courses/${courseId}/modules/${moduleId}/articles/${articleId}/${isPublished ? 'unpublish' : 'publish'}`, {
+                method: 'PATCH',
+                headers: {
+                    authorization: `Bearer ${localStorage.getItem('token')}`
+                }
+            });
+            toast.dismiss(publishToast);
+
+            if (response.ok) {
+                setIsPublished(isPublished ? false : true);
+                toast.success(`Article ${isPublished ? 'Unpublished' : 'Published'}`);
+            } else {
+                toast.error("Something went wrong");
+            }
+        } catch (error) {
+            console.log(error);
+            toast.error("Something went wrong");
+        } finally {
             setIsLoading(false);
         }
     }
@@ -31,7 +58,7 @@ const ArticleActions = ({ disabled, courseId, moduleId, articleId, isPublished }
         <div className='flex items-center gap-x-2'>
             <button
                 disabled={disabled || isLoading}
-                onClick={() => { }}
+                onClick={onClick}
                 className={isPublished ? 'px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md' : 'px-4 py-2 text-white font-semibold bg-gradient-to-r from-indigo-500 to-purple-500 hover:bg-gradient-to-r hover:from-indigo-700 hover:to-purple-600 rounded-md'}
             >
                 {isPublished ? "Unpublish" : "Publish"}

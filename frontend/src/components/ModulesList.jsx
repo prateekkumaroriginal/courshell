@@ -51,7 +51,7 @@ const ModulesList = ({ items, onReorder }) => {
                 {(provided) => (
                     <div {...provided.droppableProps} ref={provided.innerRef}>
                         {modules.map((module, index) => {
-                            const published = module.articles.some(article => article.published);
+                            const isPublished = module.articles.some(article => article.isPublished);
 
                             return (
                                 <Draggable
@@ -61,12 +61,12 @@ const ModulesList = ({ items, onReorder }) => {
                                 >
                                     {(provided) => (
                                         <div
-                                            className={`flex items-center gap-x-2 bg-slate-300 border-slate-200 border text-slate-700 rounded-md mb-2 text-sm ${published && "bg-sky-100 border-sky-200 text-sky-700"}`}
+                                            className={`flex items-center gap-x-2 bg-slate-300 border-slate-200 border text-slate-700 rounded-md mb-2 text-sm ${isPublished && "bg-sky-100 border-sky-200 text-sky-700"}`}
                                             ref={provided.innerRef}
                                             {...provided.draggableProps}
                                         >
                                             <div
-                                                className={`px-2 py-3 cursor-grab border-r border-r-slate-200 hover:bg-slate-400 active:bg-slate-400 rounded-l-md transition ${published && "hover:bg-sky-200 border-r-sky-200"}`}
+                                                className={`px-2 py-3 cursor-grab border-r border-r-slate-200 hover:bg-slate-400 active:bg-slate-400 rounded-l-md transition ${isPublished && "hover:bg-sky-200 border-r-sky-200"}`}
                                                 {...provided.dragHandleProps}
                                             >
                                                 <Grip className='h-5 w-5' />
@@ -78,9 +78,9 @@ const ModulesList = ({ items, onReorder }) => {
 
                                             <div className='ml-auto pr-2 flex items-center gap-x-2'>
                                                 <div
-                                                    className={`text-white px-2 py-1 font-semibold rounded-full text-xs cursor-default ${published ? "bg-sky-700 hover:bg-sky-800" : "bg-slate-600 hover:bg-slate-700"}`}
+                                                    className={`text-white px-2 py-1 font-semibold rounded-full text-xs cursor-default ${isPublished ? "bg-sky-700 hover:bg-sky-800" : "bg-slate-600 hover:bg-slate-700"}`}
                                                 >
-                                                    {published ? "Published" : "Draft"}
+                                                    {isPublished ? "Published" : "Draft"}
                                                 </div>
                                                 <Link to={module.id} className='hover:underline py-1 cursor-pointer hover:opacity-75 transition'>
                                                     <Pencil className='w-4 h-4' />
