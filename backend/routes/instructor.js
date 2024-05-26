@@ -89,7 +89,7 @@ router.get('/courses/:courseId', authenticateToken, authorizeRoles(SUPERADMIN, A
             return res.status(404).json({ message: "Course not found" });
         }
 
-        if (course.coverImageId){
+        if (course.coverImageId) {
             const coverImage = await getAttachment(course.id, course.coverImageId);
             course.coverImage = coverImage.data.toString('base64');
         }
@@ -142,6 +142,7 @@ router.post('/courses/:courseId/attachments', authenticateToken, authorizeRoles(
         }
 
         const attachment = await createAttachment(req.file, course.id);
+        attachment.data = attachment.data.toString('base64');
         return res.status(201).json({ attachment });
     } catch (error) {
         console.log("[INSTRUCTOR -> COURSES -> ATTACHMENTS]", error);
@@ -149,17 +150,20 @@ router.post('/courses/:courseId/attachments', authenticateToken, authorizeRoles(
     }
 });
 
-router.get('/courses/:courseId/attachments', authenticateToken, authorizeRoles(SUPERADMIN, ADMIN, INSTRUCTOR), async (req, res) => {
+router.get('/courses/:courseId/attachments/:includeData', authenticateToken, authorizeRoles(SUPERADMIN, ADMIN, INSTRUCTOR), async (req, res) => {
     try {
-        const course = await getCourse(req.params.courseId);
+        const { courseId, includeData } = req.params;
+        const course = await getCourse(courseId);
         if (!course || !isValidInstructorOrAbove(req.user, course.instructor.email)) {
             return res.status(404).json({ message: "Course not found" });
         }
 
-        const attachments = await getAttachments(course.id);
-        attachments.map(attachment => {
-            attachment.data = attachment.data.toString('base64');
-        });
+        const attachments = await getAttachments(course.id, includeData);
+        if (includeData === true) {
+            attachments.map(attachment => {
+                attachment.data = attachment.data.toString('base64');
+            });
+        }
 
         return res.status(201).json({ attachments });
     } catch (error) {

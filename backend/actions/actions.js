@@ -225,11 +225,27 @@ const getAttachment = async (courseId, attachmentId) => {
     });
 }
 
-const getAttachments = async (courseId) => {
+const getAttachments = async (courseId, includeData = false) => {
+    if (includeData !== false && includeData !== true) {
+        includeData = false;
+    }
+
+    const selectFields = {
+        id: true,
+        name: true,
+        type: true,
+        courseId: true,
+        createdAt: true,
+        updatedAt: true,
+        ...(includeData && { data: true })
+    };
+
     return await db.attachment.findMany({
         where: {
-            courseId
-        }
+            courseId,
+            isCoverImage: false
+        },
+        select: selectFields
     });
 }
 

@@ -10,11 +10,7 @@ import Banner from '@/components/ui/Banner';
 import CourseActions from '@/components/CourseActions';
 import PriceForm from '@/components/PriceForm';
 import CoverImage from '@/components/CoverImage';
-// import DescriptionForm from './DescriptionForm'
-// import UploadImage from './UploadImage';
-// import CategoryForm from './CategoryForm';
-// import PriceForm from './PriceForm';
-// import AttachmentsForm from './AttachmentsForm';
+import AttachmentsForm from '@/components/AttachmentsForm';
 
 const Course = () => {
     const { courseId } = useParams();
@@ -112,7 +108,7 @@ const Course = () => {
                     {!isLoading && <>
                         <ModulesForm course={course} courseId={courseId} fetchData={fetchData} />
                         <PriceForm course={course} courseId={courseId} />
-                        {/* <AttachmentsForm course={course} courseId={courseId} /> */}
+                        <AttachmentsForm courseId={courseId} />
                     </>}
                 </div>
             </div>
