@@ -68,6 +68,7 @@ model Module {
 model Attachment {
   id           String  @id @default(uuid())
   name         String
+  originalName String
   type         String
   isCoverImage Boolean @default(false)
   data         Bytes   @db.ByteA

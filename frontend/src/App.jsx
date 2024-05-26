@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import './App.css'
 import Create from '@/components/Create';
 import Course from '@/components/Course';
@@ -8,10 +8,20 @@ import Module from '@/components/Module';
 import Article from '@/components/Article';
 import Attachment from '@/components/Attachment';
 
-function App() {
+const hideNavbarPaths = ['/courses/:courseId/attachments/:attachmentId'];
+const shouldHideNavbar = (pathname, hidingPaths) => {
+    return hidingPaths.some(path => {
+        const regex = new RegExp(`^${path.replace(/:\w+/g, '[^/]+')}$`);
+        return regex.test(pathname);
+    });
+};
+
+function AppRoutes() {
+    const location = useLocation();
+
     return (
-        <Router>
-            <Navbar />
+        <>
+            {!shouldHideNavbar(location.pathname, hideNavbarPaths) && <Navbar />}
             <Routes>
                 <Route path='/signin' element={<Signin />} />
                 <Route path='/create' element={<Create />} />
@@ -23,6 +33,15 @@ function App() {
                 <Route path='/courses' element={<Courses />} />
                 */}
             </Routes>
+        </>
+    )
+
+}
+
+function App() {
+    return (
+        <Router>
+            <AppRoutes />
         </Router>
     )
 }

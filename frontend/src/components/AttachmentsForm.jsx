@@ -38,7 +38,6 @@ const AttachmentsForm = ({ courseId }) => {
             });
             const data = await response.json();
 
-            console.log(data);
             setAttachments(prev => [...prev, data.attachment]);
         } catch (error) {
             console.error("Error while uploading files: ", error);
@@ -107,8 +106,10 @@ const AttachmentsForm = ({ courseId }) => {
                                 to={`attachments/${attachment.id}`}
                                 className='w-full p-3 line-clamp-1'
                                 rel='noreferrer'
+                                target='_blank'
+                                {...(!['image/png', 'image/jpeg', 'image/jpg', 'application/pdf'].includes(attachment.type) && { download: attachment.originalName })}
                             >
-                                {attachment.name}
+                                {attachment.originalName}
                             </Link>
                             <button
                                 className='p-2 hover:scale-125 transition'
@@ -120,6 +121,7 @@ const AttachmentsForm = ({ courseId }) => {
                             </button>
                         </div>
                     ))}
+                    {!attachments.length && "No Attachments"}
                 </div>}
         </div>
     )

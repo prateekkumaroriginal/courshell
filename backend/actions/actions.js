@@ -208,6 +208,7 @@ const createAttachment = async (file, courseId, isCoverImage = false) => {
     return await db.attachment.create({
         data: {
             name: `${file.originalname}-${timestamp}`,
+            originalName: file.originalname,
             data: file.buffer,
             type: file.mimetype,
             courseId,
@@ -233,6 +234,7 @@ const getAttachments = async (courseId, includeData = false) => {
     const selectFields = {
         id: true,
         name: true,
+        originalName: true,
         type: true,
         courseId: true,
         createdAt: true,
