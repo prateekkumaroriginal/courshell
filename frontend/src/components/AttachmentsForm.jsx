@@ -14,7 +14,7 @@ const AttachmentsForm = ({ courseId }) => {
     }, []);
 
     const fetchAttachments = async () => {
-        const response = await fetch(`${VITE_APP_BACKEND_URL}/instructor/courses/${courseId}/attachments/false`, {
+        const response = await fetch(`${VITE_APP_BACKEND_URL}/instructor/courses/${courseId}/attachments`, {
             headers: {
                 authorization: `Bearer ${localStorage.getItem('token')}`
             }

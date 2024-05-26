@@ -150,22 +150,24 @@ router.post('/courses/:courseId/attachments', authenticateToken, authorizeRoles(
     }
 });
 
-router.get('/courses/:courseId/attachments/:includeData', authenticateToken, authorizeRoles(SUPERADMIN, ADMIN, INSTRUCTOR), async (req, res) => {
+router.get('/courses/:courseId/attachments', authenticateToken, authorizeRoles(SUPERADMIN, ADMIN, INSTRUCTOR), async (req, res) => {
     try {
-        const { courseId, includeData } = req.params;
+        const { courseId } = req.params;
+        const { includeData } = req.query;
+
         const course = await getCourse(courseId);
         if (!course || !isValidInstructorOrAbove(req.user, course.instructor.email)) {
             return res.status(404).json({ message: "Course not found" });
         }
 
-        const attachments = await getAttachments(course.id, includeData);
-        if (includeData === true) {
+        const attachments = await getAttachments(course.id, includeData === 'true');
+        if (includeData === 'true') {
             attachments.map(attachment => {
                 attachment.data = attachment.data.toString('base64');
             });
         }
 
-        return res.status(201).json({ attachments });
+        return res.status(200).json({ attachments });
     } catch (error) {
         console.log("[INSTRUCTOR -> COURSES -> ATTACHMENTS]", error);
         return res.status(500).json({ error: "Internal server error" });
@@ -188,7 +190,7 @@ router.get('/courses/:courseId/attachments/:attachmentId', authenticateToken, au
 
         attachment.data = attachment.data.toString('base64');
 
-        return res.status(201).json({ attachment });
+        return res.status(200).json({ attachment });
     } catch (error) {
         console.log("[INSTRUCTOR -> COURSES -> ATTACHMENTS]", error);
         return res.status(500).json({ error: "Internal server error" });
