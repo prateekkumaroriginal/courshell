@@ -76,6 +76,46 @@ const updateCourse = async (courseId, data) => {
     });
 }
 
+const publishCourse = async (course) => {
+    const allFieldsFilled = allFieldsHaveValue(course);
+    if (!allFieldsFilled) {
+        return false;
+    }
+    if (!course.modules.some(module => (
+        module.articles.some(article => article.isPublished)
+    ))) {
+        return false;
+    }
+
+    return await db.course.update({
+        where: {
+            id: course.id
+        },
+        data: {
+            isPublished: true
+        }
+    });
+}
+
+const unpublishCourse = async (courseId) => {
+    return await db.course.update({
+        where: {
+            id: courseId
+        },
+        data: {
+            isPublished: false
+        }
+    });
+}
+
+const deleteCourse = async (courseId) => {
+    return await db.course.delete({
+        where: {
+            id: courseId
+        }
+    });
+}
+
 const createModule = async (title, position, courseId) => {
     return await db.module.create({
         data: {
@@ -260,4 +300,4 @@ const deleteAttachment = async (courseId, attachmentId) => {
     });
 }
 
-export { getInstructorOrAbove, createCourse, getCreatedCourses, getCourse, getUser, createModule, getModule, updateModule, getLastModule, deleteAttachment, getAttachment, getAttachments, createAttachment, updateCourse, getArticle, createArticle, updateArticle, getLastArticle, deleteArticle, publishArticle, unpublishArticle }
+export { getInstructorOrAbove, createCourse, getCreatedCourses, getCourse, getUser, createModule, getModule, updateModule, getLastModule, deleteAttachment, getAttachment, getAttachments, createAttachment, updateCourse, getArticle, createArticle, updateArticle, getLastArticle, deleteArticle, publishArticle, unpublishArticle, publishCourse, unpublishCourse, deleteCourse }

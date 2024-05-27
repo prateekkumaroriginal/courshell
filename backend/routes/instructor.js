@@ -2,7 +2,7 @@ import express from 'express';
 import { z } from 'zod';
 import { db } from '../db/index.js';
 import { authenticateToken, authorizeRoles } from '../middleware/auth.js'
-import { getInstructorOrAbove, createCourse, getCreatedCourses, getCourse, getUser, createModule, getModule, updateModule, getLastModule, deleteAttachment, getAttachment, getAttachments, createAttachment, updateCourse, createArticle, getLastArticle, getArticle, updateArticle, deleteArticle, publishArticle, unpublishArticle } from '../actions/actions.js';
+import { getInstructorOrAbove, createCourse, getCreatedCourses, getCourse, getUser, createModule, getModule, updateModule, getLastModule, deleteAttachment, getAttachment, getAttachments, createAttachment, updateCourse, createArticle, getLastArticle, getArticle, updateArticle, deleteArticle, publishArticle, unpublishArticle, publishCourse, unpublishCourse, deleteCourse } from '../actions/actions.js';
 import { SUPERADMIN, ADMIN, INSTRUCTOR, USER } from '../constants.js';
 import 'dotenv/config';
 import multer from 'multer';
@@ -130,6 +130,63 @@ router.patch('/courses/:courseId', authenticateToken, authorizeRoles(SUPERADMIN,
         return res.json({ message: "Course updated successfully", course: updatedCourse })
     } catch (error) {
         console.log("[INSTRUCTOR -> COURSES]", error);
+        return res.status(500).json({ error: "Internal server error" });
+    }
+});
+
+router.delete('/courses/:courseId', authenticateToken, authorizeRoles(SUPERADMIN, ADMIN, INSTRUCTOR), upload.single('file'), async (req, res) => {
+    try {
+        const course = await getCourse(req.params.courseId);
+        if (!course || !isValidInstructorOrAbove(req.user, course.instructor.email)) {
+            return res.status(404).json({ message: "Course not found" });
+        }
+
+        const deletedCourse = await deleteCourse(course.id);
+        if (!deletedCourse) {
+            return res.status(404).json({ message: "Course not found" });
+        }
+
+        return res.json({ message: "Course deleted successfully" });
+    } catch (error) {
+        console.log("[INSTRUCTOR -> COURSES -> DELETE]", error);
+        return res.status(500).json({ error: "Internal server error" });
+    }
+});
+
+router.patch('/courses/:courseId/publish', authenticateToken, authorizeRoles(SUPERADMIN, ADMIN, INSTRUCTOR), async (req, res) => {
+    try {
+        const course = await getCourse(req.params.courseId);
+        if (!course || !isValidInstructorOrAbove(req.user, course.instructor.email)) {
+            return res.status(404).json({ message: "Course not found" });
+        }
+
+        const publishedCourse = await publishCourse(course);
+        if (!publishedCourse) {
+            return res.status(400).json({ message: "All fields must be filled" });
+        }
+
+        return res.json({ message: "Course published successfully" });
+    } catch (error) {
+        console.log("[INSTRUCTOR -> COURSES -> PUBLISH]", error);
+        return res.status(500).json({ error: "Internal server error" });
+    }
+});
+
+router.patch('/courses/:courseId/unpublish', authenticateToken, authorizeRoles(SUPERADMIN, ADMIN, INSTRUCTOR), async (req, res) => {
+    try {
+        const course = await getCourse(req.params.courseId);
+        if (!course || !isValidInstructorOrAbove(req.user, course.instructor.email)) {
+            return res.status(404).json({ message: "Course not found" });
+        }
+
+        const publishedCourse = await unpublishCourse(course.id);
+        if (!publishedCourse) {
+            return res.status(400).json({ message: "All fields must be filled" });
+        }
+
+        return res.json({ message: "Course published successfully" });
+    } catch (error) {
+        console.log("[INSTRUCTOR -> COURSES -> UNPUBLISH]", error);
         return res.status(500).json({ error: "Internal server error" });
     }
 });
@@ -455,13 +512,6 @@ router.delete('/courses/:courseId/modules/:moduleId/articles/:articleId', authen
         const module = await getModule(course.id, moduleId);
         if (!module) {
             return res.status(404).json({ message: "Module not found" });
-        }
-
-        const parsedInput = articleUpdateInput.safeParse(req.body);
-        if (!parsedInput.success) {
-            return res.status(400).json({
-                message: parsedInput.error
-            });
         }
 
         const article = await deleteArticle(module.id, articleId);
