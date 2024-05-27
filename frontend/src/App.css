@@ -84,12 +84,15 @@
 
 ::-webkit-scrollbar {
   width: 10px;
-  background-color: aliceblue;
 }
 
 ::-webkit-scrollbar-thumb {
   border-radius: 50px;
   background-color: rgba(93, 92, 93, 0.5);
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb:hover {
