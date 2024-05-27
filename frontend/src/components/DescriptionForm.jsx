@@ -10,12 +10,13 @@ const formSchema = z.object({
     description: z.string().min(4)
 });
 
-const DescriptionForm = ({ course, courseId }) => {
+const DescriptionForm = ({ course, courseId, description, setDescription }) => {
     const [isEditing, setIsEditing] = useState(false);
-    const [description, setDescription] = useState(course.description);
     const form = useForm({
         resolver: zodResolver(formSchema),
-        defaultValues: course
+        defaultValues: {
+            description
+        }
     }, []);
 
     const { handleSubmit, reset, register, formState: { isSubmitting, isValid } } = form;
@@ -82,7 +83,7 @@ const DescriptionForm = ({ course, courseId }) => {
                     type={"textarea"}
                     name={"description"}
                     register={register}
-                    defaultValue={course.description}
+                    defaultValue={description}
                 />
             </form> : <p className='text-md font-semibold mt-2 py-1'>
                 {description || <span className='text-sm italic text-zinc-600'>No Description</span>}

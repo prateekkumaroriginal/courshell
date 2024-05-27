@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import toast from 'react-hot-toast';
 
-const CoverImage = ({ course, courseId }) => {
+const CoverImage = ({ course, courseId, fetchData }) => {
     const [imageUrl, setImageUrl] = useState(course.coverImage && `data:image/jpeg;base64,${course.coverImage}`);
     const [isEditing, setIsEditing] = useState(false);
     const form = useForm();
@@ -28,6 +28,7 @@ const CoverImage = ({ course, courseId }) => {
 
             if (response.ok) {
                 toast.success("Article Updated");
+                fetchData();
             } else {
                 toast.error("Something went wrong");
                 setImageUrl(`data:image/jpeg;base64,${course.coverImage}`);

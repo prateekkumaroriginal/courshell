@@ -10,14 +10,16 @@ const priceSchema = z.object({
     price: z.coerce.number().multipleOf(0.01)
 });
 
-const PriceForm = ({ course, courseId }) => {
+const PriceForm = ({ courseId, price, setPrice }) => {
     const [isEditing, setIsEditing] = useState(false);
-    const [price, setPrice] = useState(course.price);
+    // const [price, setPrice] = useState(course.price);
 
     const form = useForm({
         resolver: zodResolver(priceSchema),
-        defaultValues: course
-    }, [course]);
+        defaultValues: {
+            price
+        }
+    }, [price]);
 
     const { handleSubmit, reset, register, formState: { isSubmitting, isValid } } = form;
 
@@ -82,7 +84,7 @@ const PriceForm = ({ course, courseId }) => {
             >
                 <Input
                     className='p-1 shadow-lg appearance-none rounded w-full outline-none focus:ring-4 focus:ring-blue-600/40'
-                    defaultValue={course.price}
+                    defaultValue={price}
                     name={'price'}
                     placeholder={"Enter course selling price..."}
                     type={'number'}

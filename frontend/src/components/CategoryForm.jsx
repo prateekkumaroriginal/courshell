@@ -10,7 +10,7 @@ const formSchema = z.object({
     categoryId: z.string().min(1)
 });
 
-const CategoryForm = ({ course, courseId }) => {
+const CategoryForm = ({ course, courseId, fetchData }) => {
     const [isEditing, setIsEditing] = useState(false);
     const [options, setOptions] = useState([]);
     const [category, setCategory] = useState();
@@ -65,6 +65,7 @@ const CategoryForm = ({ course, courseId }) => {
 
             if (response.ok) {
                 setCategory(options?.find(option => option.value === course.categoryId));
+                fetchData();
                 toast.success("Course Category Updated");
             } else {
                 toast.error("Something went wrong");

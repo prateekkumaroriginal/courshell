@@ -10,9 +10,8 @@ const formSchema = z.object({
     title: z.string().min(4).max(200)
 });
 
-const TitleForm = ({ course, courseId }) => {
+const TitleForm = ({ course, courseId, title, setTitle }) => {
     const [isEditing, setIsEditing] = useState(false);
-    const [title, setTitle] = useState(course.title);
 
     const form = useForm({
         resolver: zodResolver(formSchema),

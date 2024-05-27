@@ -21,9 +21,37 @@ const Course = () => {
     const [isComplete, setIsComplete] = useState();
     const [isPublished, setIsPublished] = useState();
 
+    const [title, setTitle] = useState('');
+    const [description, setDescription] = useState('');
+    const [coverImage, setCoverImage] = useState('');
+    const [price, setPrice] = useState();
+    const [categoryId, setCategoryId] = useState('');
+    const [modules, setModules] = useState([]);
+
+    const updateCompletionStatus = (course) => {
+        const requiredFields = [
+            course.title,
+            course.description,
+            course.coverImage,
+            course.price,
+            course.categoryId,
+            course.modules.some(module => module.articles.some(article => article.isPublished))
+        ];
+
+        const totalFields = requiredFields.length;
+        const completedFields = requiredFields.filter(Boolean).length;
+        setIsComplete(requiredFields.every(Boolean));
+        setCompletionText(`${completedFields}/${totalFields}`);
+    };
+
     useEffect(() => {
         fetchData();
     }, []);
+
+    useEffect(() => {
+        const course = { title, description, coverImage, price, categoryId, modules }
+        updateCompletionStatus(course);
+    }, [title, description, coverImage, price, categoryId, modules]);
 
     const fetchData = async () => {
         try {
@@ -41,20 +69,16 @@ const Course = () => {
             if (response.ok) {
                 const data = await response.json();
                 setCourse(data.course);
+
+                setTitle(data.course.title);
+                setDescription(data.course.description);
+                setCoverImage(data.course.coverImage);
+                setPrice(data.course.price);
+                setCategoryId(data.course.categoryId);
+                setModules(data.course.modules);
+
                 setIsPublished(data.course.isPublished);
-                const requiredFields = [
-                    data.course.title,
-                    data.course.description,
-                    data.course.coverImageId,
-                    data.course.price,
-                    data.course.categoryId,
-                    data.course.modules.some(module => module.articles.some(article => article.isPublished))
-                ];
-
-                const totalFields = requiredFields.length;
-                const completedFields = requiredFields.filter(Boolean).length;
-
-                setCompletionText(`${completedFields}/${totalFields}`);
+                updateCompletionStatus(data.course);
                 setIsLoading(false);
             }
         } catch (error) {
@@ -88,17 +112,16 @@ const Course = () => {
                 />}
             </div>
 
-
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                     <div className='flex items-center mt-16'>
                         <h2 className='text-xl font-semibold'>Customize Your Course</h2>
                     </div>
                     {!isLoading && <>
-                        <TitleForm course={course} courseId={courseId} />
-                        <DescriptionForm course={course} courseId={courseId} />
-                        <CategoryForm course={course} courseId={courseId} />
-                        <CoverImage course={course} fetchData={fetchData} courseId={courseId} />
+                        <TitleForm title={title} setTitle={setTitle} courseId={courseId} />
+                        <DescriptionForm description={description} setDescription={setDescription} courseId={courseId} />
+                        <CategoryForm course={course} courseId={courseId} fetchData={fetchData} />
+                        <CoverImage fetchData={fetchData} course={course} courseId={courseId} />
                     </>}
                 </div>
                 <div>
@@ -106,8 +129,8 @@ const Course = () => {
                         <h2 className='text-xl font-semibold'>Course Content</h2>
                     </div>
                     {!isLoading && <>
-                        <ModulesForm course={course} courseId={courseId} fetchData={fetchData} />
-                        <PriceForm course={course} courseId={courseId} />
+                        <ModulesForm modules={modules} setModules={setModules} course={course} courseId={courseId} fetchData={fetchData} />
+                        <PriceForm price={price} setPrice={setPrice} courseId={courseId} />
                         <AttachmentsForm courseId={courseId} />
                     </>}
                 </div>

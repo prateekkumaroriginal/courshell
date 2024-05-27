@@ -1,6 +1,6 @@
 import { VITE_APP_BACKEND_URL } from '@/constants';
 import { Download } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 const getUrlAndType = (attachment) => {
@@ -13,7 +13,7 @@ const Attachment = () => {
     const { courseId, attachmentId } = useParams();
     const [attachment, setAttachment] = useState();
 
-    const fetchAttachment = async () => {
+    const fetchAttachment = useCallback(async () => {
         try {
             const response = await fetch(`${VITE_APP_BACKEND_URL}/instructor/courses/${courseId}/attachments/${attachmentId}`, {
                 headers: {
@@ -30,14 +30,15 @@ const Attachment = () => {
         } catch (error) {
             console.log(error);
         }
-    };
+    }, [attachmentId]);
 
     useEffect(() => {
         fetchAttachment();
     }, [attachmentId]);
 
 
-    const renderAttachmentPreview = () => {
+    const renderAttachmentPreview = useCallback(() => {
+        console.log("hello");
         const urlAndType = getUrlAndType(attachment);
         if (!urlAndType) return null;
         const [url, type] = urlAndType;
@@ -55,11 +56,12 @@ const Attachment = () => {
                     </div>
                 );
             case 'application/pdf':
-                return <embed src={url} type={type} className='w-full h-lvh' />;
+                // return <embed src={url} type={type} className='w-full h-lvh' />;
+                return <iframe src={url} className='w-full h-lvh' download={attachment.name}></iframe>
             default:
                 return <a href={url} download={attachment.originalName}>{attachment.originalName}</a>;
         }
-    };
+    }, [attachment]);
 
     return (
         <div className=''>
