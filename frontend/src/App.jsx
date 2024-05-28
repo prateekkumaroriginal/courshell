@@ -8,6 +8,7 @@ import Module from '@/components/Module';
 import Article from '@/components/Article';
 import Attachment from '@/components/Attachment';
 import Courses from '@/components/Courses';
+import SearchPage from '@/components/SearchPage';
 
 const hideNavbarPaths = ['/courses/:courseId/attachments/:attachmentId'];
 const shouldHideNavbar = (pathname, hidingPaths) => {
@@ -26,6 +27,7 @@ function AppRoutes() {
             <Routes>
                 <Route path='/signin' element={<Signin />} />
                 <Route path='/create' element={<Create />} />
+                <Route path='/search' element={<SearchPage />} />
                 <Route path='/courses' element={<Courses />} />
                 <Route path='/courses/:courseId' element={<Course />} />
                 <Route path='/courses/:courseId/attachments/:attachmentId' element={<Attachment />} />

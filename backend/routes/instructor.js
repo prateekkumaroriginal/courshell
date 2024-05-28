@@ -619,12 +619,12 @@ router.patch('/courses/:courseId/modules/:moduleId/articles/:articleId/unpublish
     }
 });
 
-router.get('/categories', authenticateToken, authorizeRoles(SUPERADMIN, ADMIN, INSTRUCTOR), async (req, res) => {
+router.get('/categories', authenticateToken, async (req, res) => {
     try {
         const categories = await db.category.findMany();
         return res.json({ categories });
     } catch (error) {
-        console.log("INSTRUCTOR -> CATEGORIES");
+        console.log("CATEGORIES");
         return res.status(500).json({ error: "Internal server error" });
     }
 });

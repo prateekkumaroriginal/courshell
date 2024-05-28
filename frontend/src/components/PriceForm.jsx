@@ -12,7 +12,6 @@ const priceSchema = z.object({
 
 const PriceForm = ({ courseId, price, setPrice }) => {
     const [isEditing, setIsEditing] = useState(false);
-    // const [price, setPrice] = useState(course.price);
 
     const form = useForm({
         resolver: zodResolver(priceSchema),
