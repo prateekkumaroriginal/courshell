@@ -120,7 +120,7 @@ const Course = () => {
                     {!isLoading && <>
                         <TitleForm title={title} setTitle={setTitle} courseId={courseId} />
                         <DescriptionForm description={description} setDescription={setDescription} courseId={courseId} />
-                        <CategoryForm course={course} courseId={courseId} fetchData={fetchData} />
+                        <CategoryForm setCategoryId={setCategoryId} course={course} courseId={courseId} fetchData={fetchData} />
                         <CoverImage fetchData={fetchData} course={course} courseId={courseId} />
                     </>}
                 </div>

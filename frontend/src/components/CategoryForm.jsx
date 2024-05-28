@@ -10,7 +10,7 @@ const formSchema = z.object({
     categoryId: z.string().min(1)
 });
 
-const CategoryForm = ({ course, courseId, fetchData }) => {
+const CategoryForm = ({ course, courseId, setCategoryId }) => {
     const [isEditing, setIsEditing] = useState(false);
     const [options, setOptions] = useState([]);
     const [category, setCategory] = useState();
@@ -37,7 +37,7 @@ const CategoryForm = ({ course, courseId, fetchData }) => {
                 label: option.name,
                 value: option.id
             }));
-            setCategory(arr?.find(option => option.value === course.categoryId));
+            setCategory(arr.find(option => option.value === course.categoryId));
             setOptions(arr);
         } catch (error) {
             console.log(error);
@@ -64,8 +64,8 @@ const CategoryForm = ({ course, courseId, fetchData }) => {
             toast.dismiss(updatingToast);
 
             if (response.ok) {
-                setCategory(options?.find(option => option.value === course.categoryId));
-                fetchData();
+                setCategory(options?.find(option => option.value === values.categoryId));
+                setCategoryId(options?.find(option => option.value === values.categoryId)?.value);
                 toast.success("Course Category Updated");
             } else {
                 toast.error("Something went wrong");
