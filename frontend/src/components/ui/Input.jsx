@@ -1,35 +1,19 @@
-import React from 'react'
+import * as React from "react"
 
-const Input = ({ type, name, label, register, defaultValue, className, placeholder }) => {
-    const placeholderMap = {
-        text: "e.g. \"Full Stack\"",
-        password: "••••••••",
-        email: "johndoe@example.com",
-        textarea: "Start Typing..."
-    }
+import { cn } from "@/lib/utils"
 
-    return (
-        <div>
-            {label && <div className="block">
-                <label className="text-gray-700 text-xl font-bold mr-4" htmlFor={name}>{label}</label>
-            </div>}
-            {(type !== "textarea") ? <input
-                className={className || 'p-2 shadow-lg outline-none rounded w-full focus:ring-4 focus:ring-blue-600/40'}
-                type={type}
-                id={name}
-                {...register(name)}
-                placeholder={placeholder || placeholderMap[type]}
-                defaultValue={defaultValue || ""}
-            /> : <textarea
-                className={className || 'p-2 min-h-16 shadow-lg outline-none rounded w-full focus:ring-4 focus:ring-blue-600/40'}
-                type={type}
-                id={name}
-                {...register(name)}
-                placeholder={placeholder || placeholderMap[type]}
-                defaultValue={defaultValue || ""}
-            ></textarea>}
-        </div>
-    )
-}
+const Input = React.forwardRef(({ className, type, ...props }, ref) => {
+  return (
+    (<input
+      type={type}
+      className={cn(
+        "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+        className
+      )}
+      ref={ref}
+      {...props} />)
+  );
+})
+Input.displayName = "Input"
 
-export default Input
+export { Input }

@@ -5,7 +5,7 @@ import { z } from 'zod';
 import ModulesList from '@/components/ModulesList';
 import { Loader2, PlusCircle } from 'lucide-react';
 import { VITE_APP_BACKEND_URL } from '@/constants';
-import Input from '@/components/ui/Input';
+import CustomInput from '@/components/ui/CustomInput';
 import toast from 'react-hot-toast';
 
 const formSchema = z.object({
@@ -118,7 +118,7 @@ const ModulesForm = ({ course, courseId, fetchData }) => {
                 className='mt-2'
                 onSubmit={handleSubmit(onSubmit)}
             >
-                <Input
+                <CustomInput
                     type={'text'}
                     name={'title'}
                     register={register}

@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { VITE_APP_BACKEND_URL } from '@/constants';
-import Input from '@/components/ui/Input';
+import CustomInput from '@/components/ui/CustomInput';
 import toast from 'react-hot-toast';
 
 const formSchema = z.object({
@@ -79,7 +79,7 @@ const DescriptionForm = ({ course, courseId, description, setDescription }) => {
                 className='mt-2'
                 onSubmit={handleSubmit(onSubmit)}
             >
-                <Input
+                <CustomInput
                     type={"textarea"}
                     name={"description"}
                     register={register}
