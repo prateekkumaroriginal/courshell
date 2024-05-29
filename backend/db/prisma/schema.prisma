@@ -14,6 +14,8 @@ model User {
   role            Role
   createdCourses  Course[]     @relation("UserCourses")
   enrolledCourses Enrollment[] @relation("UserEnrollments")
+
+  UserProgress UserProgress[]
 }
 
 enum Role {
@@ -113,5 +115,24 @@ model Article {
   moduleId String
   module   Module @relation(fields: [moduleId], references: [id], onDelete: Cascade)
 
+  userProgress UserProgress[]
+
   @@index([moduleId])
+}
+
+model UserProgress {
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  articleId String
+  Article   Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+
+  isCompleted Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, articleId])
+  @@index([articleId])
 }
