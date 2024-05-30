@@ -31,7 +31,7 @@ const CategoryItem = ({ label, value, icon: Icon }) => {
 
     return (
         <button
-            className={`py-2 px-3 text-sm border border-slate-200 rounded-full flex items-center gap-x-1 hover:border-purple-900 transition ${isSelected && 'border-purple-900 bg-purple-200/40 text-purple-800'}`}
+            className={`py-2 px-3 text-sm border ${isSelected ? 'border-purple-900' : 'border-slate-200'} rounded-full flex items-center gap-x-1 hover:border-purple-900 transition ${isSelected && 'bg-purple-200/40 text-purple-800'}`}
             type='button'
             onClick={onClick}
         >
