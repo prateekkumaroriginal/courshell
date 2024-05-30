@@ -13,8 +13,8 @@ const CategoryItem = ({ label, value, icon: Icon }) => {
 
     useEffect(() => {
         const currentCategoryId = searchParams.get("categoryId");
-        const currentTitle = searchParams.get("title");
-        setCurrentTitle(currentTitle);
+        const newTitle = searchParams.get("title");
+        setCurrentTitle(newTitle);
         setIsSelected(currentCategoryId === value);
     }, [searchParams, value]);
 
