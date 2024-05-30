@@ -2,7 +2,7 @@ import express from 'express';
 import { z } from 'zod';
 import { db } from '../db/index.js';
 import { authenticateToken, authorizeRoles } from '../middleware/auth.js'
-import { getInstructorOrAbove, createCourse, getCreatedCourses, getCourse, getUser, createModule, getModule, updateModule, getLastModule, deleteAttachment, getAttachment, getAttachments, createAttachment, updateCourse, createArticle, getLastArticle, getArticle, updateArticle, deleteArticle, publishArticle, unpublishArticle, publishCourse, unpublishCourse, deleteCourse } from '../actions/actions.js';
+import { getInstructorOrAbove, createCourse, getCreatedCourses, getCourse, getUser, createModule, getModule, updateModule, getLastModule, deleteAttachment, getAttachment, getAttachments, createAttachment, updateCourse, createArticle, getLastArticle, getArticle, updateArticle, deleteArticle, publishArticle, unpublishArticle, publishCourse, unpublishCourse, deleteCourse, getProgress } from '../actions/actions.js';
 import { SUPERADMIN, ADMIN, INSTRUCTOR, USER } from '../constants.js';
 import 'dotenv/config';
 import multer from 'multer';
@@ -615,16 +615,6 @@ router.patch('/courses/:courseId/modules/:moduleId/articles/:articleId/unpublish
         return res.json({ message: "Article unpublished successfully" });
     } catch (error) {
         console.log("[INSTRUCTOR -> COURSES -> MODULES -> ARTICLES -> UNPUBLISH]", error);
-        return res.status(500).json({ error: "Internal server error" });
-    }
-});
-
-router.get('/categories', authenticateToken, async (req, res) => {
-    try {
-        const categories = await db.category.findMany();
-        return res.json({ categories });
-    } catch (error) {
-        console.log("CATEGORIES");
         return res.status(500).json({ error: "Internal server error" });
     }
 });

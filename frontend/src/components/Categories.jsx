@@ -26,7 +26,7 @@ const iconsMap = {
     "Finance": FaDollarSign
 };
 
-const Categories = ({ items }) => {
+const Categories = ({ items, setIsLoading }) => {
     return (
         <div className='flex items-center justify-center gap-x-2 overflow-x-auto pb-2'>
             {items.map(item => (
@@ -35,6 +35,7 @@ const Categories = ({ items }) => {
                     label={item.name}
                     icon={iconsMap[item.name]}
                     value={item.id}
+                    setIsLoading={setIsLoading}
                 />
             ))}
         </div>

@@ -2,7 +2,7 @@ import queryString from 'query-string';
 import React, { useEffect, useState } from 'react'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 
-const CategoryItem = ({ label, value, icon: Icon }) => {
+const CategoryItem = ({ label, value, icon: Icon, setIsLoading }) => {
     const location = useLocation();
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
@@ -19,6 +19,7 @@ const CategoryItem = ({ label, value, icon: Icon }) => {
     }, [searchParams, value]);
 
     const onClick = () => {
+        setIsLoading(true);
         const url = queryString.stringifyUrl({
             url: pathname,
             query: {

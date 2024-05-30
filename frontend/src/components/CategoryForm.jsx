@@ -25,7 +25,7 @@ const CategoryForm = ({ course, courseId, setCategoryId }) => {
 
     const fetchCategories = async () => {
         try {
-            const response = await fetch(`${VITE_APP_BACKEND_URL}/instructor/categories`, {
+            const response = await fetch(`${VITE_APP_BACKEND_URL}/categories`, {
                 method: 'GET',
                 headers: {
                     authorization: `Bearer ${localStorage.getItem('token')}`,

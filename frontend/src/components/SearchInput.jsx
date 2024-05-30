@@ -5,7 +5,7 @@ import { Input } from './ui/input'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import queryString from 'query-string'
 
-const SearchInput = () => {
+const SearchInput = ({ setIsLoading }) => {
     const [value, setValue] = useState('');
     const debouncedValue = useDebounce(value);
     const { pathname } = useLocation();
@@ -21,6 +21,7 @@ const SearchInput = () => {
             }
         }, { skipEmptyString: true, skipNull: true });
         navigate(url);
+        setIsLoading(true);
     }, [debouncedValue, searchParams]);
 
     return (
