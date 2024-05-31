@@ -107,7 +107,7 @@ const Article = () => {
             <div className='flex items-center justify-center mb-8'>
                 <div className='w-full'>
                     <Link
-                        to={`/courses/${courseId}/${moduleId}`}
+                        to={`/instructor/courses/${courseId}/${moduleId}`}
                         className='flex w-fit items-center justify-center p-4 rounded-lg font-semibold text-sm text-white bg-gray-700 hover:bg-gray-800'
                     >
                         <ArrowLeft className='w-6 h-6 mr-2' /> Back to Module

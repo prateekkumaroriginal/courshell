@@ -32,7 +32,7 @@ const Signin = () => {
             });
             const data = await response.json();
             localStorage.setItem('token', data.token);
-            navigate(`/courses`);
+            navigate(`/dashboard`);
         } catch (e) {
             console.log(e);
         }

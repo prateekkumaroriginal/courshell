@@ -32,7 +32,7 @@ const Create = () => {
                 }
             });
             const data = await response.json();
-            return navigate(`/courses/${data.courseId}`);
+            return navigate(`/instructor/courses/${data.courseId}`);
         } catch (error) {
             console.log("Something went wrong");
         }

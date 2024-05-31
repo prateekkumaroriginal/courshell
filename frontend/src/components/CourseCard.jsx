@@ -11,13 +11,13 @@ const formatPrice = (price) => {
 
 const CourseCard = ({ id, title, imageUrl, articlesLength, price, progress, category }) => {
     return (
-        <Link to={`/courses/${id}`}>
+        <Link to={`/instructor/courses/${id}`}>
             <div className="group hover:shadow-md hover:shadow-purple-300 transition overflow-hidden border rounded-lg p-3 h-full">
                 <div className="w-full relative aspect-video rounded-md overflow-hidden">
                     <img src={imageUrl} alt="" />
                 </div>
 
-                <div className="felx flex-col pt-2">
+                <div className="flex flex-col pt-2">
                     <div className="text-lg font-medium transition line-clamp-2 group-hover:text-purple-700">
                         {title}
                     </div>

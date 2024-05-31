@@ -54,7 +54,7 @@ export function DataTable({
                     }
                     className="max-w-sm"
                 />
-                <Link to={"/create"}>
+                <Link to={"/instructor/create"}>
                     <button className='px-4 py-2 text-white font-semibold bg-gradient-to-r from-indigo-500 to-purple-500 hover:bg-gradient-to-r hover:from-indigo-700 hover:to-purple-600 rounded-md'>
                         New Course
                     </button>

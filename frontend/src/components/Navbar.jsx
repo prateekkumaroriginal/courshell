@@ -37,7 +37,7 @@ const Navbar = () => {
     const routes = [
         {
             label: "Courses",
-            href: "/courses"
+            href: "/instructor/courses"
         },
         {
             label: "Analytics",
