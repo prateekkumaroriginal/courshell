@@ -83,7 +83,7 @@ const TitleForm = ({ course, courseId, title, setTitle }) => {
                     type={'text'}
                     name={'title'}
                     register={register}
-                    defaultValue={course.title}
+                    defaultValue={title}
                 />
             </form> : <p className='text-md font-semibold mt-2 py-1'>
                 {title}

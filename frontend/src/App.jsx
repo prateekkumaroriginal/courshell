@@ -1,16 +1,19 @@
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import './App.css'
-import Create from '@/components/Create';
-import Course from '@/components/Course';
-import Signin from '@/components/Signin';
-import Navbar from '@/components/Navbar';
-import Module from '@/components/Module';
-import Article from '@/components/Article';
-import Attachment from '@/components/Attachment';
-import Courses from '@/components/Courses';
-import SearchPage from '@/components/SearchPage';
+import Create from '@/components/Instructor/Create';
+import Course from '@/components/Instructor/Course';
+import Signin from '@/components/common/Signin';
+import Navbar from '@/components/common/Navbar';
+import Module from '@/components/Instructor/Module';
+import Article from '@/components/Instructor/Article';
+import Attachment from '@/components/common/Attachment';
+import Courses from '@/components/Instructor/Courses';
+import SearchPage from '@/components/User/SearchPage';
 
-const hideNavbarPaths = ['/courses/:courseId/attachments/:attachmentId'];
+const hideNavbarPaths = [
+    '/courses/:courseId/attachments/:attachmentId',
+    '/instructor/courses/:courseId/attachments/:attachmentId',
+];
 const shouldHideNavbar = (pathname, hidingPaths) => {
     return hidingPaths.some(path => {
         const regex = new RegExp(`^${path.replace(/:\w+/g, '[^/]+')}$`);

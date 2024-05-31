@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { VITE_APP_BACKEND_URL } from '@/constants'
-import NavbarItem from '@/components/NavbarItem';
+import NavbarItem from '@/components/common/NavbarItem';
 
 const Navbar = () => {
     const [userData, setUserData] = useState(null);

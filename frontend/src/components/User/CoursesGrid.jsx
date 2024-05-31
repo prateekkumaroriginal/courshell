@@ -1,5 +1,5 @@
 import React from 'react'
-import CourseCard from '@/components/CourseCard'
+import CourseCard from '@/components/User/CourseCard'
 
 const CoursesGrid = ({ items }) => {
     return (

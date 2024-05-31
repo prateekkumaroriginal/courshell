@@ -4,12 +4,12 @@ import React, { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { z } from 'zod';
-import Editor from '@/components/Editor';
-import ArticleAccessForm from '@/components/ArticleAccessForm';
+import Editor from '@/components/Instructor/Editor';
+import ArticleAccessForm from '@/components/Instructor/ArticleAccessForm';
 import Banner from '@/components/ui/Banner';
-import ArticleActions from '@/components/ArticleActions';
+import ArticleActions from '@/components/Instructor/ArticleActions';
 import { VITE_APP_BACKEND_URL } from '@/constants';
-import ToastProvider from './ui/ToastProvider';
+import ToastProvider from '../ui/ToastProvider';
 import toast from 'react-hot-toast';
 
 const formSchema = z.object({

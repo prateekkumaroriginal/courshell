@@ -1,11 +1,11 @@
 import { VITE_APP_BACKEND_URL } from '@/constants'
 import React, { useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast';
-import Categories from '@/components/Categories';
-import SearchInput from '@/components/SearchInput';
 import { useSearchParams } from 'react-router-dom';
 import queryString from 'query-string';
-import CoursesGrid from '@/components/CoursesGrid';
+import Categories from '@/components/User/Categories';
+import SearchInput from '@/components/User/SearchInput';
+import CoursesGrid from '@/components/User/CoursesGrid';
 
 const SearchPage = () => {
     const [categories, setCategories] = useState([]);

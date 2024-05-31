@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { DataTable } from '@/components/ui/DataTable'
-import { columns } from './ui/columns'
+import { columns } from '../ui/columns'
 import toast from 'react-hot-toast'
 import { VITE_APP_BACKEND_URL } from '@/constants'
-import ToastProvider from './ui/ToastProvider'
+import ToastProvider from '../ui/ToastProvider'
 
 const Courses = () => {
     const navigate = useNavigate();

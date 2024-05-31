@@ -65,7 +65,7 @@ const Create = () => {
                     <div className='flex gap-2 mt-8'>
                         <button
                             className='bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600'
-                            onClick={() => navigate('/courses')}
+                            onClick={() => navigate('/instructor/courses')}
                         >
                             Cancel
                         </button>

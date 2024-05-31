@@ -2,7 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import React, { useState } from 'react'
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import ModulesList from '@/components/ModulesList';
+import ModulesList from '@/components/Instructor/ModulesList';
 import { Loader2, PlusCircle } from 'lucide-react';
 import { VITE_APP_BACKEND_URL } from '@/constants';
 import CustomInput from '@/components/ui/CustomInput';

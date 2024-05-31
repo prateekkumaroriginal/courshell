@@ -11,7 +11,7 @@ const formatPrice = (price) => {
 
 const CourseCard = ({ id, title, imageUrl, articlesLength, price, progress, category }) => {
     return (
-        <Link to={`/instructor/courses/${id}`}>
+        <Link to={`/courses/${id}`}>
             <div className="group hover:shadow-md hover:shadow-purple-300 transition overflow-hidden border rounded-lg p-3 h-full">
                 <div className="w-full relative aspect-video rounded-md overflow-hidden">
                     <img src={imageUrl} alt="" />

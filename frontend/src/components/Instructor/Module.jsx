@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useParams } from 'react-router-dom';
 import { z } from 'zod';
-import ArticlesList from '@/components/ArticlesList';
+import ArticlesList from '@/components/Instructor/ArticlesList';
 import { Loader2 } from 'lucide-react';
 import { VITE_APP_BACKEND_URL } from '@/constants';
 import toast from 'react-hot-toast';

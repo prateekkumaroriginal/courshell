@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import TitleForm from '@/components/TitleForm';
-import DescriptionForm from '@/components/DescriptionForm';
-import CategoryForm from '@/components/CategoryForm';
+import TitleForm from '@/components/Instructor/TitleForm';
+import DescriptionForm from '@/components/Instructor/DescriptionForm';
+import CategoryForm from '@/components/Instructor/CategoryForm';
 import ToastProvider from '@/components/ui/ToastProvider';
-import ModulesForm from '@/components/ModulesForm';
+import ModulesForm from '@/components/Instructor/ModulesForm';
 import { VITE_APP_BACKEND_URL } from '@/constants';
 import Banner from '@/components/ui/Banner';
-import CourseActions from '@/components/CourseActions';
-import PriceForm from '@/components/PriceForm';
-import CoverImage from '@/components/CoverImage';
-import AttachmentsForm from '@/components/AttachmentsForm';
+import CourseActions from '@/components/Instructor/CourseActions';
+import PriceForm from '@/components/Instructor/PriceForm';
+import CoverImage from '@/components/Instructor/CoverImage';
+import AttachmentsForm from '@/components/Instructor/AttachmentsForm';
 
 const Course = () => {
     const { courseId } = useParams();
