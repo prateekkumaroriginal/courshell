@@ -26,7 +26,7 @@ const Signin = () => {
 
     const onSubmit = async (values) => {
         try {
-            const response = await fetch(`${VITE_APP_BACKEND_URL}/login`, {
+            const response = await fetch(`${VITE_APP_BACKEND_URL}/user/login`, {
                 method: 'POST',
                 headers: values
             });

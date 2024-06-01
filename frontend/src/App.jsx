@@ -9,6 +9,7 @@ import Article from '@/components/Instructor/Article';
 import Attachment from '@/components/common/Attachment';
 import Courses from '@/components/Instructor/Courses';
 import SearchPage from '@/components/User/SearchPage';
+import ReadCourse from './components/User/ReadCourse';
 
 const hideNavbarPaths = [
     '/courses/:courseId/attachments/:attachmentId',
@@ -23,6 +24,7 @@ const shouldHideNavbar = (pathname, hidingPaths) => {
 
 function AppRoutes() {
     const location = useLocation();
+    const isInstructorPage = location.pathname.startsWith('/instructor');
 
     return (
         <>
@@ -30,6 +32,7 @@ function AppRoutes() {
             <Routes>
                 <Route path='/signin' element={<Signin />} />
                 <Route path='/search' element={<SearchPage />} />
+                <Route path='/courses/:courseId' element={<ReadCourse />} />
                 <Route path='/instructor/create' element={<Create />} />
                 <Route path='/instructor/courses' element={<Courses />} />
                 <Route path='/instructor/courses/:courseId' element={<Course />} />

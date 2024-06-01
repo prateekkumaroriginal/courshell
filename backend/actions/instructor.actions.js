@@ -1,32 +1,4 @@
 import { db } from '../db/index.js';
-import { SUPERADMIN, ADMIN, INSTRUCTOR } from '../constants.js';
-
-const getUser = async (email) => {
-    return await db.user.findUnique({
-        where: {
-            email,
-        },
-        select: {
-            email: true,
-            role: true,
-            createdCourses: true,
-            enrolledCourses: true
-        }
-    });
-}
-
-const getInstructorOrAbove = async (email) => {
-    return await db.user.findUnique({
-        where: {
-            email,
-            OR: [
-                { role: SUPERADMIN },
-                { role: ADMIN },
-                { role: INSTRUCTOR }
-            ]
-        }
-    });
-}
 
 const createCourse = async (title, instructorId) => {
     return await db.course.create({
@@ -243,98 +215,6 @@ const unpublishArticle = async (moduleId, articleId) => {
     });
 }
 
-const getProgress = async (courseId, userId) => {
-    const modules = await db.module.findMany({
-        where: {
-            courseId
-        }
-    });
-
-    const publishedArticles = [];
-    for (const module of modules) {
-        publishedArticles.push(...(await db.article.findMany({
-            where: {
-                moduleId: module.id,
-                isPublished: true
-            },
-            select: {
-                id: true
-            }
-        })));
-    }
-
-    const publishedArticleIds = publishedArticles.map(article => article.id);
-
-    const validCompletedArticles = await db.userProgress.count({
-        where: {
-            userId,
-            articleId: {
-                in: publishedArticleIds
-            },
-            isCompleted: true
-        }
-    });
-
-    const progressPercentage = (validCompletedArticles / publishedArticleIds.length) * 100;
-    return progressPercentage;
-}
-
-const getAllCourses = async ({ userId, categoryId, title }) => {
-    const courses = await db.course.findMany({
-        where: {
-            isPublished: true,
-            title: {
-                contains: title || '',
-                mode: 'insensitive'
-            },
-            ...(categoryId && { categoryId })
-        },
-        include: {
-            category: true,
-            coverImage: true,
-            modules: {
-                include: {
-                    articles: {
-                        where: {
-                            isPublished: true
-                        },
-                        select: {
-                            id: true
-                        }
-                    }
-                }
-            },
-            enrolledUsers: {
-                where: {
-                    userId
-                }
-            }
-        },
-        orderBy: {
-            createdAt: "desc"
-        }
-    });
-
-    const coursesWithProgress = await Promise.all(
-        courses.map(async course => {
-            if (course.enrolledUsers.length === 0) {
-                return {
-                    ...course,
-                    progress: null
-                }
-            }
-
-            const progressPercentage = await getProgress(course.id, userId);
-            return {
-                ...course,
-                progress: progressPercentage
-            }
-        })
-    );
-
-    return coursesWithProgress;
-}
-
 const createAttachment = async (file, courseId, isCoverImage = false) => {
     const timestamp = Date.now();
     return await db.attachment.create({
@@ -392,4 +272,4 @@ const deleteAttachment = async (courseId, attachmentId) => {
     });
 }
 
-export { getInstructorOrAbove, createCourse, getCreatedCourses, getCourse, getUser, createModule, getModule, updateModule, getLastModule, deleteAttachment, getAttachment, getAttachments, createAttachment, updateCourse, getArticle, createArticle, updateArticle, getLastArticle, deleteArticle, publishArticle, unpublishArticle, publishCourse, unpublishCourse, deleteCourse, getProgress, getAllCourses }
+export { createCourse, getCreatedCourses, getCourse, createModule, getModule, updateModule, getLastModule, deleteAttachment, getAttachment, getAttachments, createAttachment, updateCourse, getArticle, createArticle, updateArticle, getLastArticle, deleteArticle, publishArticle, unpublishArticle, publishCourse, unpublishCourse, deleteCourse }

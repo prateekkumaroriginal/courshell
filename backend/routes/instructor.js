@@ -2,10 +2,11 @@ import express from 'express';
 import { z } from 'zod';
 import { db } from '../db/index.js';
 import { authenticateToken, authorizeRoles } from '../middleware/auth.js'
-import { getInstructorOrAbove, createCourse, getCreatedCourses, getCourse, getUser, createModule, getModule, updateModule, getLastModule, deleteAttachment, getAttachment, getAttachments, createAttachment, updateCourse, createArticle, getLastArticle, getArticle, updateArticle, deleteArticle, publishArticle, unpublishArticle, publishCourse, unpublishCourse, deleteCourse, getProgress } from '../actions/actions.js';
-import { SUPERADMIN, ADMIN, INSTRUCTOR, USER } from '../constants.js';
+import { createCourse, getCreatedCourses, getCourse, createModule, getModule, updateModule, getLastModule, deleteAttachment, getAttachment, getAttachments, createAttachment, updateCourse, createArticle, getLastArticle, getArticle, updateArticle, deleteArticle, publishArticle, unpublishArticle, publishCourse, unpublishCourse, deleteCourse } from '../actions/instructor.actions.js';
+import { SUPERADMIN, ADMIN, INSTRUCTOR } from '../constants.js';
 import 'dotenv/config';
 import multer from 'multer';
+import { getInstructorOrAbove } from '../actions/user.actions.js';
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
@@ -38,16 +39,6 @@ const articleUpdateInput = z.object({
 const isValidInstructorOrAbove = (user, email) => {
     return user.role === SUPERADMIN || user.role === ADMIN || user.email === email;
 }
-
-router.get('/me', authenticateToken, async (req, res) => {
-    try {
-        const user = await getUser(req.user.email);
-        res.json(user);
-    } catch (error) {
-        console.log("[ME]", error);
-        return res.status(500).json({ error: "Internal server error" });
-    }
-});
 
 router.post('/courses', authenticateToken, authorizeRoles(SUPERADMIN, ADMIN, INSTRUCTOR), async (req, res) => {
     try {

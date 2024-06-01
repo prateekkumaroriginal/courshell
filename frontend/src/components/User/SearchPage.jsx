@@ -30,7 +30,7 @@ const SearchPage = () => {
 
     const fetchCategories = useCallback(async () => {
         try {
-            const response = await fetch(`${VITE_APP_BACKEND_URL}/categories`, {
+            const response = await fetch(`${VITE_APP_BACKEND_URL}/user/categories`, {
                 method: 'GET',
                 headers: {
                     authorization: `Bearer ${localStorage.getItem('token')}`
@@ -51,7 +51,7 @@ const SearchPage = () => {
 
     const fetchCourses = useCallback(async (url) => {
         try {
-            const response = await fetch(`${VITE_APP_BACKEND_URL}/browse${url}`, {
+            const response = await fetch(`${VITE_APP_BACKEND_URL}/user/courses${url}`, {
                 method: 'GET',
                 headers: {
                     authorization: `Bearer ${localStorage.getItem('token')}`

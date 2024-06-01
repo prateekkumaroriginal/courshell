@@ -11,7 +11,7 @@ const Navbar = () => {
     const fetchProfile = async () => {
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch(`${VITE_APP_BACKEND_URL}/instructor/me`, {
+            const response = await fetch(`${VITE_APP_BACKEND_URL}/user/me`, {
                 headers: {
                     authorization: `Bearer ${token}`
                 }
@@ -46,7 +46,7 @@ const Navbar = () => {
     ];
 
     return (
-        <div className='bg-gray-200 px-4 py-2 flex w-full justify-between items-center shadow-lg'>
+        <div className='relative bg-gray-200 px-4 py-2 flex w-full justify-between items-center shadow-lg z-50'>
             <div>
                 <button onClick={() => {
                     navigate("/")
