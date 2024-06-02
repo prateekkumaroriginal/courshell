@@ -1,10 +1,9 @@
 import React from 'react'
 import CourseSidebarGroup from '@/components/User/CourseSidebarGroup';
-import { Menu, PanelRightClose } from 'lucide-react';
+import { PanelRightClose } from 'lucide-react';
 import {
     Sheet,
     SheetContent,
-    SheetDescription,
     SheetHeader,
     SheetTitle,
     SheetTrigger,

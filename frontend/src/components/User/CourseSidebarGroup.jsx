@@ -15,7 +15,7 @@ const CourseSidebarGroup = ({ id, label, courseId, enrolled, articles }) => {
                     label={article.title}
                     moduleId={id}
                     courseId={courseId}
-                    isLocked={!enrolled}
+                    isLocked={!article.isFree && !enrolled}
                     isCompleted={!!article.userProgress?.[0]?.isCompleted}
                 />
             ))}

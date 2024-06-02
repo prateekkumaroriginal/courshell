@@ -33,6 +33,7 @@ function AppRoutes() {
                 <Route path='/signin' element={<Signin />} />
                 <Route path='/search' element={<SearchPage />} />
                 <Route path='/courses/:courseId' element={<ReadCourse />} />
+                <Route path='/courses/:courseId/:articleId' element={<ReadCourse />} />
                 <Route path='/instructor/create' element={<Create />} />
                 <Route path='/instructor/courses' element={<Courses />} />
                 <Route path='/instructor/courses/:courseId' element={<Course />} />

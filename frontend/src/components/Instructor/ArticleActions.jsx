@@ -20,7 +20,7 @@ const ArticleActions = ({ disabled, courseId, moduleId, articleId, isPublished, 
                     'content-type': 'application/json'
                 }
             });
-            navigate(`/courses/${courseId}/${moduleId}`);
+            navigate(`/instructor/courses/${courseId}/${moduleId}`);
         } catch (e) {
             console.log(e);
         } finally {

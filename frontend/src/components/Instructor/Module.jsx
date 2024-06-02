@@ -108,6 +108,7 @@ const Module = () => {
 
             if (response.ok) {
                 toast.success("Article Created");
+                articleReset();
                 fetchModule();
             } else {
                 toast.error("Something went wrong");
