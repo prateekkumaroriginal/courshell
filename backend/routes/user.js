@@ -64,11 +64,7 @@ router.get('/categories', authenticateToken, async (req, res) => {
 router.get('/courses', authenticateToken, async (req, res) => {
     try {
         const { title, categoryId } = req.query;
-        const courses = await getAllCourses({
-            userId: req.user.id,
-            categoryId: categoryId || null,
-            title: title || null
-        });
+        const courses = await getAllCourses(req.user.id, categoryId || null, title || null);
 
         courses.map(course => {
             course.coverImage.data = course.coverImage.data.toString('base64');

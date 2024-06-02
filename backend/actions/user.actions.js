@@ -115,7 +115,7 @@ const getProgress = async (courseId, userId) => {
     return progressPercentage;
 }
 
-const getAllCourses = async ({ userId, categoryId, title }) => {
+const getAllCourses = async (userId, categoryId, title) => {
     const courses = await db.course.findMany({
         where: {
             isPublished: true,
