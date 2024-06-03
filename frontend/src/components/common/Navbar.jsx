@@ -44,9 +44,9 @@ const Navbar = () => {
             href: "/analytics"
         },
     ];
-
+9
     return (
-        <div className='sticky top-0 bg-gray-200 border-slate-500/25 border-b-4 px-4 py-2 flex w-full justify-between items-center shadow-xl z-50'>
+        <div className='sticky top-0 bg-opacity-80 backdrop-blur supports-[backdrop-filter]:bg-background/60 bg-gray-200 px-4 py-2 flex w-full justify-between items-center shadow-md z-50'>
             <div>
                 <button onClick={() => {
                     navigate("/")
