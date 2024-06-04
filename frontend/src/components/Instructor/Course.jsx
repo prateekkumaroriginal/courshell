@@ -88,7 +88,7 @@ const Course = () => {
     };
 
     return (
-        <div className='md:px-6'>
+        <div className='md:px-6 mb-10'>
             <ToastProvider />
             {!isLoading && !isPublished && <Banner
                 label={"This course is unpublished. It will not be visible to the students."}

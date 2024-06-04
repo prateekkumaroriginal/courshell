@@ -190,7 +190,7 @@ const Module = () => {
                                 id='title'
                                 placeholder="e.g. 'Intro to web development'"
                                 disabled={moduleIsSubmitting}
-                                defaultValue={module.title}
+                                defaultValue={module?.title}
                                 {...moduleForm.register('title')}
                             />
                             <div className="flex items-center">

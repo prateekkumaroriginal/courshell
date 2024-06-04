@@ -3,7 +3,7 @@ import { z } from 'zod';
 import jwt from 'jsonwebtoken';
 import express from 'express';
 import { authenticateToken } from '../middleware/auth.js';
-import { getCourse, getEnrollment, getAllCourses, getProgress, getUser } from '../actions/user.actions.js';
+import { getCourse, getEnrollment, getAllCourses, getProgress, getUser, getArticle, getArticleProgress } from '../actions/user.actions.js';
 
 const router = express.Router();
 
@@ -91,6 +91,61 @@ router.get('/courses/:courseId', authenticateToken, async (req, res) => {
 
         res.json({ course, enrollment, progressPercentage });
     } catch (error) {
+        console.log("[USER -> COURSE]", error);
+        return res.status(500).json({ error: "Internal server error" });
+    }
+});
+
+router.get('/courses/:courseId/:articleId', authenticateToken, async (req, res) => {
+    try {
+        const { courseId, articleId } = req.params;
+        const course = await db.course.findUnique({
+            where: {
+                id: courseId,
+                isPublished: true
+            },
+            select: {
+                price: true
+            }
+        });
+
+        if (!course) {
+            return res.status(404).json({ message: "Course not found" });
+        }
+
+        const enrollment = await getEnrollment(courseId, req.user.id);
+        const article = await getArticle(articleId);
+        let nextArticle;
+
+        if (!article) {
+            return res.status(404).json({ message: "Article not found" });
+        }
+
+        if (article.isFree || enrollment) {
+            nextArticle = await db.article.findFirst({
+                where: {
+                    isPublished: true,
+                    position: {
+                        gt: article?.position
+                    }
+                },
+                orderBy: {
+                    position: 'asc'
+                }
+            });
+        }
+
+        const userProgress = await getArticleProgress(articleId, req.user.id);
+
+        return res.json({
+            article,
+            course,
+            nextArticle,
+            userProgress,
+            enrollment
+        });
+    }
+    catch (error) {
         console.log("[USER -> COURSE]", error);
         return res.status(500).json({ error: "Internal server error" });
     }

@@ -9,17 +9,19 @@ const Editor = ({ defaultContent }) => {
     const editor = useRef(null);
     const [content, setContent] = useState(defaultContent || '');
     const [placeholder, setPlaceholder] = useState('Start typing...');
+    const [isFullScreen, setIsFullScreen] = useState(false);
 
     const config = useMemo(() => ({
         readonly: false,
         placeholder: placeholder,
         height: '600px',
-    }), [placeholder]);
+        toolbarStickyOffset: 57
+    }), [placeholder, isFullScreen]);
 
     const saveContent = useCallback((event) => {
         if (event.ctrlKey && event.key === 's') {
             event.preventDefault();
-            localStorage.setItem('joditContent', content);
+            localStorage.setItem(`joditContent-${articleId}`, content);
         }
     }, [content]);
 
@@ -32,13 +34,33 @@ const Editor = ({ defaultContent }) => {
 
     useEffect(() => {
         if (!defaultContent) {
-            const data = localStorage.getItem('joditContent');
+            const data = localStorage.getItem(`joditContent-${articleId}`);
             if (data) {
                 setPlaceholder("");
                 setContent(data);
             };
         }
     }, []);
+
+    // useEffect(() => {
+    //     const handleFullScreenChange = () => {
+    //         if (editor.current) {
+    //             const isFullScreenMode = editor.current.isFullSize;
+    //             setIsFullScreen(isFullScreenMode);
+    //         }
+    //     };
+
+    //     const editorInstance = editor.current;
+    //     if (editorInstance) {
+    //         editorInstance.events.on('afterSetMode', handleFullScreenChange);
+    //     }
+
+    //     return () => {
+    //         if (editorInstance) {
+    //             editorInstance.events.off('afterSetMode', handleFullScreenChange);
+    //         }
+    //     };
+    // }, []);
 
     const handleSubmit = async () => {
         try {

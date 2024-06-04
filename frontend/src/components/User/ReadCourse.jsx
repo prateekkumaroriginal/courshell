@@ -1,8 +1,9 @@
 import { VITE_APP_BACKEND_URL } from '@/constants';
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import CourseSidebar from '@/components/User/CourseSidebar';
 import ReadArticle from '@/components/User/ReadArticle';
+import ToastProvider from '../ui/ToastProvider';
 
 const ReadCourse = () => {
     const { courseId, articleId } = useParams();
@@ -10,6 +11,7 @@ const ReadCourse = () => {
     const [enrollment, setEnrollment] = useState();
     const [progressPercentage, setProgressPercentage] = useState();
     const [isLoading, setIsLoading] = useState(true);
+    const [isCourseLoading, setIsCourseLoading] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -36,22 +38,28 @@ const ReadCourse = () => {
         setCourse(data.course);
         setEnrollment(data.enrollment);
         setProgressPercentage(data.progressPercentage);
-        setIsLoading(false);
+        setIsCourseLoading(false);
     }
 
     return (
         <>
-            {!isLoading && !course ? null : <div className='relative h-full z-40'>
-                <div className="hidden md:flex h-full flex-col fixed inset-y-0 top-14 p-1 z-40">
-                    {!isLoading && <CourseSidebar
+            <ToastProvider/>
+            {!isCourseLoading && !course ? null : <div className='relative h-full z-40'>
+                <div className="flex h-full flex-col fixed inset-y-0 top-14 z-40">
+                    {!isCourseLoading && <CourseSidebar
                         course={course}
                         enrollment={enrollment}
                         progressPercentage={progressPercentage}
                     />}
                 </div>
 
-                <div className='px-20 py-6'>
-                    <ReadArticle articleId={articleId} />
+                <div className='px-20'>
+                    <ReadArticle
+                        courseId={courseId}
+                        articleId={articleId}
+                        isLoading={isLoading}
+                        setIsLoading={setIsLoading}
+                    />
                 </div>
             </div>}
         </>

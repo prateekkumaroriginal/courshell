@@ -9,7 +9,7 @@ import Article from '@/components/Instructor/Article';
 import Attachment from '@/components/common/Attachment';
 import Courses from '@/components/Instructor/Courses';
 import SearchPage from '@/components/User/SearchPage';
-import ReadCourse from './components/User/ReadCourse';
+import ReadCourse from '@/components/User/ReadCourse';
 
 const hideNavbarPaths = [
     '/courses/:courseId/attachments/:attachmentId',

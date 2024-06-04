@@ -3,7 +3,7 @@ import CourseSidebarItem from '@/components/User/CourseSidebarItem'
 
 const CourseSidebarGroup = ({ id, label, courseId, enrolled, articles }) => {
     return (
-        <div className=''>
+        <div>
             <h2 className='pl-4'>
                 {label}
             </h2>

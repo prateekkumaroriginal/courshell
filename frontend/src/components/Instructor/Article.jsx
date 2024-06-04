@@ -97,14 +97,14 @@ const Article = () => {
     }, []);
 
     return (
-        <div className='md:p-6'>
+        <div className='md:px-6'>
             <ToastProvider />
             {!isLoading && !isPublished && <Banner
                 label={"This article is unpublished. It will not be visible in the course."}
                 variant={"WARNING"}
             />}
 
-            <div className='flex items-center justify-center mb-8'>
+            <div className='flex items-center justify-center my-4'>
                 <div className='w-full'>
                     <Link
                         to={`/instructor/courses/${courseId}/${moduleId}`}
@@ -172,7 +172,7 @@ const Article = () => {
                             id='title'
                             placeholder="e.g. 'Full stack web development'"
                             disabled={isSubmitting}
-                            defaultValue={article.title}
+                            defaultValue={article?.title}
                             {...form.register('title')}
                         />
                         <div className="flex items-center">

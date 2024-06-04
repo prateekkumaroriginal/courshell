@@ -48,7 +48,10 @@ const getCourse = async (courseId, userId) => {
                         where: {
                             isPublished: true
                         },
-                        include: {
+                        select: {
+                            id: true,
+                            title: true,
+                            isFree: true,
                             userProgress: {
                                 where: {
                                     userId
@@ -115,6 +118,17 @@ const getProgress = async (courseId, userId) => {
     return progressPercentage;
 }
 
+const getArticleProgress = async (articleId, userId) => {
+    return await db.userProgress.findUnique({
+        where: {
+            userId_articleId: {
+                userId,
+                articleId
+            }
+        }
+    });
+}
+
 const getAllCourses = async (userId, categoryId, title) => {
     const courses = await db.course.findMany({
         where: {
@@ -171,4 +185,13 @@ const getAllCourses = async (userId, categoryId, title) => {
     return coursesWithProgress;
 }
 
-export { getUser, getInstructorOrAbove, getCourse, getEnrollment, getProgress, getAllCourses }
+const getArticle = async (articleId) => {
+    return await db.article.findUnique({
+        where: {
+            id: articleId,
+            isPublished: true
+        }
+    });
+}
+
+export { getUser, getInstructorOrAbove, getCourse, getEnrollment, getProgress, getAllCourses, getArticle, getArticleProgress }

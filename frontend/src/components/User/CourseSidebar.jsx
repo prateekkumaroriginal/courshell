@@ -12,11 +12,13 @@ import {
 const CourseSidebar = ({ course, enrollment, progressPercentage }) => {
     return (
 
-        <div className='h-full flex flex-col overflow-y-auto'>
+        <div className='h-full flex flex-col overflow-y-auto border-r border-slate-600/40'>
             <Sheet>
+                <div className='p-1'>
                 <SheetTrigger className='p-2 rounded-md hover:bg-slate-400/25 transition'>
                     <PanelRightClose className='h-6 w-6' />
                 </SheetTrigger>
+                </div>
 
                 <SheetContent side="left" className='p-0 bg-white w-80 inset-y-0 top-14'>
                     <SheetHeader>
@@ -27,19 +29,20 @@ const CourseSidebar = ({ course, enrollment, progressPercentage }) => {
                                 </h1>
                             </div>
                         </SheetTitle>
-                        <div className='flex flex-col w-full'>
-                            {course.modules.map(module => (
-                                <CourseSidebarGroup
-                                    key={module.id}
-                                    id={module.id}
-                                    label={module.title}
-                                    articles={module.articles}
-                                    courseId={course.id}
-                                    enrolled={!!enrollment}
-                                />
-                            ))}
-                        </div>
                     </SheetHeader>
+
+                    <div className='flex flex-col w-full'>
+                        {course.modules.map(module => (
+                            <CourseSidebarGroup
+                                key={module.id}
+                                id={module.id}
+                                label={module.title}
+                                articles={module.articles}
+                                courseId={course.id}
+                                enrolled={!!enrollment}
+                            />
+                        ))}
+                    </div>
                 </SheetContent>
             </Sheet>
         </div>
