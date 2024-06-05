@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form'
 import CustomInput from '@/components/ui/CustomInput';
 import toast from 'react-hot-toast';
 import { VITE_APP_BACKEND_URL } from '@/constants';
+import { formatPrice } from '@/lib/format';
 
 const priceSchema = z.object({
     price: z.coerce.number().multipleOf(0.01)
@@ -90,9 +91,8 @@ const PriceForm = ({ courseId, price, setPrice }) => {
                     register={register}
                 />
             </form> : <p className='text-md font-semibold mt-2 py-1'>
-                <span className='text-zinc-600 py-2'>&#8377; </span>
                 <span className={`${!price && 'italic text-zinc-600'}`}>
-                    {price || "Not set"}
+                    {formatPrice(price) || "Not set"}
                 </span>
             </p>}
         </div>

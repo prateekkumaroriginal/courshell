@@ -66,6 +66,27 @@ const getCourse = async (courseId, userId) => {
                 orderBy: {
                     position: 'asc'
                 }
+            },
+            attachments: {
+                where: {
+                    isCoverImage: false
+                },
+                select: {
+                    id: true,
+                    name: true,
+                    originalName: true,
+                    type: true
+                }
+            },
+            requestedUsers: {
+                where: {
+                    userId,
+                    courseId
+                },
+                orderBy: {
+                    updatedAt: 'desc'
+                },
+                take: 1
             }
         }
     });

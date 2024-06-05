@@ -1,9 +1,10 @@
 import { VITE_APP_BACKEND_URL } from '@/constants';
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import CourseSidebar from '@/components/User/CourseSidebar';
 import ReadArticle from '@/components/User/ReadArticle';
 import ToastProvider from '../ui/ToastProvider';
+import CourseEnrollButton from '@/components/User/CourseEnrollButton';
 
 const ReadCourse = () => {
     const { courseId, articleId } = useParams();
@@ -41,10 +42,18 @@ const ReadCourse = () => {
         setIsCourseLoading(false);
     }
 
+    if (isCourseLoading) {
+        return <div className='text-center text-2xl text-muted-foreground mt-10'>
+            Loading...
+        </div>
+    }
+
     return (
         <>
-            <ToastProvider/>
-            {!isCourseLoading && !course ? null : <div className='relative h-full z-40'>
+            <ToastProvider />
+            {!isCourseLoading && !course ? <div className='text-center text-2xl text-muted-foreground mt-10'>
+                Loading...
+            </div> : <div className='relative h-full z-40 mb-20'>
                 <div className="flex h-full flex-col fixed inset-y-0 top-14 z-40">
                     {!isCourseLoading && <CourseSidebar
                         course={course}
@@ -60,6 +69,16 @@ const ReadCourse = () => {
                         isLoading={isLoading}
                         setIsLoading={setIsLoading}
                     />
+                </div>
+
+                <div className='px-20 flex flex-col md:flex-row items-center justify-between'>
+                    {enrollment ? <div>
+                        {/* TODO Add Course Progress Component */}
+                    </div> : <CourseEnrollButton
+                        courseId={courseId}
+                        price={course.price}
+                        requested={course?.requestedUsers?.length}
+                    />}
                 </div>
             </div>}
         </>

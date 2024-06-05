@@ -39,7 +39,7 @@ const Signin = () => {
     }
 
     return (
-        <div className="flex flex-col items-center justify-center py-8 mx-auto md:h-screen lg:py-0">
+        <div className="flex flex-col items-center justify-center py-8 mx-auto lg:py-0">
             <div className="w-full bg-blue-200 rounded-lg shadow-2xl mt-20 sm:max-w-md xl:p-0">
                 <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
                     <h1 className="text-xl text-center font-bold leading-tight tracking-tight text-gray-900 md:text-2xl">

@@ -1,13 +1,7 @@
 import { BookOpen } from 'lucide-react'
 import React from 'react'
 import { Link } from 'react-router-dom'
-
-const formatPrice = (price) => {
-    return new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "INR"
-    }).format(price);
-}
+import { formatPrice } from '@/lib/format'
 
 const CourseCard = ({ id, title, imageUrl, articlesLength, price, progress, category }) => {
     return (

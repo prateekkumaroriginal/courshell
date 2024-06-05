@@ -16,7 +16,7 @@ const ReadArticle = ({ courseId, articleId, isLoading, setIsLoading }) => {
     }, [articleId]);
 
     const fetchArticle = async () => {
-        const response = await fetch(`${VITE_APP_BACKEND_URL}/user/courses/${courseId}/${articleId}`, {
+        const response = await fetch(`${VITE_APP_BACKEND_URL}/user/courses/${courseId}/articles/${articleId}`, {
             method: 'GET',
             headers: {
                 authorization: `Bearer ${localStorage.getItem('token')}`
@@ -59,10 +59,10 @@ const ReadArticle = ({ courseId, articleId, isLoading, setIsLoading }) => {
                 label="You need to enroll in this course to read this article."
                 variant="WARNING"
             /> : (
-                <div className='flex flex-col mx-auto mb-20'>
+                <div className='flex flex-col mx-auto'>
                     <div className="py-8">
                         <h1 className='text-3xl text-center'>{article.title}</h1>
-                        <div className='py-8'>
+                        <div className='pt-8'>
                             {parse(article.content)}
                         </div>
                     </div>

@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 import express from 'express';
 import { authenticateToken } from '../middleware/auth.js';
 import { getCourse, getEnrollment, getAllCourses, getProgress, getUser, getArticle, getArticleProgress } from '../actions/user.actions.js';
+import { ACCEPTED, PENDING, REJECTED } from '../constants.js';
 
 const router = express.Router();
 
@@ -96,7 +97,7 @@ router.get('/courses/:courseId', authenticateToken, async (req, res) => {
     }
 });
 
-router.get('/courses/:courseId/:articleId', authenticateToken, async (req, res) => {
+router.get('/courses/:courseId/articles/:articleId', authenticateToken, async (req, res) => {
     try {
         const { courseId, articleId } = req.params;
         const course = await db.course.findUnique({
@@ -147,6 +148,58 @@ router.get('/courses/:courseId/:articleId', authenticateToken, async (req, res) 
     }
     catch (error) {
         console.log("[USER -> COURSE]", error);
+        return res.status(500).json({ error: "Internal server error" });
+    }
+});
+
+router.post('/courses/:courseId/request', authenticateToken, async (req, res) => {
+    try {
+        const { courseId } = req.params;
+        const course = await db.course.findUnique({
+            where: {
+                id: courseId,
+                isPublished: true
+            }
+        });
+
+        if (!course) {
+            return res.status(404).json({ message: "Course not found" });
+        }
+
+        const enrollment = await getEnrollment(courseId, req.user.id);
+        if (enrollment) {
+            return res.status(400).json({ message: "Already Enrolled" });
+        }
+
+        const request = await db.request.findFirst({
+            where: {
+                userId: req.user.id,
+                courseId
+            },
+            orderBy: {
+                updatedAt: "desc"
+            }
+        });
+
+        if (request && request.status === PENDING) {
+            return res.status(400).json({ message: "Previous request is pending" });
+        }
+
+        const newRequest = await db.request.create({
+            data: {
+                userId: req.user.id,
+                courseId
+            }
+        });
+
+        if (newRequest) {
+            return res.json({ message: "Request for enrollment made" });
+        }
+
+        return res.json({ request });
+    }
+    catch (error) {
+        console.log("[USER -> COURSE -> REQUEST]", error);
         return res.status(500).json({ error: "Internal server error" });
     }
 });

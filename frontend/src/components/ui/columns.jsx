@@ -1,5 +1,6 @@
 import { ArrowUpDown, MoreHorizontal, Pencil } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { formatPrice } from "@/lib/format";
 
 import {
     DropdownMenu,
@@ -43,10 +44,7 @@ export const columns = [
         },
         cell: ({ row }) => {
             const price = row.getValue("price") || 0;
-            const formatted = new Intl.NumberFormat("en-US", {
-                style: "currency",
-                currency: "INR"
-            }).format(price)
+            const formatted = formatPrice(price);
             return <div className="text-center font-medium">{formatted}</div>
         }
     },
