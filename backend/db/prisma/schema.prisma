@@ -9,14 +9,14 @@ datasource db {
 }
 
 model User {
-  id              String       @id @default(uuid())
-  email           String       @unique
-  password        String
-  role            Role
-  createdCourses  Course[]     @relation("UserCourses")
-  enrolledCourses Enrollment[] @relation("UserEnrollments")
-
-  UserProgress UserProgress[]
+  id               String         @id @default(uuid())
+  email            String         @unique
+  password         String
+  role             Role
+  createdCourses   Course[]
+  enrolledCourses  Enrollment[]
+  requestedCourses Request[]
+  userProgress     UserProgress[]
 }
 
 enum Role {
@@ -29,9 +29,9 @@ enum Role {
 model Course {
   id           String @id @default(uuid())
   instructorId String
-  instructor   User   @relation("UserCourses", fields: [instructorId], references: [id])
+  instructor   User   @relation(fields: [instructorId], references: [id])
 
-  enrolledUsers Enrollment[] @relation("CourseEnrollments")
+  enrolledUsers Enrollment[]
 
   title        String      @db.Text
   description  String?     @db.Text
@@ -45,7 +45,8 @@ model Course {
   category   Category? @relation(fields: [categoryId], references: [id])
   modules    Module[]
 
-  attachments Attachment[]
+  attachments    Attachment[]
+  requestedUsers Request[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -97,8 +98,8 @@ model Enrollment {
   id        String   @id @default(uuid())
   userId    String
   courseId  String
-  user      User     @relation("UserEnrollments", fields: [userId], references: [id], onDelete: Cascade)
-  course    Course   @relation("CourseEnrollments", fields: [courseId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -118,6 +119,9 @@ model Article {
 
   userProgress UserProgress[]
 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@index([moduleId])
 }
 
@@ -136,4 +140,24 @@ model UserProgress {
 
   @@unique([userId, articleId])
   @@index([articleId])
+}
+
+model Request {
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  courseId String
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  status STATUS
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum STATUS {
+  PENDING
+  ACCEPTED
+  REJECTED
 }
