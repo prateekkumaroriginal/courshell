@@ -19,7 +19,7 @@ const Create = () => {
         }
     });
 
-    const { handleSubmit, reset, formState: { isSubmitting, isValid } } = form;
+    const { handleSubmit, formState: { isSubmitting, isValid } } = form;
 
     const onSubmit = async (values) => {
         try {
@@ -31,10 +31,15 @@ const Create = () => {
                     'content-type': 'application/json'
                 }
             });
-            const data = await response.json();
-            return navigate(`/instructor/courses/${data.courseId}`);
+
+            if (response.ok) {
+                const data = await response.json();
+                return navigate(`/instructor/courses/${data.courseId}`);
+            } else {
+                console.log("Something went wrong");
+            }
         } catch (error) {
-            console.log("Something went wrong");
+            console.log(error);
         }
     }
 
@@ -50,6 +55,12 @@ const Create = () => {
             <div className='w-[520px]'>
                 <form
                     onSubmit={handleSubmit(onSubmit)}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            handleSubmit(onSubmit)();
+                        }
+                    }}
                     className='mt-8'
                 >
                     <div>
