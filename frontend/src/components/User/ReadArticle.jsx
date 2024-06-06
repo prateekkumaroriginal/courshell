@@ -4,10 +4,12 @@ import parse from 'html-react-parser';
 import Banner from '../ui/Banner';
 import toast from 'react-hot-toast';
 import { useParams } from 'react-router-dom';
+import CourseProgressButton from './CourseProgressButton';
 
-const ReadArticle = ({ isLoading, setIsLoading }) => {
+const ReadArticle = ({ isLoading, setIsLoading, enrollment, setProgressPercentage }) => {
     const { courseId, articleId } = useParams();
     const [article, setArticle] = useState();
+    const [nextArticle, setNextArticle] = useState();
     const [course, setCourse] = useState();
     const [isLocked, setIsLocked] = useState();
     const [userProgress, setUserProgress] = useState();
@@ -32,6 +34,7 @@ const ReadArticle = ({ isLoading, setIsLoading }) => {
                 setCourse(data.course);
                 setIsLocked(!data.article.isFree && !data.enrollment);
                 setUserProgress(data.userProgress);
+                setNextArticle(data.nextArticle);
                 console.log(data);
             } else {
                 toast.error("Something went wrong");
@@ -70,6 +73,17 @@ const ReadArticle = ({ isLoading, setIsLoading }) => {
                             <div className='pt-8'>
                                 {parse(article.content)}
                             </div>
+
+                            {enrollment && <div>
+                                <CourseProgressButton
+                                    articleId={articleId}
+                                    courseId={courseId}
+                                    nextArticleId={nextArticle?.id}
+                                    isCompleted={!!userProgress?.isCompleted}
+                                    setUserProgress={setUserProgress}
+                                    setProgressPercentage={setProgressPercentage}
+                                />
+                            </div>}
                         </div>
                     </div>
                 )}

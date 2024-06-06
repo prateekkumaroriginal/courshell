@@ -64,17 +64,15 @@ const ReadCourse = () => {
 
                 <div className='px-20'>
                     <ReadArticle
-                        courseId={courseId}
-                        articleId={articleId}
                         isLoading={isLoading}
                         setIsLoading={setIsLoading}
+                        enrollment={enrollment}
+                        setProgressPercentage={setProgressPercentage}
                     />
                 </div>
 
                 <div className='px-20 flex flex-col md:flex-row items-center justify-between'>
-                    {enrollment ? <div>
-                        {/* TODO Add Course Progress Component */}
-                    </div> : <CourseEnrollButton
+                    {!enrollment && <CourseEnrollButton
                         courseId={courseId}
                         price={course.price}
                         requested={course?.requestedUsers?.length}

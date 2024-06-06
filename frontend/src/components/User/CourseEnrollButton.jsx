@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Button } from '@/components/ui/button';
 import { formatPrice } from '@/lib/format';
 import toast from 'react-hot-toast';

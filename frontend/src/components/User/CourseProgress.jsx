@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
 
-const CourseProgress = ({ variant, value }) => {
-    const [isComplete, setIsComplete] = useState(variant === "SUCCESS" ? true : false);
+const CourseProgress = ({ value }) => {
+    const [isComplete, setIsComplete] = useState(value === 100 ? true : false);
 
     return (
         <div>

@@ -15,6 +15,10 @@ const loginInput = z.object({
     password: z.string().min(4),
 });
 
+const markAsCompleteInput = z.object({
+    isCompleted: z.boolean()
+});
+
 router.post('/login', async (req, res) => {
     try {
         const parsedInput = loginInput.safeParse(req.headers);
@@ -132,6 +136,9 @@ router.get('/courses/:courseId/articles/:articleId', authenticateToken, async (r
                 },
                 orderBy: {
                     position: 'asc'
+                },
+                select: {
+                    id: true
                 }
             });
         }
@@ -149,6 +156,55 @@ router.get('/courses/:courseId/articles/:articleId', authenticateToken, async (r
     catch (error) {
         console.log("[USER -> COURSE]", error);
         return res.status(500).json({ error: "Internal server error" });
+    }
+});
+
+router.patch('/courses/:courseId/articles/:articleId', authenticateToken, async (req, res) => {
+    try {
+        const { courseId, articleId } = req.params;
+        const course = await db.course.findUnique({
+            where: {
+                id: courseId,
+                isPublished: true
+            }
+        });
+
+        if (!course) {
+            return res.status(404).json({ message: "Course not found" });
+        }
+
+        const article = await getArticle(articleId);
+        if (!article) {
+            return res.status(404).json({ message: "Article not found" });
+        }
+
+        const parsedInput = markAsCompleteInput.safeParse(req.body);
+        if (!parsedInput.success) {
+            return res.status(400).json({
+                message: parsedInput.error
+            });
+        }
+
+        const userProgress = await db.userProgress.upsert({
+            where: {
+                userId_articleId: {
+                    userId: req.user.id,
+                    articleId
+                }
+            },
+            update: parsedInput.data,
+            create: {
+                userId: req.user.id,
+                articleId,
+                ...parsedInput.data
+            }
+        });
+
+        const progressPercentage = await getProgress(courseId, req.user.id);
+
+        return res.json({ userProgress, progressPercentage });
+    } catch (error) {
+        console.log(error);
     }
 });
 
