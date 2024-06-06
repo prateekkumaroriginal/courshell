@@ -9,7 +9,6 @@ const CourseSidebarItem = ({ id, label, courseId, isLocked, isCompleted }) => {
     const navigate = useNavigate();
     const Icon = isLocked ? Lock : (isCompleted ? CircleCheck : Newspaper);
     const isActive = pathname?.includes(id);
-    
 
     const onClick = () => {
         navigate(`/courses/${courseId}/${id}`);

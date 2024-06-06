@@ -9,6 +9,7 @@ import {
     SheetTrigger,
 } from "@/components/ui/sheet";
 import AttachmentsSidebarItem from './AttachmentsSidebarItem';
+import CourseProgress from './CourseProgress';
 
 const CourseSidebar = ({ course, enrollment, progressPercentage }) => {
     const [trigger, setTrigger] = useState();
@@ -41,6 +42,11 @@ const CourseSidebar = ({ course, enrollment, progressPercentage }) => {
                                 <h1 className='font-semibold'>
                                     {course.title}
                                 </h1>
+                                {enrollment && <div>
+                                    <CourseProgress
+                                        value={progressPercentage}
+                                    />
+                                </div>}
                             </div>
                         </SheetTitle>
                     </SheetHeader>

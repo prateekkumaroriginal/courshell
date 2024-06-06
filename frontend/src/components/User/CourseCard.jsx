@@ -2,6 +2,7 @@ import { BookOpen } from 'lucide-react'
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { formatPrice } from '@/lib/format'
+import CourseProgress from './CourseProgress'
 
 const CourseCard = ({ id, title, imageUrl, articlesLength, price, progress, category }) => {
     return (
@@ -30,7 +31,10 @@ const CourseCard = ({ id, title, imageUrl, articlesLength, price, progress, cate
                     </div>
 
                     {progress !== null ? <div>
-                        TODO: Progress Component
+                        <CourseProgress
+                            variant={progress === 100 ? "SUCCESS" : "default"}
+                            value={progress}
+                        />
                     </div> : <p className='text-md md:text-sm fomt-medium text-slate-700'>
                         {formatPrice(price)}
                     </p>}
