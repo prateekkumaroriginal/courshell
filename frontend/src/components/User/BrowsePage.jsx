@@ -7,7 +7,7 @@ import Categories from '@/components/User/Categories';
 import SearchInput from '@/components/User/SearchInput';
 import CoursesGrid from '@/components/User/CoursesGrid';
 
-const SearchPage = () => {
+const BrowsePage = () => {
     const [categories, setCategories] = useState([]);
     const [searchParams] = useSearchParams();
     const [courses, setCourses] = useState([]);
@@ -83,4 +83,4 @@ const SearchPage = () => {
     )
 }
 
-export default SearchPage
+export default BrowsePage

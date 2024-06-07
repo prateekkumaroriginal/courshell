@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { VITE_APP_BACKEND_URL } from '@/constants'
 import NavbarItem from '@/components/common/NavbarItem';
 
 const Navbar = () => {
     const [userData, setUserData] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
-    const navigate = useNavigate();
 
     const fetchProfile = async () => {
         try {
@@ -36,6 +35,10 @@ const Navbar = () => {
 
     const routes = [
         {
+            label: "Browse",
+            href: "/browse"
+        },
+        {
             label: "Courses",
             href: "/instructor/courses"
         },
@@ -43,15 +46,21 @@ const Navbar = () => {
             label: "Analytics",
             href: "/analytics"
         },
+        {
+            label: "Dashboard",
+            href: "/dashboard"
+        },
     ];
-9
+
     return (
         <div className='sticky top-0 bg-opacity-80 backdrop-blur supports-[backdrop-filter]:bg-background/60 bg-gray-200 px-4 py-2 flex w-full justify-between items-center shadow-md z-50'>
             <div>
-                <button onClick={() => {
-                    navigate("/")
-                }}
-                    className='text-purple-700 text-4xl font-[900]'>Courshell</button>
+                <Link
+                    to={'/'}
+                    className='text-purple-700 text-4xl font-[900]'
+                >
+                    Courshell
+                </Link>
             </div>
             <div className='flex h-10'>
                 {routes.map((route, index) => {
@@ -59,13 +68,6 @@ const Navbar = () => {
                         <NavbarItem route={route} key={index} />
                     )
                 })}
-                <a
-                    href='http://localhost:5174'
-                    target='_blank'
-                    className='flex items-center font-semibold px-4 hover:bg-purple-900 hover:text-white hover:rounded-md'
-                >
-                    User Site
-                </a>
                 {!isLoading && <NavbarItem route={
                     {
                         label: userData ? 'Logout' : 'Login',
