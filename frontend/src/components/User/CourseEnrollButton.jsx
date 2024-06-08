@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { formatPrice } from '@/lib/format';
 import toast from 'react-hot-toast';
 import { VITE_APP_BACKEND_URL } from '@/constants';
 
 const CourseEnrollButton = ({ courseId, price, requested }) => {
+    const [localRequested, setLocalRequested] = useState(requested);
+
     const onClick = async () => {
         try {
             const response = await fetch(`${VITE_APP_BACKEND_URL}/user/courses/${courseId}/request`, {
@@ -13,8 +15,12 @@ const CourseEnrollButton = ({ courseId, price, requested }) => {
                     authorization: `Bearer ${localStorage.getItem('token')}`
                 }
             });
-            const data = await response.json();
-            console.log(data);
+
+            if (response.ok){
+                const data = await response.json();
+                setLocalRequested(localRequested => !localRequested);
+                console.log(data);
+            }
         } catch (error) {
             console.log(error);
             toast.error("Something went wrong");
@@ -26,9 +32,9 @@ const CourseEnrollButton = ({ courseId, price, requested }) => {
             size="sm"
             className='w-full md:w-auto mt-8'
             onClick={onClick}
-            disabled={requested ? true : false}
+            disabled={localRequested ? true : false}
         >
-            {requested ? "Requested" : <>Enroll for {formatPrice(price)}</>}
+            {localRequested ? "Requested" : <>Enroll for {formatPrice(price)}</>}
         </Button>
     )
 }

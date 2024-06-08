@@ -3,7 +3,7 @@ import CourseCard from '@/components/User/CourseCard'
 
 const CoursesGrid = ({ items }) => {
     return (
-        <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 md:p-6 xl:grid-cols-4 gap-4'>
+        <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 md:px-6 xl:grid-cols-4 gap-4'>
             {items.map(item => (
                 <CourseCard
                     key={item.id}
@@ -16,12 +16,6 @@ const CoursesGrid = ({ items }) => {
                     category={item.category.name}
                 />
             ))}
-
-            {items.length === 0 && (
-                <div className='text-center text-2xl text-muted-foreground mt-10'>
-                    No Courses Found
-                </div>
-            )}
         </div>
     )
 }

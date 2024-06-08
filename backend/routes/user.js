@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken';
 import express from 'express';
 import { authenticateToken } from '../middleware/auth.js';
 import { getCourse, getEnrollment, getAllCourses, getProgress, getUser, getArticle, getArticleProgress } from '../actions/user.actions.js';
-import { ACCEPTED, PENDING, REJECTED } from '../constants.js';
+import { ACCEPTED, ADMIN, INSTRUCTOR, PENDING, REJECTED, SUPERADMIN } from '../constants.js';
 
 const router = express.Router();
 
@@ -52,6 +52,69 @@ router.get('/me', authenticateToken, async (req, res) => {
         res.json(user);
     } catch (error) {
         console.log("[ME]", error);
+        return res.status(500).json({ error: "Internal server error" });
+    }
+});
+
+router.get('/dashboard', authenticateToken, async (req, res) => {
+    try {
+        const user = await db.user.findUnique({
+            where: {
+                email: req.user.email
+            },
+            select: {
+                id: true,
+                email: true,
+                role: true,
+                enrolledCourses: {
+                    select: {
+                        course: {
+                            include: {
+                                coverImage: true,
+                                category: true,
+                                enrolledUsers: {
+                                    where: {
+                                        userId: req.user.id
+                                    }
+                                },
+                                modules: {
+                                    include: {
+                                        articles: {
+                                            where: {
+                                                isPublished: true
+                                            },
+                                            select: {
+                                                id: true
+                                            }
+                                        }
+                                    }
+                                },
+                            }
+                        }
+                    }
+                },
+                requestedCourses: true,
+            }
+        });
+
+        user.enrolledCourses = await Promise.all(
+            user.enrolledCourses
+                .filter(({ course }) => course.isPublished)
+                .map(async ({ course }) => {
+                    const { enrolledUsers, ...courseWithoutEnrolledUsers } = course;
+                    course.coverImage.data = course.coverImage.data.toString('base64');
+
+                    const progressPercentage = await getProgress(courseWithoutEnrolledUsers.id, req.user.id);
+                    return {
+                        ...courseWithoutEnrolledUsers,
+                        progress: progressPercentage
+                    }
+                })
+        );
+
+        res.json({ user });
+    } catch (error) {
+        console.log("[DASHBOARD]", error);
         return res.status(500).json({ error: "Internal server error" });
     }
 });
@@ -205,6 +268,7 @@ router.patch('/courses/:courseId/articles/:articleId', authenticateToken, async 
         return res.json({ userProgress, progressPercentage });
     } catch (error) {
         console.log(error);
+        return res.status(500).json({ error: "Internal server error" });
     }
 });
 

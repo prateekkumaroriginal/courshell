@@ -8,9 +8,7 @@ const getUser = async (email) => {
         },
         select: {
             email: true,
-            role: true,
-            createdCourses: true,
-            enrolledCourses: true
+            role: true
         }
     });
 }

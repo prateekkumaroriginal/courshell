@@ -10,6 +10,7 @@ import Attachment from '@/components/common/Attachment';
 import Courses from '@/components/Instructor/Courses';
 import BrowsePage from '@/components/User/BrowsePage';
 import ReadCourse from '@/components/User/ReadCourse';
+import Dashboard from '@/components/User/Dashboard';
 
 const hideNavbarPaths = [
     '/courses/:courseId/attachments/:attachmentId',
@@ -41,8 +42,7 @@ function AppRoutes() {
                 <Route path='/instructor/courses/:courseId/attachments/:attachmentId' element={<Attachment />} />
                 <Route path='/instructor/courses/:courseId/:moduleId' element={<Module />} />
                 <Route path='/instructor/courses/:courseId/:moduleId/:articleId' element={<Article />} />
-                {/* <Route path='/dashboard' element={<Dashboard />} />
-                */}
+                <Route path='/dashboard' element={<Dashboard />} />
             </Routes>
         </>
     )

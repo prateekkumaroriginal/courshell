@@ -78,7 +78,13 @@ const BrowsePage = () => {
             <Categories items={categories} isLoading={isLoading} setIsLoading={setIsLoading} />
             {isLoading ? <div className='text-center text-2xl text-muted-foreground mt-10'>
                 Loading ...
-            </div> : <CoursesGrid items={courses} />}
+            </div> : (
+                courses.length > 0
+                    ? <CoursesGrid items={courses} />
+                    : <div className='text-center text-2xl text-muted-foreground mt-10'>
+                        No Courses Found
+                    </div>
+            )}
         </div>
     )
 }

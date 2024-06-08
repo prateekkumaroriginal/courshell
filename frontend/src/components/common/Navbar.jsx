@@ -44,7 +44,7 @@ const Navbar = () => {
         },
         {
             label: "Analytics",
-            href: "/analytics"
+            href: "/instructor/analytics"
         },
         {
             label: "Dashboard",
