@@ -30,7 +30,7 @@ const CourseCard = ({ id, title, imageUrl, articlesLength, price, progress, cate
                         </span>
                     </div>
 
-                    {progress !== null ? <div>
+                    {![null, undefined].includes(progress) ? <div>
                         <CourseProgress
                             variant={progress === 100 ? "SUCCESS" : "default"}
                             value={progress}

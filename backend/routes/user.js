@@ -93,7 +93,34 @@ router.get('/dashboard', authenticateToken, async (req, res) => {
                         }
                     }
                 },
-                requestedCourses: true,
+                requestedCourses: {
+                    select: {
+                        updatedAt: true,
+                        course: {
+                            include: {
+                                coverImage: true,
+                                category: true,
+                                enrolledUsers: {
+                                    where: {
+                                        userId: req.user.id
+                                    }
+                                },
+                                modules: {
+                                    include: {
+                                        articles: {
+                                            where: {
+                                                isPublished: true
+                                            },
+                                            select: {
+                                                id: true
+                                            }
+                                        }
+                                    }
+                                },
+                            },
+                        }
+                    }
+                },
             }
         });
 
@@ -108,6 +135,28 @@ router.get('/dashboard', authenticateToken, async (req, res) => {
                     return {
                         ...courseWithoutEnrolledUsers,
                         progress: progressPercentage
+                    }
+                })
+        );
+
+        const latestRequestedCoursesMap = {};
+        user.requestedCourses.forEach(request => {
+            const courseId = request.courseId;
+            if (!latestRequestedCoursesMap[courseId] || new Date(request.updatedAt) > new Date(latestRequestedCoursesMap[courseId].updatedAt)) {
+                latestRequestedCoursesMap[courseId] = request;
+            }
+        });
+        user.requestedCourses = Object.values(latestRequestedCoursesMap);
+
+        user.requestedCourses = await Promise.all(
+            user.requestedCourses
+                .filter(({ course }) => course.isPublished)
+                .map(async ({ course }) => {
+                    const { enrolledUsers, ...courseWithoutEnrolledUsers } = course;
+                    course.coverImage.data = course.coverImage.data.toString('base64');
+
+                    return {
+                        ...courseWithoutEnrolledUsers
                     }
                 })
         );

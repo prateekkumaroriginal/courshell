@@ -2,8 +2,6 @@ import { VITE_APP_BACKEND_URL } from '@/constants';
 import React, { useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
-import { DataTable } from '../ui/DataTable';
-import { columns } from '../ui/columns';
 import InfoCard from './InfoCard';
 import { CheckCircle, Clock } from 'lucide-react';
 import CoursesGrid from './CoursesGrid';
@@ -11,7 +9,6 @@ import CoursesGrid from './CoursesGrid';
 const Dashboard = () => {
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(true);
-    const [userData, setUserData] = useState();
     const [completedCourses, setCompletedCourses] = useState([]);
     const [coursesInProgress, setCoursesInProgress] = useState([]);
     const [requestedCourses, setRequestedCourses] = useState([]);
@@ -32,7 +29,6 @@ const Dashboard = () => {
 
             if (response.ok) {
                 const data = await response.json();
-                console.log(data);
                 const tempCompletedCourses = [];
                 const tempCoursesInProgress = [];
                 data.user.enrolledCourses.map(course => {
@@ -44,6 +40,7 @@ const Dashboard = () => {
                 });
                 setCompletedCourses(tempCompletedCourses);
                 setCoursesInProgress(tempCoursesInProgress);
+                setRequestedCourses(data.user.requestedCourses);
             } else if (response.status === 401) {
                 navigate('/signin');
             } else {
