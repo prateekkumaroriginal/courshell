@@ -2,7 +2,7 @@ import express from 'express';
 import { z } from 'zod';
 import { db } from '../db/index.js';
 import { authenticateToken, authorizeRoles } from '../middleware/auth.js'
-import { createCourse, getCreatedCourses, getCourse, createModule, getModule, updateModule, getLastModule, deleteAttachment, getAttachment, getAttachments, createAttachment, updateCourse, createArticle, getLastArticle, getArticle, updateArticle, deleteArticle, publishArticle, unpublishArticle, publishCourse, unpublishCourse, deleteCourse } from '../actions/instructor.actions.js';
+import { createCourse, getCreatedCourses, getCourse, createModule, getModule, updateModule, getLastModule, deleteAttachment, getAttachment, getAttachments, createAttachment, updateCourse, createArticle, getLastArticle, getArticle, updateArticle, deleteArticle, publishArticle, unpublishArticle, publishCourse, unpublishCourse, deleteCourse, groupEnrollmentsByCourse } from '../actions/instructor.actions.js';
 import { SUPERADMIN, ADMIN, INSTRUCTOR } from '../constants.js';
 import 'dotenv/config';
 import multer from 'multer';
@@ -39,6 +39,38 @@ const articleUpdateInput = z.object({
 const isValidInstructorOrAbove = (user, email) => {
     return user.role === SUPERADMIN || user.role === ADMIN || user.email === email;
 }
+
+router.get('/analytics', authenticateToken, authorizeRoles(SUPERADMIN, ADMIN, INSTRUCTOR), async (req, res) => {
+    try {
+        const enrollments = await db.enrollment.findMany({
+            where: {
+                userId: req.user.id
+            },
+            include: {
+                course: true
+            }
+        });
+
+        const groupedEarnings = groupEnrollmentsByCourse(enrollments);
+        const data = Object.entries(groupedEarnings).map(([courseId, {total, title}]) => ({
+            courseId,
+            title,
+            total
+        }));
+
+        const totalRevenue = data.reduce((acc, curr) => acc + curr.total, 0);
+        const totalEnrollments = enrollments.length;
+
+        return res.json({
+            data,
+            totalRevenue,
+            totalEnrollments
+        });
+    } catch (error) {
+        console.log("[ANALYTICS]", error);
+        return res.status(500).json({ error: "Internal server error" });
+    }
+});
 
 router.post('/courses', authenticateToken, authorizeRoles(SUPERADMIN, ADMIN, INSTRUCTOR), async (req, res) => {
     try {

@@ -272,4 +272,19 @@ const deleteAttachment = async (courseId, attachmentId) => {
     });
 }
 
-export { createCourse, getCreatedCourses, getCourse, createModule, getModule, updateModule, getLastModule, deleteAttachment, getAttachment, getAttachments, createAttachment, updateCourse, getArticle, createArticle, updateArticle, getLastArticle, deleteArticle, publishArticle, unpublishArticle, publishCourse, unpublishCourse, deleteCourse }
+const groupEnrollmentsByCourse = (enrollments) => {
+    const grouped = {};
+    enrollments.forEach(enrollment => {
+        const courseId = enrollment.course.id;
+        if (!grouped[courseId]) {
+            grouped[courseId] = {
+                total: 0,
+                title: enrollment.course.title
+            };
+        }
+        grouped[courseId].total += enrollment.course.price;
+    });
+    return grouped;
+}
+
+export { createCourse, getCreatedCourses, getCourse, createModule, getModule, updateModule, getLastModule, deleteAttachment, getAttachment, getAttachments, createAttachment, updateCourse, getArticle, createArticle, updateArticle, getLastArticle, deleteArticle, publishArticle, unpublishArticle, publishCourse, unpublishCourse, deleteCourse, groupEnrollmentsByCourse }
