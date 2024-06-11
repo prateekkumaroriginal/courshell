@@ -3,8 +3,10 @@ import React, { useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast';
 import DataCard from './DataCard';
 import Chart from './Chart';
+import { useNavigate } from 'react-router-dom';
 
 const Analytics = () => {
+    const navigate = useNavigate();
     const [totalEnrollments, setTotalEnrollments] = useState();
     const [totalRevenue, setTotalRevenue] = useState();
     const [coursesData, setCoursesData] = useState();

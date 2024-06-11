@@ -6,7 +6,7 @@ import toast from 'react-hot-toast'
 import { VITE_APP_BACKEND_URL } from '@/constants'
 import ToastProvider from '../ui/ToastProvider'
 
-const Courses = () => {
+const CreatedCourses = () => {
     const navigate = useNavigate();
     const [courses, setCourses] = useState([]);
 
@@ -45,4 +45,4 @@ const Courses = () => {
     )
 }
 
-export default Courses
+export default CreatedCourses

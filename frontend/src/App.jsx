@@ -7,11 +7,12 @@ import Navbar from '@/components/common/Navbar';
 import Module from '@/components/Instructor/Module';
 import Article from '@/components/Instructor/Article';
 import Attachment from '@/components/common/Attachment';
-import Courses from '@/components/Instructor/Courses';
+import CreatedCourses from '@/components/Instructor/CreatedCourses';
 import BrowsePage from '@/components/User/BrowsePage';
 import ReadCourse from '@/components/User/ReadCourse';
 import Dashboard from '@/components/User/Dashboard';
 import Analytics from '@/components/Instructor/Analytics';
+import ManageCourses from './components/Admin/ManageCourses';
 
 const hideNavbarPaths = [
     '/courses/:courseId/attachments/:attachmentId',
@@ -34,17 +35,18 @@ function AppRoutes() {
             <Routes>
                 <Route path='/signin' element={<Signin />} />
                 <Route path='/browse' element={<BrowsePage />} />
+                <Route path='/dashboard' element={<Dashboard />} />
                 <Route path='/courses/:courseId' element={<ReadCourse />} />
                 <Route path='/courses/:courseId/:articleId' element={<ReadCourse />} />
                 <Route path='/courses/:courseId/attachments/:attachmentId' element={<Attachment />} />
                 <Route path='/instructor/analytics' element={<Analytics />} />
                 <Route path='/instructor/create' element={<Create />} />
-                <Route path='/instructor/courses' element={<Courses />} />
+                <Route path='/instructor/courses' element={<CreatedCourses />} />
                 <Route path='/instructor/courses/:courseId' element={<Course />} />
                 <Route path='/instructor/courses/:courseId/attachments/:attachmentId' element={<Attachment />} />
                 <Route path='/instructor/courses/:courseId/:moduleId' element={<Module />} />
                 <Route path='/instructor/courses/:courseId/:moduleId/:articleId' element={<Article />} />
-                <Route path='/dashboard' element={<Dashboard />} />
+                <Route path='/admin/courses' element={<ManageCourses />} />
             </Routes>
         </>
     )
