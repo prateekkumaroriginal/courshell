@@ -26,7 +26,7 @@ const ManageCourses = () => {
             if (response.ok) {
                 const data = await response.json();
                 console.log(data);
-                
+
                 const flattenedData = data.courses.map(course => {
                     const { _count, ...rest } = course;
                     return { ...rest, instructorEmail: course.instructor.email, enrolledCount: _count.enrolledUsers, requestedCount: _count.requestedUsers };
@@ -40,11 +40,18 @@ const ManageCourses = () => {
             toast.error("Something went wrong");
         }
     }
+
     return (
         <div className='p-6'>
             <ToastProvider />
             <div className='mb-8'>
-                <DataTable columns={columns} data={courses} />
+                <DataTable
+                    isCoursePage={true}
+                    columns={columns}
+                    data={courses}
+                    filterField="title"
+                    filterFieldPlaceholder="Filter courses ..."
+                />
             </div>
         </div>
     )

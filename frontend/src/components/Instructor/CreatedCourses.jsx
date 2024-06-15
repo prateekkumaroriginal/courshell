@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { DataTable } from '@/components/ui/DataTable'
 import { columns } from '../ui/columns'
 import toast from 'react-hot-toast'
@@ -7,7 +6,6 @@ import { VITE_APP_BACKEND_URL } from '@/constants'
 import ToastProvider from '../ui/ToastProvider'
 
 const CreatedCourses = () => {
-    const navigate = useNavigate();
     const [courses, setCourses] = useState([]);
 
     useEffect(() => {
@@ -39,7 +37,13 @@ const CreatedCourses = () => {
         <div className='p-6'>
             <ToastProvider />
             <div className='mb-8'>
-                <DataTable columns={columns} data={courses} />
+                <DataTable
+                    isCoursePage={true}
+                    columns={columns}
+                    data={courses}
+                    filterField="title"
+                    filterFieldPlaceholder="Filter courses ..."
+                />
             </div>
         </div>
     )

@@ -22,8 +22,11 @@ import { Input } from "@/components/ui/input"
 import { Link } from "react-router-dom"
 
 export function DataTable({
+    isCoursePage,
     columns,
     data,
+    filterField,
+    filterFieldPlaceholder,
 }) {
     const [sorting, setSorting] = React.useState([]);
     const [columnFilters, setColumnFilters] = React.useState([]);
@@ -47,18 +50,18 @@ export function DataTable({
         <div>
             <div className="flex items-center py-4 justify-between">
                 <Input
-                    placeholder="Filter courses..."
-                    value={(table.getColumn("title")?.getFilterValue()) ?? ""}
+                    placeholder={filterFieldPlaceholder}
+                    value={(table.getColumn(filterField)?.getFilterValue()) ?? ""}
                     onChange={(event) =>
-                        table.getColumn("title")?.setFilterValue(event.target.value)
+                        table.getColumn(filterField)?.setFilterValue(event.target.value)
                     }
                     className="max-w-sm"
                 />
-                <Link to={"/instructor/create"}>
+                {isCoursePage && <Link to={"/instructor/create"}>
                     <button className='px-4 py-2 text-white font-semibold bg-gradient-to-r from-indigo-500 to-purple-500 hover:bg-gradient-to-r hover:from-indigo-700 hover:to-purple-600 rounded-md'>
                         New Course
                     </button>
-                </Link>
+                </Link>}
             </div>
 
             <div className="rounded-md border">

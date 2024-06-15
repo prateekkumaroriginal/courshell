@@ -93,16 +93,16 @@ export const columns = [
     {
         accessorKey: "price",
         header: ({ column }) => {
-            return (<div className="flex justify-center">
-
-                <Button
-                    variant="ghost"
-                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                >
-                    Price
-                    <ArrowUpDown className="ml-2 h-4 w-4" />
-                </Button>
-            </div>
+            return (
+                <div className="flex justify-center">
+                    <Button
+                        variant="ghost"
+                        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                    >
+                        Price
+                        <ArrowUpDown className="ml-2 h-4 w-4" />
+                    </Button>
+                </div>
             )
         },
         cell: ({ row }) => {
@@ -114,23 +114,22 @@ export const columns = [
     {
         accessorKey: "isPublished",
         header: ({ column }) => {
-            return (<div className="flex justify-center">
-
-                <Button
-                    variant="ghost"
-                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                >
-                    Published
-                    <ArrowUpDown className="ml-2 h-4 w-4" />
-                </Button>
-            </div>
+            return (
+                <div className="flex justify-center">
+                    <Button
+                        variant="ghost"
+                        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                    >
+                        Published
+                        <ArrowUpDown className="ml-2 h-4 w-4" />
+                    </Button>
+                </div>
             )
         },
         cell: ({ row }) => {
             const isPublished = row.getValue("isPublished") || false;
             return (
                 <div className="flex justify-center">
-
                     <div
                         className={`w-fit text-white text-center px-2 py-1 font-semibold rounded-full text-xs cursor-default ${isPublished ? "bg-sky-700 hover:bg-sky-800" : "bg-slate-600 hover:bg-slate-700"}`}
                     >
@@ -155,6 +154,11 @@ export const columns = [
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                         <Link to={id} className="cursor-pointer">
+                            <DropdownMenuItem className="cursor-pointer">
+                                <Pencil className="mr-2 h-4 w-4" /> Manage
+                            </DropdownMenuItem>
+                        </Link>
+                        <Link to={`/instructor/courses/${id}`} className="cursor-pointer">
                             <DropdownMenuItem className="cursor-pointer">
                                 <Pencil className="mr-2 h-4 w-4" /> Edit
                             </DropdownMenuItem>

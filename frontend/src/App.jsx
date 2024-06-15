@@ -13,6 +13,7 @@ import ReadCourse from '@/components/User/ReadCourse';
 import Dashboard from '@/components/User/Dashboard';
 import Analytics from '@/components/Instructor/Analytics';
 import ManageCourses from './components/Admin/ManageCourses';
+import ManageCourse from './components/Admin/ManageCourse';
 
 const hideNavbarPaths = [
     '/courses/:courseId/attachments/:attachmentId',
@@ -47,6 +48,7 @@ function AppRoutes() {
                 <Route path='/instructor/courses/:courseId/:moduleId' element={<Module />} />
                 <Route path='/instructor/courses/:courseId/:moduleId/:articleId' element={<Article />} />
                 <Route path='/admin/courses' element={<ManageCourses />} />
+                <Route path='/admin/courses/:courseId' element={<ManageCourse />} />
             </Routes>
         </>
     )

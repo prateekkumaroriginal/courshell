@@ -5,6 +5,7 @@ import NavbarItem from '@/components/common/NavbarItem';
 
 const Navbar = () => {
     const [userData, setUserData] = useState(null);
+    const [userRole, setUserRole] = useState();
     const [isLoading, setIsLoading] = useState(true);
 
     const fetchProfile = async () => {
@@ -21,6 +22,7 @@ const Navbar = () => {
             }
             if (data) {
                 setUserData(data);
+                setUserRole(data.role);
             }
         } catch (error) {
             console.log(error);
@@ -38,11 +40,11 @@ const Navbar = () => {
             label: "Browse",
             href: "/browse"
         },
-        {
+        (["SUPERADMIN", "ADMIN", "INSTRUCTOR"].includes(userRole)) && {
             label: "Courses",
-            href: "/instructor/courses"
+            href: ["SUPERADMIN", "ADMIN"].includes(userRole) ? '/admin/courses' : '/instructor/courses'
         },
-        {
+        (["SUPERADMIN", "ADMIN", "INSTRUCTOR"].includes(userRole)) && {
             label: "Analytics",
             href: "/instructor/analytics"
         },
@@ -64,6 +66,7 @@ const Navbar = () => {
             </div>
             <div className='flex h-10'>
                 {routes.map((route, index) => {
+                    if (!route) return null;
                     return (
                         <NavbarItem route={route} key={index} />
                     )
