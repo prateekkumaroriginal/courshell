@@ -105,7 +105,7 @@ const ManageCourse = () => {
                             <div>
                                 <DataTable
                                     isCoursePage={false}
-                                    columns={requestColumns(courseId, updateRequestStatus)}
+                                    columns={requestColumns(courseId, updateRequestStatus, setEnrollments)}
                                     data={requests}
                                     filterField="userEmail"
                                     filterFieldPlaceholder="Filter by Email ..."

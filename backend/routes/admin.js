@@ -126,16 +126,49 @@ router.patch('/courses/:courseId/requests/:requestId', authenticateToken, author
             });
         }
 
+        const status = parsedInput.data.status;
         const request = await db.request.update({
             where: {
                 id: requestId
             },
             data: {
-                status: parsedInput.data.status
+                status
             }
         });
 
-        return res.json({ message: "Request updated" });
+        let enrollment;
+        if (request && request.status === ACCEPTED) {
+            enrollment = await db.enrollment.findUnique({
+                where: {
+                    userId_courseId: {
+                        userId: request.userId,
+                        courseId
+                    }
+                }
+            });
+
+            if (!enrollment) {
+                enrollment = await db.enrollment.create({
+                    data: {
+                        userId: request.userId,
+                        courseId
+                    },
+                    include: {
+                        user: {
+                            select: {
+                                id: true,
+                                email: true
+                            }
+                        }
+                    }
+                });
+                if (enrollment) {
+                    enrollment.progress = 0;
+                }
+            }
+        }
+
+        return res.json({ message: "Request updated", enrollment });
     } catch (error) {
         console.log("[ADMIN -> COURSES -> COURSE -> REQUEST]", error);
         return res.status(500).json({ error: "Internal server error" });

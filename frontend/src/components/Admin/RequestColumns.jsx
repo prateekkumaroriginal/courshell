@@ -10,7 +10,7 @@ import {
 import { VITE_APP_BACKEND_URL } from "@/constants";
 import toast from "react-hot-toast";
 
-const onClick = async (courseId, id, status, updateRequestStatus) => {
+const onClick = async (courseId, id, status, updateRequestStatus, setEnrollments) => {
     try {
         const response = await fetch(`${VITE_APP_BACKEND_URL}/admin/courses/${courseId}/requests/${id}`, {
             method: 'PATCH',
@@ -28,6 +28,12 @@ const onClick = async (courseId, id, status, updateRequestStatus) => {
         }
 
         if (response.ok) {
+            const data = await response.json();
+            if (data.enrollment) {
+                const { user, ...rest } = data.enrollment;
+                const enrollment = { ...rest, userEmail: user.email };
+                setEnrollments(prevEnrollments => [...prevEnrollments, enrollment])
+            }
             updateRequestStatus(id, status);
             toast.success("Request updated")
         } else {
@@ -39,7 +45,7 @@ const onClick = async (courseId, id, status, updateRequestStatus) => {
     }
 }
 
-export const columns = (courseId, updateRequestStatus) => [
+export const columns = (courseId, updateRequestStatus, setEnrollments) => [
     {
         accessorKey: "userEmail",
         header: ({ column }) => {
@@ -132,13 +138,13 @@ export const columns = (courseId, updateRequestStatus) => [
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                             <DropdownMenuItem
-                                onClick={() => onClick(courseId, id, "ACCEPTED", updateRequestStatus)}
+                                onClick={() => onClick(courseId, id, "ACCEPTED", updateRequestStatus, setEnrollments)}
                                 className="cursor-pointer"
                             >
                                 <Pencil className="mr-2 h-4 w-4" /> Accept
                             </DropdownMenuItem>
                             <DropdownMenuItem
-                                onClick={() => onClick(courseId, id, "REJECTED", updateRequestStatus)}
+                                onClick={() => onClick(courseId, id, "REJECTED", updateRequestStatus, setEnrollments)}
                                 className="cursor-pointer"
                             >
                                 <Pencil className="mr-2 h-4 w-4" /> Reject
