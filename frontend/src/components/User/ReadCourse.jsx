@@ -21,7 +21,7 @@ const ReadCourse = () => {
 
     useEffect(() => {
         if (!isLoading && !articleId) {
-            navigate(`/courses/${courseId}/${course?.modules[0]?.articles[0]?.id}`);
+            navigate(`/courses/${courseId}/${course?.modules[0]?.id}/${course?.modules[0]?.articles[0]?.id}`);
         }
     }, [isLoading]);
 

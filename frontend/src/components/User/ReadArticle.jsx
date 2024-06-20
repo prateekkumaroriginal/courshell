@@ -7,9 +7,10 @@ import { useParams } from 'react-router-dom';
 import CourseProgressButton from './CourseProgressButton';
 
 const ReadArticle = ({ isLoading, setIsLoading, enrollment, setProgressPercentage }) => {
-    const { courseId, articleId } = useParams();
+    const { courseId, moduleId, articleId } = useParams();
     const [article, setArticle] = useState();
     const [nextArticle, setNextArticle] = useState();
+    const [nextModule, setNextModule] = useState();
     const [course, setCourse] = useState();
     const [isLocked, setIsLocked] = useState();
     const [userProgress, setUserProgress] = useState();
@@ -21,7 +22,7 @@ const ReadArticle = ({ isLoading, setIsLoading, enrollment, setProgressPercentag
     const fetchArticle = async () => {
         setIsLoading(true);
         if (articleId !== undefined) {
-            const response = await fetch(`${VITE_APP_BACKEND_URL}/user/courses/${courseId}/articles/${articleId}`, {
+            const response = await fetch(`${VITE_APP_BACKEND_URL}/user/courses/${courseId}/modules/${moduleId}/articles/${articleId}`, {
                 method: 'GET',
                 headers: {
                     authorization: `Bearer ${localStorage.getItem('token')}`
@@ -35,6 +36,7 @@ const ReadArticle = ({ isLoading, setIsLoading, enrollment, setProgressPercentag
                 setIsLocked(!data.article.isFree && !data.enrollment);
                 setUserProgress(data.userProgress);
                 setNextArticle(data.nextArticle);
+                setNextModule(data.nextModule);
                 console.log(data);
             } else {
                 toast.error("Something went wrong");
@@ -77,8 +79,10 @@ const ReadArticle = ({ isLoading, setIsLoading, enrollment, setProgressPercentag
                             {enrollment && <div>
                                 <CourseProgressButton
                                     articleId={articleId}
+                                    moduleId={moduleId}
                                     courseId={courseId}
                                     nextArticleId={nextArticle?.id}
+                                    nextModuleId={nextModule?.id}
                                     isCompleted={!!userProgress?.isCompleted}
                                     setUserProgress={setUserProgress}
                                     setProgressPercentage={setProgressPercentage}

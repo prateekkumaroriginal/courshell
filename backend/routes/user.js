@@ -213,9 +213,9 @@ router.get('/courses/:courseId', authenticateToken, async (req, res) => {
     }
 });
 
-router.get('/courses/:courseId/articles/:articleId', authenticateToken, async (req, res) => {
+router.get('/courses/:courseId/modules/:moduleId/articles/:articleId', authenticateToken, async (req, res) => {
     try {
-        const { courseId, articleId } = req.params;
+        const { courseId, moduleId, articleId } = req.params;
         const course = await db.course.findUnique({
             where: {
                 id: courseId,
@@ -233,6 +233,7 @@ router.get('/courses/:courseId/articles/:articleId', authenticateToken, async (r
         const enrollment = await getEnrollment(courseId, req.user.id);
         const article = await getArticle(articleId);
         let nextArticle;
+        let nextModule;
 
         if (!article) {
             return res.status(404).json({ message: "Article not found" });
@@ -242,6 +243,7 @@ router.get('/courses/:courseId/articles/:articleId', authenticateToken, async (r
             nextArticle = await db.article.findFirst({
                 where: {
                     isPublished: true,
+                    moduleId,
                     position: {
                         gt: article?.position
                     }
@@ -253,6 +255,47 @@ router.get('/courses/:courseId/articles/:articleId', authenticateToken, async (r
                     id: true
                 }
             });
+
+            if (!nextArticle) {
+                const module = await db.module.findUnique({
+                    where: {
+                        id: moduleId
+                    },
+                    select: {
+                        position: true
+                    }
+                });
+
+                nextModule = await db.module.findFirst({
+                    where: {
+                        courseId,
+                        position: {
+                            gt: module?.position
+                        }
+                    },
+                    orderBy: {
+                        position: 'asc'
+                    },
+                    select: {
+                        id: true
+                    }
+                });
+
+                if (nextModule) {
+                    nextArticle = await db.article.findFirst({
+                        where: {
+                            moduleId: nextModule.id,
+                            isPublished: true
+                        },
+                        orderBy: {
+                            position: 'asc'
+                        },
+                        select: {
+                            id: true
+                        }
+                    });
+                }
+            }
         }
 
         const userProgress = await getArticleProgress(articleId, req.user.id);
@@ -261,6 +304,7 @@ router.get('/courses/:courseId/articles/:articleId', authenticateToken, async (r
             article,
             course,
             nextArticle,
+            nextModule,
             userProgress,
             enrollment
         });

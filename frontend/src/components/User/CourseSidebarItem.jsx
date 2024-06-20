@@ -4,14 +4,14 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { SheetClose } from '@/components/ui/sheet';
 
-const CourseSidebarItem = ({ id, label, courseId, isLocked, isCompleted }) => {
+const CourseSidebarItem = ({ id, label, courseId, moduleId, isLocked, isCompleted }) => {
     const pathname = useLocation().pathname;
     const navigate = useNavigate();
     const Icon = isLocked ? Lock : (isCompleted ? CircleCheck : Newspaper);
     const isActive = pathname?.includes(id);
 
     const onClick = () => {
-        navigate(`/courses/${courseId}/${id}`);
+        navigate(`/courses/${courseId}/${moduleId}/${id}`);
     }
 
     return (

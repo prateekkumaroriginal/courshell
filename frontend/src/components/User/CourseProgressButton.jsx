@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import { VITE_APP_BACKEND_URL } from '@/constants'
 
-const CourseProgressButton = ({ articleId, courseId, nextArticleId, isCompleted, setUserProgress, setProgressPercentage }) => {
+const CourseProgressButton = ({ articleId, moduleId, courseId, nextArticleId, nextModuleId, isCompleted, setUserProgress, setProgressPercentage }) => {
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
     const Icon = isCompleted ? XCircle : CheckCircle;
@@ -30,7 +30,7 @@ const CourseProgressButton = ({ articleId, courseId, nextArticleId, isCompleted,
                 setUserProgress(data.userProgress);
                 setProgressPercentage(data.progressPercentage);
                 if (!isCompleted && nextArticleId) {
-                    navigate(`/courses/${courseId}/${nextArticleId}`);
+                    navigate(`/courses/${courseId}/${nextModuleId ? nextModuleId : moduleId}/${nextArticleId}`);
                 }
             } else {
                 toast.error("Something went wrong");
