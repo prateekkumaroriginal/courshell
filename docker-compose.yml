@@ -1,0 +1,40 @@
+services:
+  db:
+    image: postgres:13
+    container_name: postgres-db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: courshellDB
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
+
+  backend:
+    build:
+      context: ./backend
+    container_name: pern-backend
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/courshellDB
+      - SECRET=super_secret
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    volumes:
+      - ./backend:/app
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: pern-frontend
+    environment:
+      - VITE_APP_BACKEND_URL=http://localhost:3000
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend:/app
