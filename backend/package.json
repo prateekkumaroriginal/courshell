@@ -8,13 +8,14 @@
     "schema": "./db/prisma/schema.prisma"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev:docker": "npx prisma generate && npx prisma migrate deploy && node db/seed.js && node index.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@prisma/client": "^5.14.0",
+    "@prisma/client": "^5.16.0",
     "body-parser": "^1.20.2",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
@@ -25,6 +26,6 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "prisma": "^5.14.0"
+    "prisma": "^5.16.0"
   }
 }

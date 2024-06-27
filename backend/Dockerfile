@@ -9,9 +9,7 @@ COPY db ./db
 
 COPY . .
 
-RUN npx prisma generate
-RUN node ./db/seed.js
-
 EXPOSE 3000
+EXPOSE 5555
 
-CMD ["node", "index.js"]
+CMD ["npm", "run", "dev:docker"]
