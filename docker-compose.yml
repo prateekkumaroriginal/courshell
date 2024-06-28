@@ -16,7 +16,7 @@ services:
     build: ./backend
     container_name: pern-backend
     environment:
-      - DATABASE_URL=postgresql://postgres:postgres@db:5432/courshellDB
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/courshellDB?schema=public
       - SECRET=super_secret
     ports:
       - "3000:3000"
@@ -30,7 +30,7 @@ services:
     build: ./frontend
     container_name: pern-frontend
     environment:
-      - VITE_APP_BACKEND_URL=http://localhost:3000
+      - VITE_APP_BACKEND_URL=http://pern-backend:3000
     ports:
       - "5173:5173"
     depends_on:

@@ -1,6 +1,6 @@
 import express from 'express';
 import { z } from 'zod';
-import { db } from '../db/index.js';
+import { db } from '../prisma/index.js';
 import { authenticateToken, authorizeRoles } from '../middleware/auth.js'
 import { createCourse, getCreatedCourses, getCourse, createModule, getModule, updateModule, getLastModule, deleteAttachment, getAttachment, getAttachments, createAttachment, updateCourse, createArticle, getLastArticle, getArticle, updateArticle, deleteArticle, publishArticle, unpublishArticle, publishCourse, unpublishCourse, deleteCourse, groupEnrollmentsByCourse } from '../actions/instructor.actions.js';
 import { SUPERADMIN, ADMIN, INSTRUCTOR } from '../constants.js';

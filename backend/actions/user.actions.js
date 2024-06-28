@@ -1,4 +1,4 @@
-import { db } from "../db/index.js";
+import { db } from "../prisma/index.js";
 import { SUPERADMIN, ADMIN, INSTRUCTOR } from '../constants.js';
 
 const getUser = async (email) => {

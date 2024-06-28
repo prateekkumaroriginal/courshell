@@ -24,6 +24,7 @@
     "cmdk": "^0.2.0",
     "dotenv": "^16.4.5",
     "html-react-parser": "^5.1.10",
+    "jodit-react": "^4.1.2",
     "lucide-react": "^0.379.0",
     "query-string": "^9.0.0",
     "react": "^18.2.0",

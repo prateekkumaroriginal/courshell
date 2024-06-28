@@ -1,4 +1,4 @@
-import { db } from '../db/index.js';
+import { db } from '../prisma/index.js';
 import { z } from 'zod';
 import express from 'express';
 import { authenticateToken, authorizeRoles } from '../middleware/auth.js';

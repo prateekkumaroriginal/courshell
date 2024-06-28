@@ -1,4 +1,4 @@
-import { db } from '../db/index.js';
+import { db } from '../prisma/index.js';
 
 const createCourse = async (title, instructorId) => {
     return await db.course.create({

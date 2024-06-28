@@ -1,4 +1,4 @@
-import { db } from '../db/index.js';
+import { db } from '../prisma/index.js';
 import { z } from 'zod';
 import jwt from 'jsonwebtoken';
 import express from 'express';

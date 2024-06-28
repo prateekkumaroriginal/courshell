@@ -12,8 +12,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@prisma/client": "^5.14.0",
-    "concurrently": "^8.2.2",
-    "jodit-react": "^4.1.2"
+    "concurrently": "^8.2.2"
   }
 }
