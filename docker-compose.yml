@@ -10,7 +10,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - ./postgres-data:/var/lib/postgresql/data
+      - postgres-data:/var/lib/postgresql/data
 
   backend:
     build: ./backend
@@ -23,17 +23,6 @@ services:
       - "5555:5555"
     depends_on:
       - db
-    volumes:
-      - ./backend:/app
 
-  frontend:
-    build: ./frontend
-    container_name: pern-frontend
-    environment:
-      - VITE_APP_BACKEND_URL=http://pern-backend:3000
-    ports:
-      - "5173:5173"
-    depends_on:
-      - backend
-    volumes:
-      - ./frontend:/app
+volumes:
+  postgres-data:
