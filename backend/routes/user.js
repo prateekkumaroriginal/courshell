@@ -12,7 +12,7 @@ const SECRET = process.env.SECRET;
 
 const loginInput = z.object({
     email: z.string().email(),
-    password: z.string().min(4),
+    password: z.string().min(4).max(64),
 });
 
 const markAsCompleteInput = z.object({
