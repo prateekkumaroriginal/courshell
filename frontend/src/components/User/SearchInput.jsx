@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useDebounce } from '@/hooks/useDebounce'
 import { Search } from 'lucide-react'
-import { Input } from '../ui/input'
+import { Input } from '@/components/ui/input'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import queryString from 'query-string'
 
