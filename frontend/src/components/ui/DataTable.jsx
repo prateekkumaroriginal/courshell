@@ -18,7 +18,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
-import { Input } from "./input"
+import { Input } from "@/components/ui/input.jsx"
 import { Link } from "react-router-dom"
 
 export function DataTable({
