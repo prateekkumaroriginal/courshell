@@ -11,7 +11,7 @@ const formSchema = z.object({
     password: z.string().min(8).max(64),
 });
 
-const Signin = () => {
+const Signin = ({ setUserRole }) => {
     const navigate = useNavigate();
 
     const form = useForm({
@@ -31,6 +31,7 @@ const Signin = () => {
                 headers: values
             });
             const data = await response.json();
+            setUserRole(data.role);
             localStorage.setItem('token', data.token);
             navigate(`/dashboard`);
         } catch (e) {

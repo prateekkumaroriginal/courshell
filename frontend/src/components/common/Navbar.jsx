@@ -3,9 +3,8 @@ import { Link } from 'react-router-dom'
 import { VITE_APP_BACKEND_URL } from '@/constants'
 import NavbarItem from '@/components/common/NavbarItem';
 
-const Navbar = () => {
-    const [userData, setUserData] = useState(null);
-    const [userRole, setUserRole] = useState();
+const Navbar = ({ userRole, setUserRole }) => {
+    const [routes, setRoutes] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
 
     const fetchProfile = async () => {
@@ -18,10 +17,9 @@ const Navbar = () => {
             });
             const data = await response.json();
             if (data.error) {
-                return setUserData(null);
+                return;
             }
             if (data) {
-                setUserData(data);
                 setUserRole(data.role);
             }
         } catch (error) {
@@ -35,24 +33,30 @@ const Navbar = () => {
         fetchProfile();
     }, []);
 
-    const routes = [
-        {
-            label: "Browse",
-            href: "/browse"
-        },
-        (["SUPERADMIN", "ADMIN", "INSTRUCTOR"].includes(userRole)) && {
-            label: "Courses",
-            href: ["SUPERADMIN", "ADMIN"].includes(userRole) ? '/admin/courses' : '/instructor/courses'
-        },
-        (["SUPERADMIN", "ADMIN", "INSTRUCTOR"].includes(userRole)) && {
-            label: "Analytics",
-            href: "/instructor/analytics"
-        },
-        {
-            label: "Dashboard",
-            href: "/dashboard"
-        },
-    ];
+    useEffect(() => {
+        setRoutes([
+            (userRole === "SUPERADMIN") && {
+                label: "Users",
+                href: "/superadmin/users"
+            },
+            (["SUPERADMIN", "ADMIN", "INSTRUCTOR"].includes(userRole)) && {
+                label: "Courses",
+                href: ["SUPERADMIN", "ADMIN"].includes(userRole) ? '/admin/courses' : '/instructor/courses'
+            },
+            (["SUPERADMIN", "ADMIN", "INSTRUCTOR"].includes(userRole)) && {
+                label: "Analytics",
+                href: "/instructor/analytics"
+            },
+            {
+                label: "Browse",
+                href: "/browse"
+            },
+            {
+                label: "Dashboard",
+                href: "/dashboard"
+            },
+        ]);
+    }, [userRole]);
 
     return (
         <div className='sticky top-0 bg-opacity-80 backdrop-blur supports-[backdrop-filter]:bg-background/60 bg-gray-200 px-4 py-2 flex w-full justify-between items-center shadow-md z-50'>
@@ -73,8 +77,8 @@ const Navbar = () => {
                 })}
                 {!isLoading && <NavbarItem route={
                     {
-                        label: userData ? 'Logout' : 'Login',
-                        href: userData ? '/' : '/signin'
+                        label: userRole ? 'Logout' : 'Login',
+                        href: userRole ? '/' : '/signin'
                     }}
                 />}
             </div>

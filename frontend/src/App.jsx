@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { useState } from 'react';
 import './App.css'
 import Create from '@/components/Instructor/Create';
 import Course from '@/components/Instructor/Course';
@@ -28,13 +29,13 @@ const shouldHideNavbar = (pathname, hidingPaths) => {
 
 function AppRoutes() {
     const location = useLocation();
-    const isInstructorPage = location.pathname.startsWith('/instructor');
+    const [userRole, setUserRole] = useState();
 
     return (
         <>
-            {!shouldHideNavbar(location.pathname, hideNavbarPaths) && <Navbar />}
+            {!shouldHideNavbar(location.pathname, hideNavbarPaths) && <Navbar userRole={userRole} setUserRole={setUserRole} />}
             <Routes>
-                <Route path='/signin' element={<Signin />} />
+                <Route path='/signin' element={<Signin setUserRole={setUserRole} />} />
                 <Route path='/browse' element={<BrowsePage />} />
                 <Route path='/dashboard' element={<Dashboard />} />
                 <Route path='/courses/:courseId' element={<ReadCourse />} />
