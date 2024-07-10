@@ -1,7 +1,7 @@
 generator client {
   provider        = "prisma-client-js"
   previewFeatures = ["fullTextSearch"]
-  binaryTargets = ["native", "windows", "linux-musl-openssl-3.0.x"]
+  binaryTargets   = ["native", "windows", "linux-musl-openssl-3.0.x"]
 }
 
 datasource db {
@@ -18,6 +18,9 @@ model User {
   enrolledCourses  Enrollment[]
   requestedCourses Request[]
   userProgress     UserProgress[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 enum Role {
