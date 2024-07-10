@@ -17,6 +17,7 @@ import ManageCourses from './components/Admin/ManageCourses';
 import ManageCourse from './components/Admin/ManageCourse';
 import Users from './components/Superadmin/Users';
 import ToastProvider from './components/ui/ToastProvider';
+import AddUser from './components/Superadmin/AddUser';
 
 const hideNavbarPaths = [
     '/courses/:courseId/attachments/:attachmentId',
@@ -53,6 +54,8 @@ function AppRoutes() {
                 <Route path='/instructor/courses/:courseId/:moduleId/:articleId' element={<Article />} />
                 <Route path='/admin/courses' element={<ManageCourses />} />
                 <Route path='/admin/courses/:courseId' element={<ManageCourse />} />
+                <Route path='/superadmin/users' element={<Users />} />
+                <Route path='/superadmin/users/add' element={<AddUser />} />
             </Routes>
         </>
     )

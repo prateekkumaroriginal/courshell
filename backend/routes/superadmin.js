@@ -29,7 +29,11 @@ router.post("/users", authenticateToken, authorizeRoles(SUPERADMIN), async (req,
 
         if (existingUser) {
             return res.status(400).json({
-                message: "User with same email already exist"
+                message: {
+                    issues: [{
+                        message: "User with same email already exists!"
+                    }]
+                }
             });
         }
 
@@ -63,6 +67,12 @@ router.get("/users", authenticateToken, authorizeRoles(SUPERADMIN), async (req, 
                 role: {
                     not: SUPERADMIN
                 }
+            },
+            select: {
+                id: true,
+                email: true,
+                role: true,
+                createdAt: true
             }
         });
 

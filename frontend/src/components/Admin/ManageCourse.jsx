@@ -87,7 +87,6 @@ const ManageCourse = () => {
                             </h1>
                             <div>
                                 <DataTable
-                                    isCoursePage={false}
                                     columns={enrollmentColumns}
                                     data={enrollments}
                                     filterField="userEmail"
@@ -102,7 +101,6 @@ const ManageCourse = () => {
                             </h1>
                             <div>
                                 <DataTable
-                                    isCoursePage={false}
                                     columns={requestColumns(courseId, updateRequestStatus, setEnrollments)}
                                     data={requests}
                                     filterField="userEmail"

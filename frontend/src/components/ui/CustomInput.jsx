@@ -11,7 +11,7 @@ const CustomInput = ({ type, name, label, register, defaultValue, className, pla
     return (
         <div>
             {label && <div className="block">
-                <label className="text-gray-700 text-xl font-bold mr-4" htmlFor={name}>{label}</label>
+                <label className="text-gray-700 text-xl font-bold" htmlFor={name}>{label}</label>
             </div>}
             {(type !== "textarea") ? <input
                 className={className || 'p-2 shadow-lg outline-none rounded w-full focus:ring-4 focus:ring-blue-600/40'}

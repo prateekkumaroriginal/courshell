@@ -44,7 +44,10 @@ const ManageCourses = () => {
         <div className='p-6'>
             <div className='mb-8'>
                 <DataTable
-                    isCoursePage={true}
+                    createObject={{
+                        label: "New Course",
+                        link: "/instructor/create"
+                    }}
                     columns={columns}
                     data={courses}
                     filterField="title"
