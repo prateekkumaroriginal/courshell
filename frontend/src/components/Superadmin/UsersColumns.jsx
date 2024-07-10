@@ -48,7 +48,7 @@ export const columns = [
         }
     },
     {
-        accessorKey: "joined",
+        accessorKey: "createdAt",
         header: ({ column }) => {
             return (
                 <div className="flex justify-center">
@@ -63,9 +63,25 @@ export const columns = [
             )
         },
         cell: ({ row }) => {
-            return <div className="text-center font-medium">
-                {row.getValue('createdAt')}
-            </div>
+            const time = new Date(row.getValue("createdAt"));
+            const formattedTime = time.toLocaleTimeString();
+            const formattedDate = time.toLocaleDateString('en-US', {
+                day: '2-digit',
+                month: 'long',
+                year: 'numeric'
+            });
+
+            return (
+                <div className="text-center font-medium">
+                    <div>
+                        {formattedTime}
+                    </div>
+                    <div className="border-b border-slate-600/60 max-w-20 mx-auto"></div>
+                    <div>
+                        {formattedDate}
+                    </div>
+                </div>
+            )
         }
     },
     {
@@ -85,11 +101,6 @@ export const columns = [
                         <Link to={id} className="cursor-pointer">
                             <DropdownMenuItem className="cursor-pointer">
                                 <Pencil className="mr-2 h-4 w-4" /> Manage
-                            </DropdownMenuItem>
-                        </Link>
-                        <Link to={`/instructor/courses/${id}`} className="cursor-pointer">
-                            <DropdownMenuItem className="cursor-pointer">
-                                <Pencil className="mr-2 h-4 w-4" /> Edit
                             </DropdownMenuItem>
                         </Link>
                     </DropdownMenuContent>
