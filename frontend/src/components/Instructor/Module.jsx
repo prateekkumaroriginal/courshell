@@ -7,7 +7,6 @@ import ArticlesList from '@/components/Instructor/ArticlesList';
 import { Loader2 } from 'lucide-react';
 import { VITE_APP_BACKEND_URL } from '@/constants';
 import toast from 'react-hot-toast';
-import ToastProvider from '@/components/ui/ToastProvider';
 
 const formSchema = z.object({
     title: z.string().min(4).max(200),
@@ -150,7 +149,6 @@ const Module = () => {
 
     return (
         <div className='md:p-6'>
-            <ToastProvider />
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                     <div className='mt-6 border bg-slate-200 rounded-md p-4'>

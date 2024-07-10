@@ -2,7 +2,6 @@ import { VITE_APP_BACKEND_URL } from '@/constants';
 import React, { useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast';
 import { useParams } from 'react-router-dom'
-import ToastProvider from '../ui/ToastProvider';
 import { DataTable } from '../ui/DataTable';
 import { columns as enrollmentColumns } from './EnrollmentColumns';
 import { columns as requestColumns } from './RequestColumns';
@@ -69,7 +68,6 @@ const ManageCourse = () => {
 
     return (
         <div>
-            <ToastProvider />
             <div className='md:px-6 mb-10'>
                 {isLoading ? <div className='text-center text-2xl text-muted-foreground mt-10'>
                     Loading ...

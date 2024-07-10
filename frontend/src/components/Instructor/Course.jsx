@@ -3,7 +3,6 @@ import { useParams, useNavigate } from 'react-router-dom'
 import TitleForm from '@/components/Instructor/TitleForm';
 import DescriptionForm from '@/components/Instructor/DescriptionForm';
 import CategoryForm from '@/components/Instructor/CategoryForm';
-import ToastProvider from '@/components/ui/ToastProvider';
 import ModulesForm from '@/components/Instructor/ModulesForm';
 import { VITE_APP_BACKEND_URL } from '@/constants';
 import Banner from '@/components/ui/Banner';
@@ -89,7 +88,6 @@ const Course = () => {
 
     return (
         <div className='md:px-6 mb-10'>
-            <ToastProvider />
             {!isLoading && !isPublished && <Banner
                 label={"This course is unpublished. It will not be visible to the students."}
             />}

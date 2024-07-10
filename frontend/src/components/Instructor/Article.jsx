@@ -9,7 +9,6 @@ import ArticleAccessForm from '@/components/Instructor/ArticleAccessForm';
 import Banner from '@/components/ui/Banner';
 import ArticleActions from '@/components/Instructor/ArticleActions';
 import { VITE_APP_BACKEND_URL } from '@/constants';
-import ToastProvider from '../ui/ToastProvider';
 import toast from 'react-hot-toast';
 
 const formSchema = z.object({
@@ -98,7 +97,6 @@ const Article = () => {
 
     return (
         <div className='md:px-6'>
-            <ToastProvider />
             {!isLoading && !isPublished && <Banner
                 label={"This article is unpublished. It will not be visible in the course."}
                 variant={"WARNING"}

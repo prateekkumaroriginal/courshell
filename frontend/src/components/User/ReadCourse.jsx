@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import CourseSidebar from '@/components/User/CourseSidebar';
 import ReadArticle from '@/components/User/ReadArticle';
-import ToastProvider from '../ui/ToastProvider';
 import CourseEnrollButton from '@/components/User/CourseEnrollButton';
 
 const ReadCourse = () => {
@@ -50,7 +49,6 @@ const ReadCourse = () => {
 
     return (
         <>
-            <ToastProvider />
             {!isCourseLoading && !course ? <div className='text-center text-2xl text-muted-foreground mt-10'>
                 Loading...
             </div> : <div className='relative h-full z-40 mb-20'>

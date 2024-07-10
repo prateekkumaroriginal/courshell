@@ -15,6 +15,8 @@ import Dashboard from '@/components/User/Dashboard';
 import Analytics from '@/components/Instructor/Analytics';
 import ManageCourses from './components/Admin/ManageCourses';
 import ManageCourse from './components/Admin/ManageCourse';
+import Users from './components/Superadmin/Users';
+import ToastProvider from './components/ui/ToastProvider';
 
 const hideNavbarPaths = [
     '/courses/:courseId/attachments/:attachmentId',
@@ -33,6 +35,7 @@ function AppRoutes() {
 
     return (
         <>
+            <ToastProvider />
             {!shouldHideNavbar(location.pathname, hideNavbarPaths) && <Navbar userRole={userRole} setUserRole={setUserRole} />}
             <Routes>
                 <Route path='/signin' element={<Signin setUserRole={setUserRole} />} />

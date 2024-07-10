@@ -3,7 +3,6 @@ import { DataTable } from '@/components/ui/DataTable'
 import { columns } from '../ui/columns'
 import toast from 'react-hot-toast'
 import { VITE_APP_BACKEND_URL } from '@/constants'
-import ToastProvider from '../ui/ToastProvider'
 
 const CreatedCourses = () => {
     const [courses, setCourses] = useState([]);
@@ -35,7 +34,6 @@ const CreatedCourses = () => {
 
     return (
         <div className='p-6'>
-            <ToastProvider />
             <div className='mb-8'>
                 <DataTable
                     isCoursePage={true}

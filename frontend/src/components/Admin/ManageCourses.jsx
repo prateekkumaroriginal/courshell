@@ -2,7 +2,6 @@ import { VITE_APP_BACKEND_URL } from '@/constants';
 import React, { useEffect, useState } from 'react'
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
-import ToastProvider from '../ui/ToastProvider';
 import { DataTable } from '../ui/DataTable';
 import { columns } from './AdminCoursesColumns';
 
@@ -43,7 +42,6 @@ const ManageCourses = () => {
 
     return (
         <div className='p-6'>
-            <ToastProvider />
             <div className='mb-8'>
                 <DataTable
                     isCoursePage={true}
