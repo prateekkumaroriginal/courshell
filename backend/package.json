@@ -6,10 +6,11 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev:docker:migrate": "npx prisma generate && npx prisma migrate deploy && node prisma/seed.js && node index.js",
-    "dev:docker": "npx prisma generate && node index.js",
-    "prod:seed": "node prisma/seed.js && node index.js",
-    "prod": "node index.js"
+    "prisma:deploy": "npx prisma generate && npx prisma migrate deploy",
+    "dev:docker:migrate": "npm run prisma:deploy && node prisma/seed.js && node index.js",
+    "dev:docker": "npm run prisma:deploy && node index.js",
+    "prod:seed": "npm run prisma:deploy && node prisma/seed.js && node index.js",
+    "prod": "npm run prisma:deploy && node index.js"
   },
   "keywords": [],
   "author": "",
