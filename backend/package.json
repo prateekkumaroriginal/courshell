@@ -8,6 +8,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev:docker:migrate": "npx prisma generate && npx prisma migrate deploy && node prisma/seed.js && node index.js",
     "dev:docker": "npx prisma generate && node index.js",
+    "prod:seed": "node seed.js && node index.js",
     "prod": "node index.js"
   },
   "keywords": [],
