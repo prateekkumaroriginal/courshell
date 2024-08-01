@@ -42,7 +42,7 @@ const Dashboard = () => {
                 setCoursesInProgress(tempCoursesInProgress);
                 setRequestedCourses(data.user.requestedCourses);
             } else if (response.status === 401) {
-                navigate('/signin');
+                return navigate('/signin');
             } else {
                 toast.error("Something went wrong");
             }

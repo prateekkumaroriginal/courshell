@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import React, { useState, useEffect, useCallback } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import { VITE_APP_BACKEND_URL } from '@/constants'
 import NavbarItem from '@/components/common/NavbarItem';
+import ConfirmModal from '../ui/ConfirmModal';
 
 const Navbar = ({ userRole, setUserRole }) => {
     const [routes, setRoutes] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+    const navigate = useNavigate();
 
     const fetchProfile = async () => {
         try {
@@ -58,6 +60,12 @@ const Navbar = ({ userRole, setUserRole }) => {
         ]);
     }, [userRole]);
 
+    const handleLogout = useCallback(() => {
+        localStorage.removeItem("token");
+        setUserRole();
+        return navigate("/");
+    }, []);
+
     return (
         <div className='sticky top-0 bg-opacity-80 backdrop-blur supports-[backdrop-filter]:bg-background/60 bg-gray-200 px-4 py-2 flex w-full justify-between items-center shadow-md z-50'>
             <div>
@@ -75,12 +83,20 @@ const Navbar = ({ userRole, setUserRole }) => {
                         <NavbarItem route={route} key={index} />
                     )
                 })}
-                {!isLoading && <NavbarItem route={
+                {!isLoading && !userRole && <NavbarItem route={
                     {
-                        label: userRole ? 'Logout' : 'Login',
-                        href: userRole ? '/' : '/signin'
+                        label: 'Login',
+                        href: '/signin'
                     }}
                 />}
+                {!isLoading && userRole && <div className='flex'>
+                    <div
+                        onClick={handleLogout}
+                        className='flex items-center font-semibold px-4 cursor-pointer hover:bg-purple-900 hover:text-white hover:rounded-md'
+                    >
+                        Logout
+                    </div>
+                </div>}
             </div>
         </div>
     )

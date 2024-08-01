@@ -1,7 +1,7 @@
 import { VITE_APP_BACKEND_URL } from '@/constants'
 import React, { useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import queryString from 'query-string';
 import Categories from '@/components/User/Categories';
 import SearchInput from '@/components/User/SearchInput';
@@ -12,6 +12,7 @@ const BrowsePage = () => {
     const [searchParams] = useSearchParams();
     const [courses, setCourses] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+    const navigate = useNavigate();
 
     useEffect(() => {
         fetchCategories();
@@ -40,6 +41,8 @@ const BrowsePage = () => {
             if (response.ok) {
                 const data = await response.json();
                 setCategories(data.categories);
+            } else if (response.status === 401) {
+                return navigate("/signin");
             } else {
                 toast.error("Something went wrong");
             }
@@ -61,6 +64,8 @@ const BrowsePage = () => {
             if (response.ok) {
                 const data = await response.json();
                 setCourses(data.courses);
+            } else if (response.status === 401) {
+                return navigate("/signin");
             } else {
                 toast.error("Something went wrong");
             }
