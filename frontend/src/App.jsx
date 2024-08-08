@@ -40,7 +40,7 @@ function AppRoutes() {
             <ToastProvider />
             {!shouldHideNavbar(location.pathname, hideNavbarPaths) && <Navbar userRole={userRole} setUserRole={setUserRole} />}
             <Routes>
-                <Route path='/' element={<RedirectComponent userRole={userRole}  />} />
+                <Route path='/' element={<RedirectComponent />} />
                 <Route path='/signin' element={<Signin setUserRole={setUserRole} />} />
                 <Route path='/browse' element={<BrowsePage />} />
                 <Route path='/dashboard' element={<Dashboard />} />

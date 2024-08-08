@@ -1,22 +1,18 @@
-// RedirectComponent.jsx
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-function RedirectComponent({userRole}) {
+function RedirectComponent() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (userRole){
+        if (localStorage.getItem("token")) {
             navigate('/dashboard');
-        } else{
+        } else {
             navigate('/signin');
         }
     }, [navigate]);
 
-    return (
-        <div>
-        </div>
-    );
+    return null;
 }
 
 export default RedirectComponent;
