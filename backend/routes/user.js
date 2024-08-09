@@ -145,9 +145,11 @@ router.get('/dashboard', authenticateToken, async (req, res) => {
 
         const latestRequestedCoursesMap = {};
         user.requestedCourses.forEach(request => {
-            const courseId = request.courseId;
-            if (!latestRequestedCoursesMap[courseId] || new Date(request.updatedAt) > new Date(latestRequestedCoursesMap[courseId].updatedAt)) {
-                latestRequestedCoursesMap[courseId] = request;
+            if (request.status === PENDING) {
+                const courseId = request.courseId;
+                if (!latestRequestedCoursesMap[courseId] || new Date(request.updatedAt) > new Date(latestRequestedCoursesMap[courseId].updatedAt)) {
+                    latestRequestedCoursesMap[courseId] = request;
+                }
             }
         });
         user.requestedCourses = Object.values(latestRequestedCoursesMap);
