@@ -10,7 +10,7 @@
     "dev:docker:migrate": "npm run prisma:deploy && node prisma/seed.js && node index.js",
     "dev:docker": "npm run prisma:deploy && node index.js",
     "prod:seed": "npm run prisma:deploy && node prisma/seed.js && node index.js",
-    "prod": "npm run prisma:deploy && node index.js"
+    "prod": "npx prisma db push && node index.js"
   },
   "keywords": [],
   "author": "",
