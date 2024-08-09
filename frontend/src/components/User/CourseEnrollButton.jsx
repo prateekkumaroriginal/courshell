@@ -34,7 +34,7 @@ const CourseEnrollButton = ({ courseId, price, requested }) => {
             onClick={onClick}
             disabled={localRequested ? true : false}
         >
-            {localRequested ? "Requested" : <>Enroll for {formatPrice(price)}</>}
+            {localRequested ? "Requested" : <>Enroll</>}
         </Button>
     )
 }

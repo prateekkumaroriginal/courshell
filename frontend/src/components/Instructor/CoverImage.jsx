@@ -27,7 +27,7 @@ const CoverImage = ({ course, courseId, fetchData }) => {
             toast.dismiss(updatingToast);
 
             if (response.ok) {
-                toast.success("Article Updated");
+                toast.success("Cover Image Updated");
                 fetchData();
             } else {
                 toast.error("Something went wrong");
