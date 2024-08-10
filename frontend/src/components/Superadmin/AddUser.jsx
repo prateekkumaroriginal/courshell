@@ -24,22 +24,23 @@ const ROLES = ["ADMIN", "INSTRUCTOR", "USER"];
 
 const formSchema = z.object({
     email: z.string().email(),
-    password1: z.string().min(8).max(64),
-    password2: z.string().min(8).max(64),
+    password: z.string().min(8).max(64),
+    confirmPassword: z.string().min(8).max(64),
     role: z.enum(ROLES)
-}).refine(({ password1, password2 }) => password1 === password2);
+}).refine(({ password, confirmPassword }) => password === confirmPassword);
 
 const AddUser = () => {
     const form = useForm({
         resolver: zodResolver(formSchema),
         defaultValues: {
             email: "",
-            password1: "",
-            password2: ""
+            password: "",
+            confirmPassword: "",
+            role: ROLES[2]
         },
     });
 
-    const { handleSubmit, register, formState: { isSubmitting, isValid } } = form;
+    const { handleSubmit, register, reset, formState: { isSubmitting, isValid } } = form;
 
     const onSubmit = async (values) => {
         console.log(values);
@@ -52,13 +53,14 @@ const AddUser = () => {
                 },
                 body: JSON.stringify({
                     email: values.email,
-                    password: values.password2,
+                    password: values.password,
                     role: values.role
                 })
             });
 
             if (response.ok) {
                 toast.success("User added");
+                reset();
             } else if (response.status === 400) {
                 const data = await response.json();
                 console.log(data.message.issues);
@@ -128,15 +130,15 @@ const AddUser = () => {
                                 <div className="flex flex-col gap-y-4">
                                     <CustomInput
                                         type="password"
-                                        name="password1"
-                                        label="Password1"
+                                        name="password"
+                                        label="Password"
                                         register={register}
                                     />
 
                                     <CustomInput
                                         type="password"
-                                        name="password2"
-                                        label="Password2"
+                                        name="confirmPassword"
+                                        label="ConfirmPassword"
                                         register={register}
                                     />
                                 </div>
