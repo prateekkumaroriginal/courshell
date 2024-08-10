@@ -3,6 +3,7 @@ import { ADMIN, INSTRUCTOR, SUPERADMIN, USER } from "../constants.js";
 import { authenticateToken, authorizeRoles } from "../middleware/auth.js";
 import { z } from "zod";
 import { db } from "../prisma/index.js";
+import bcrypt from "bcrypt";
 
 const router = express.Router();
 
@@ -37,10 +38,12 @@ router.post("/users", authenticateToken, authorizeRoles(SUPERADMIN), async (req,
             });
         }
 
+        const hashedPassword = bcrypt.hashSync(parsedInput.data.password, 10);
+
         const user = await db.user.create({
             data: {
                 email: parsedInput.data.email,
-                password: parsedInput.data.password,
+                password: hashedPassword,
                 role: parsedInput.data.role
             },
             select: {

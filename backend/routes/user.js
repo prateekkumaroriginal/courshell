@@ -3,6 +3,7 @@ import { z } from 'zod';
 import jwt from 'jsonwebtoken';
 import express from 'express';
 import { authenticateToken } from '../middleware/auth.js';
+import bcrypt from "bcrypt";
 import { getCourse, getEnrollment, getAllCourses, getProgress, getUser, getArticle, getArticleProgress } from '../actions/user.actions.js';
 import { ACCEPTED, ADMIN, INSTRUCTOR, PENDING, REJECTED, SUPERADMIN } from '../constants.js';
 
@@ -34,7 +35,7 @@ router.post('/login', async (req, res) => {
             }
         });
 
-        if (!user || user.password !== parsedInput.data.password) {
+        if (!user || !bcrypt.compareSync(parsedInput.data.password, user.password)) {
             return res.status(401).json({ message: 'Invalid credentials' });
         }
 
