@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import CustomInput from '@/components/ui/CustomInput';
 import { VITE_APP_BACKEND_URL } from '@/constants';
+import toast from 'react-hot-toast';
 
 const formSchema = z.object({
     email: z.string().email(),
@@ -30,12 +31,20 @@ const Signin = ({ setUserRole }) => {
                 method: 'POST',
                 headers: values
             });
-            const data = await response.json();
-            setUserRole(data.role);
-            localStorage.setItem('token', data.token);
-            navigate(`/dashboard`);
+
+            if (response.ok) {
+                const data = await response.json();
+                setUserRole(data.role);
+                localStorage.setItem('token', data.token);
+                navigate(`/dashboard`);
+            } else if (response.status === 401) {
+                toast.error("Invalid Credentials");
+            } else {
+                toast.error("Something went wrong");
+            }
         } catch (e) {
             console.log(e);
+            toast.error("Something went wrong");
         }
     }
 
