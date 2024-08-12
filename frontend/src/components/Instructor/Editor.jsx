@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom';
 import { VITE_APP_BACKEND_URL } from '@/constants';
 import toast from 'react-hot-toast';
 
-const Editor = ({ defaultContent }) => {
+const Editor = ({ defaultContent, setIsComplete, setCompletionText }) => {
     const { courseId, moduleId, articleId } = useParams();
     const editor = useRef(null);
     const [content, setContent] = useState(defaultContent || '');
@@ -78,6 +78,17 @@ const Editor = ({ defaultContent }) => {
             toast.dismiss(updatingToast);
 
             if (response.ok) {
+                const data = await response.json();
+                console.log(data);
+                const requiredFields = [
+                    data.article.title,
+                    data.article.content
+                ]
+                const totalFields = requiredFields.length;
+                const completedFields = requiredFields.filter(Boolean).length;
+                setIsComplete(requiredFields.every(Boolean));
+                setCompletionText(`${completedFields}/${totalFields}`);
+
                 toast.success("Article Updated");
             } else {
                 toast.error("Something went wrong");

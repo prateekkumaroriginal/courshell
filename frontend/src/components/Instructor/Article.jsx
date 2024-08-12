@@ -195,7 +195,7 @@ const Article = () => {
             </div>
 
             <div>
-                {!isLoading && <Editor defaultContent={article.content} />}
+                {!isLoading && <Editor defaultContent={article.content} setIsComplete={setIsComplete} setCompletionText={setCompletionText} />}
             </div>
         </div>
     )
