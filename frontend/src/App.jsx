@@ -35,6 +35,10 @@ function AppRoutes() {
     const location = useLocation();
     const [userRole, setUserRole] = useState();
 
+    useEffect(() => {
+        document.title = 'Courshell';
+    }, []);
+
     return (
         <>
             <ToastProvider />
