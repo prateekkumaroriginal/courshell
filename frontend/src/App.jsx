@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './App.css'
 import Create from '@/components/Instructor/Create';
 import Course from '@/components/Instructor/Course';
