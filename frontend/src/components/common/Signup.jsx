@@ -19,8 +19,9 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import { Link, useNavigate } from 'react-router-dom';
 
-const ROLES = ["ADMIN", "INSTRUCTOR", "USER"];
+const ROLES = ["USER", "INSTRUCTOR"];
 
 const formSchema = z.object({
     email: z.string().email(),
@@ -29,26 +30,26 @@ const formSchema = z.object({
     role: z.enum(ROLES)
 }).refine(({ password, confirmPassword }) => password === confirmPassword);
 
-const AddUser = () => {
+const Signup = ({ setUserRole }) => {
+    const navigate = useNavigate();
+
     const form = useForm({
         resolver: zodResolver(formSchema),
         defaultValues: {
             email: "",
             password: "",
             confirmPassword: "",
-            role: ROLES[2]
+            role: ROLES[1]
         },
     });
 
-    const { handleSubmit, register, reset, formState: { isSubmitting, isValid } } = form;
+    const { handleSubmit, register, formState: { isSubmitting, isValid } } = form;
 
     const onSubmit = async (values) => {
-        console.log(values);
         try {
-            const response = await fetch(`${VITE_APP_BACKEND_URL}/superadmin/users`, {
+            const response = await fetch(`${VITE_APP_BACKEND_URL}/user`, {
                 method: 'POST',
                 headers: {
-                    authorization: `Bearer ${localStorage.getItem('token')}`,
                     'content-type': 'application/json'
                 },
                 body: JSON.stringify({
@@ -59,18 +60,18 @@ const AddUser = () => {
             });
 
             if (response.ok) {
-                toast.success("User added");
-                reset();
+                toast.success("Signup Successful");
+                const data = await response.json();
+                setUserRole(data.role);
+                localStorage.setItem('token', data.token);
+                return navigate(`/dashboard`);
             } else if (response.status === 400) {
                 const data = await response.json();
-                console.log(data.message.issues);
-                for (const error of data.message.issues) {
-                    if (error.path) {
-                        toast.error(`${error.path}: ${error.message}`);
-                    } else {
-                        toast.error(error.message);
-                    }
-                }
+                let errorMessage = ``;
+                data.message.issues.map(({ message }) => {
+                    errorMessage += `${message}\n`;
+                });
+                toast.error(errorMessage);
             } else {
                 toast.error("Something went wrong");
             }
@@ -85,7 +86,7 @@ const AddUser = () => {
             <div className="w-full bg-blue-200 rounded-lg shadow-2xl mt-20 max-w-3xl lg:mt-10 xl:p-0">
                 <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
                     <h1 className="text-xl text-center font-bold leading-tight tracking-tight text-gray-900 md:text-2xl">
-                        Create a new user
+                        Signup
                     </h1>
 
                     <Form {...form}>
@@ -149,8 +150,17 @@ const AddUser = () => {
                                 className={`w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg px-5 py-2.5 text-center ${(!isValid || isSubmitting) && 'opacity-50 cursor-not-allowed hover:bg-blue-700'}`}
                                 disabled={!isValid || isSubmitting}
                             >
-                                Add
+                                Signup
                             </button>
+
+                            <div className="flex justify-center">
+                                <Link
+                                    to="/signin"
+                                    className='text-sm text-blue-800 hover:underline'
+                                >
+                                    Login
+                                </Link>
+                            </div>
                         </form>
                     </Form>
                 </div>
@@ -159,4 +169,4 @@ const AddUser = () => {
     )
 }
 
-export default AddUser
+export default Signup

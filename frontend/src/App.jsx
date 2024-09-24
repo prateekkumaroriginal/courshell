@@ -17,7 +17,7 @@ import ManageCourses from './components/Admin/ManageCourses';
 import ManageCourse from './components/Admin/ManageCourse';
 import Users from './components/Superadmin/Users';
 import ToastProvider from './components/ui/ToastProvider';
-import AddUser from './components/Superadmin/AddUser';
+import Signup from './components/common/Signup';
 import RedirectComponent from './components/common/RedirectComponent';
 
 const hideNavbarPaths = [
@@ -45,6 +45,7 @@ function AppRoutes() {
             {!shouldHideNavbar(location.pathname, hideNavbarPaths) && <Navbar userRole={userRole} setUserRole={setUserRole} />}
             <Routes>
                 <Route path='/' element={<RedirectComponent />} />
+                <Route path='/signup' element={<Signup setUserRole={setUserRole} />} />
                 <Route path='/signin' element={<Signin setUserRole={setUserRole} />} />
                 <Route path='/browse' element={<BrowsePage />} />
                 <Route path='/dashboard' element={<Dashboard />} />
@@ -61,7 +62,6 @@ function AppRoutes() {
                 <Route path='/admin/courses' element={<ManageCourses />} />
                 <Route path='/admin/courses/:courseId' element={<ManageCourse />} />
                 <Route path='/superadmin/users' element={<Users />} />
-                <Route path='/superadmin/users/add' element={<AddUser />} />
             </Routes>
         </>
     )

@@ -5,7 +5,7 @@ import express from 'express';
 import { authenticateToken } from '../middleware/auth.js';
 import bcrypt from "bcrypt";
 import { getCourse, getEnrollment, getAllCourses, getProgress, getUser, getArticle, getArticleProgress } from '../actions/user.actions.js';
-import { ACCEPTED, ADMIN, INSTRUCTOR, PENDING, REJECTED, SUPERADMIN } from '../constants.js';
+import { Role, STATUS } from '@prisma/client';
 
 const router = express.Router();
 
@@ -16,8 +16,68 @@ const loginInput = z.object({
     password: z.string().min(4).max(64),
 });
 
+const signupInput = z.object({
+    email: z.string().email().min(4).max(200),
+    password: z.string().min(8).max(64),
+    role: z.enum([Role.USER, Role.INSTRUCTOR])
+});
+
 const markAsCompleteInput = z.object({
     isCompleted: z.boolean()
+});
+
+router.post("/", async (req, res) => {
+    try {
+        const parsedInput = signupInput.safeParse(req.body);
+        if (!parsedInput.success) {
+            return res.status(400).json({
+                message: parsedInput.error
+            });
+        }
+
+        const existingUser = await db.user.findUnique({
+            where: {
+                email: parsedInput.data.email
+            }
+        });
+
+        if (existingUser) {
+            return res.status(400).json({
+                message: {
+                    issues: [{
+                        message: "User with same email already exists!"
+                    }]
+                }
+            });
+        }
+
+        const hashedPassword = bcrypt.hashSync(parsedInput.data.password, 10);
+
+        const user = await db.user.create({
+            data: {
+                email: parsedInput.data.email,
+                password: hashedPassword,
+                role: parsedInput.data.role
+            },
+            select: {
+                id: true,
+                email: true,
+                role: true
+            }
+        });
+
+        if (user) {
+            const token = jwt.sign({ email: parsedInput.data.email, role: user.role, id: user.id }, SECRET, { expiresIn: '4w' });
+            return res.json({
+                token,
+                role: user.role,
+                email: parsedInput.data.email
+            });
+        }
+    } catch (error) {
+        console.error("[USER]", error);
+        return res.status(500).json({ error: "Internal server error" });
+    }
 });
 
 router.post('/login', async (req, res) => {
@@ -146,7 +206,7 @@ router.get('/dashboard', authenticateToken, async (req, res) => {
 
         const latestRequestedCoursesMap = {};
         user.requestedCourses.forEach(request => {
-            if (request.status === PENDING) {
+            if (request.status === STATUS.PENDING) {
                 const courseId = request.courseId;
                 if (!latestRequestedCoursesMap[courseId] || new Date(request.updatedAt) > new Date(latestRequestedCoursesMap[courseId].updatedAt)) {
                     latestRequestedCoursesMap[courseId] = request;
@@ -401,7 +461,7 @@ router.post('/courses/:courseId/request', authenticateToken, async (req, res) =>
             }
         });
 
-        if (request && request.status === PENDING) {
+        if (request && request.status === STATUS.PENDING) {
             return res.status(400).json({ message: "Previous request is pending" });
         }
 
