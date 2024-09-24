@@ -26,7 +26,7 @@ const markAsCompleteInput = z.object({
     isCompleted: z.boolean()
 });
 
-router.post("/", async (req, res) => {
+router.post("/signup", async (req, res) => {
     try {
         const parsedInput = signupInput.safeParse(req.body);
         if (!parsedInput.success) {
