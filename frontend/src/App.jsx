@@ -49,8 +49,8 @@ function AppRoutes() {
                 <Route path='/signin' element={<Signin setUserRole={setUserRole} />} />
                 <Route path='/browse' element={<BrowsePage />} />
                 <Route path='/dashboard' element={<Dashboard />} />
-                <Route path='/courses/:courseId' element={<ReadCourse />} />
-                <Route path='/courses/:courseId/:moduleId/:articleId' element={<ReadCourse />} />
+                <Route path='/courses/:courseId' element={<ReadCourse userRole={userRole} />} />
+                <Route path='/courses/:courseId/:moduleId/:articleId' element={<ReadCourse userRole={userRole} />} />
                 <Route path='/courses/:courseId/attachments/:attachmentId' element={<Attachment />} />
                 <Route path='/instructor/analytics' element={<Analytics />} />
                 <Route path='/instructor/create' element={<Create />} />

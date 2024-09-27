@@ -235,7 +235,7 @@ router.get('/dashboard', authenticateToken, async (req, res) => {
     }
 });
 
-router.get('/categories', authenticateToken, async (req, res) => {
+router.get('/categories', async (req, res) => {
     try {
         const categories = await db.category.findMany();
         return res.json({ categories });
@@ -245,14 +245,14 @@ router.get('/categories', authenticateToken, async (req, res) => {
     }
 });
 
-router.get('/courses', authenticateToken, async (req, res) => {
+router.get('/courses', async (req, res) => {
     try {
         const { title, categoryId } = req.query;
-        const courses = await getAllCourses(req.user.id, categoryId || null, title || null);
+        const courses = await getAllCourses(req.user ? req.user.id : null, categoryId || null, title || null);
 
         courses.map(course => {
             course.coverImage.data = course.coverImage.data.toString('base64');
-        })
+        });
 
         return res.json({ courses });
     } catch (error) {
@@ -261,26 +261,29 @@ router.get('/courses', authenticateToken, async (req, res) => {
     }
 });
 
-router.get('/courses/:courseId', authenticateToken, async (req, res) => {
+router.get('/courses/:courseId', async (req, res) => {
     try {
         const { courseId } = req.params;
-        const course = await getCourse(courseId, req.user.id);
+        const course = await getCourse(courseId, req.user ? req.user.id : null);
 
         if (!course) {
             return res.status(404).json({ message: "Course not found" });
         }
 
-        const enrollment = await getEnrollment(courseId, req.user.id);
-        const progressPercentage = await getProgress(course.id, req.user.id);
+        if (req.user) {
+            const enrollment = await getEnrollment(courseId, req.user.id);
+            const progressPercentage = await getProgress(course.id, req.user.id);
+            res.json({ course, enrollment, progressPercentage });
+        }
 
-        res.json({ course, enrollment, progressPercentage });
+        res.json({ course });
     } catch (error) {
         console.log("[USER -> COURSE]", error);
         return res.status(500).json({ error: "Internal server error" });
     }
 });
 
-router.get('/courses/:courseId/modules/:moduleId/articles/:articleId', authenticateToken, async (req, res) => {
+router.get('/courses/:courseId/modules/:moduleId/articles/:articleId', async (req, res) => {
     try {
         const { courseId, moduleId, articleId } = req.params;
         const course = await db.course.findUnique({
@@ -297,7 +300,11 @@ router.get('/courses/:courseId/modules/:moduleId/articles/:articleId', authentic
             return res.status(404).json({ message: "Course not found" });
         }
 
-        const enrollment = await getEnrollment(courseId, req.user.id);
+        let enrollment;
+        if (req.user) {
+            enrollment = await getEnrollment(courseId, req.user.id);
+        }
+
         const article = await getArticle(articleId);
         let nextArticle;
         let nextModule;
@@ -365,15 +372,19 @@ router.get('/courses/:courseId/modules/:moduleId/articles/:articleId', authentic
             }
         }
 
-        const userProgress = await getArticleProgress(articleId, req.user.id);
+        if (req.user) {
+            const userProgress = await getArticleProgress(articleId, req.user.id);
+        }
 
         return res.json({
             article,
             course,
             nextArticle,
             nextModule,
-            userProgress,
-            enrollment
+            ...(req.user && {
+                userProgress,
+                enrollment
+            })
         });
     }
     catch (error) {

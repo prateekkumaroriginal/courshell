@@ -5,7 +5,7 @@ import CourseSidebar from '@/components/User/CourseSidebar';
 import ReadArticle from '@/components/User/ReadArticle';
 import CourseEnrollButton from '@/components/User/CourseEnrollButton';
 
-const ReadCourse = () => {
+const ReadCourse = ({ userRole }) => {
     const { courseId, articleId } = useParams();
     const [course, setCourse] = useState();
     const [enrollment, setEnrollment] = useState();
@@ -20,7 +20,7 @@ const ReadCourse = () => {
 
     useEffect(() => {
         if (!isLoading && !articleId) {
-            navigate(`/courses/${courseId}/${course?.modules[0]?.id}/${course?.modules[0]?.articles[0]?.id}`);
+            return navigate(`/courses/${courseId}/${course?.modules[0]?.id}/${course?.modules[0]?.articles[0]?.id}`);
         }
     }, [isLoading]);
 
@@ -69,11 +69,12 @@ const ReadCourse = () => {
                     />
                 </div>
 
-                <div className='px-20 flex flex-col md:flex-row items-center justify-between'>
+                <div className='px-20 flex items-center justify-center'>
                     {!enrollment && <CourseEnrollButton
                         courseId={courseId}
                         price={course.price}
                         requested={course?.requestedUsers?.length}
+                        userRole={userRole}
                     />}
                 </div>
             </div>}
