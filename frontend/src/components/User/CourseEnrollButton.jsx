@@ -5,7 +5,7 @@ import toast from 'react-hot-toast';
 import { VITE_APP_BACKEND_URL } from '@/constants';
 import { useNavigate } from 'react-router-dom';
 
-const CourseEnrollButton = ({ courseId, price, requested, userRole }) => {
+const CourseEnrollButton = ({ courseId, requested, userRole }) => {
     const navigate = useNavigate();
     const [localRequested, setLocalRequested] = useState(requested);
 

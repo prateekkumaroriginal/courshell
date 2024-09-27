@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon index.js",
     "prisma:seed": "node prisma/seed.js",
     "prisma:deploy": "npx prisma generate && npx prisma migrate deploy",
     "dev:docker:migrate": "npm run prisma:deploy && npm run prisma:seed && node index.js",

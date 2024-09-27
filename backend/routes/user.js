@@ -283,7 +283,7 @@ router.get('/courses/:courseId', async (req, res) => {
     }
 });
 
-router.get('/courses/:courseId/modules/:moduleId/articles/:articleId', async (req, res) => {
+router.get('/courses/:courseId/modules/:moduleId/articles/:articleId', authenticateToken, async (req, res) => {
     try {
         const { courseId, moduleId, articleId } = req.params;
         const course = await db.course.findUnique({
@@ -291,8 +291,23 @@ router.get('/courses/:courseId/modules/:moduleId/articles/:articleId', async (re
                 id: courseId,
                 isPublished: true
             },
-            select: {
-                price: true
+            include: {
+                modules: {
+                    include: {
+                        articles: {
+                            where: {
+                                isPublished: true
+                            },
+                            include: {
+                                userProgress: {
+                                    where: {
+                                        userId: req.user.id
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
         });
 
@@ -300,10 +315,7 @@ router.get('/courses/:courseId/modules/:moduleId/articles/:articleId', async (re
             return res.status(404).json({ message: "Course not found" });
         }
 
-        let enrollment;
-        if (req.user) {
-            enrollment = await getEnrollment(courseId, req.user.id);
-        }
+        const enrollment = await getEnrollment(courseId, req.user.id);
 
         const article = await getArticle(articleId);
         let nextArticle;
@@ -372,19 +384,19 @@ router.get('/courses/:courseId/modules/:moduleId/articles/:articleId', async (re
             }
         }
 
-        if (req.user) {
-            const userProgress = await getArticleProgress(articleId, req.user.id);
-        }
+        const [userProgress, progressPercentage] = await Promise.all([
+            getArticleProgress(articleId, req.user.id),
+            getProgress(course.id, req.user.id)
+        ]);
 
         return res.json({
             article,
             course,
             nextArticle,
             nextModule,
-            ...(req.user && {
-                userProgress,
-                enrollment
-            })
+            userProgress,
+            enrollment,
+            progressPercentage
         });
     }
     catch (error) {
@@ -392,7 +404,6 @@ router.get('/courses/:courseId/modules/:moduleId/articles/:articleId', async (re
         return res.status(500).json({ error: "Internal server error" });
     }
 });
-
 router.patch('/courses/:courseId/articles/:articleId', authenticateToken, async (req, res) => {
     try {
         const { courseId, articleId } = req.params;

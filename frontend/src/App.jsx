@@ -19,6 +19,7 @@ import Users from './components/Superadmin/Users';
 import ToastProvider from './components/ui/ToastProvider';
 import Signup from './components/common/Signup';
 import RedirectComponent from './components/common/RedirectComponent';
+import ReadArticle from './components/User/ReadArticle';
 
 const hideNavbarPaths = [
     '/courses/:courseId/attachments/:attachmentId',
@@ -50,7 +51,7 @@ function AppRoutes() {
                 <Route path='/browse' element={<BrowsePage />} />
                 <Route path='/dashboard' element={<Dashboard />} />
                 <Route path='/courses/:courseId' element={<ReadCourse userRole={userRole} />} />
-                <Route path='/courses/:courseId/:moduleId/:articleId' element={<ReadCourse userRole={userRole} />} />
+                <Route path='/courses/:courseId/:moduleId/:articleId' element={<ReadArticle />} />
                 <Route path='/courses/:courseId/attachments/:attachmentId' element={<Attachment />} />
                 <Route path='/instructor/analytics' element={<Analytics />} />
                 <Route path='/instructor/create' element={<Create />} />
