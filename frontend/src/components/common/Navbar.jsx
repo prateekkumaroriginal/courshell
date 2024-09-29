@@ -1,8 +1,7 @@
-import React, { useState, useEffect, useCallback } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { VITE_APP_BACKEND_URL } from '@/constants'
 import NavbarItem from '@/components/common/NavbarItem';
-import ConfirmModal from '../ui/ConfirmModal';
+import { VITE_APP_BACKEND_URL } from '@/constants';
+import { useCallback, useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Navbar = ({ userRole, setUserRole }) => {
     const [routes, setRoutes] = useState([]);
