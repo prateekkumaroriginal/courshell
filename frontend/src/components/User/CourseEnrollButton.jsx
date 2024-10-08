@@ -5,9 +5,8 @@ import toast from 'react-hot-toast';
 import { VITE_APP_BACKEND_URL } from '@/constants';
 import { useNavigate } from 'react-router-dom';
 
-const CourseEnrollButton = ({ courseId, requested, userRole }) => {
+const CourseEnrollButton = ({ courseId, userRole }) => {
     const navigate = useNavigate();
-    const [localRequested, setLocalRequested] = useState(requested);
 
     const onClick = async () => {
         if (!userRole) {
@@ -24,7 +23,6 @@ const CourseEnrollButton = ({ courseId, requested, userRole }) => {
 
             if (response.ok) {
                 const data = await response.json();
-                setLocalRequested(localRequested => !localRequested);
                 console.log(data);
             }
         } catch (error) {
@@ -37,11 +35,10 @@ const CourseEnrollButton = ({ courseId, requested, userRole }) => {
         <Button
             size="lg"
             variant="courshellGradient"
-            className='w-full md:w-auto mt-8 text-xl px-8 py-4'
+            className='w-full md:w-auto text-xl px-8 py-4'
             onClick={onClick}
-            disabled={localRequested ? true : false}
         >
-            {localRequested ? "Requested" : <>Enroll</>}
+            Enroll
         </Button>
     )
 }

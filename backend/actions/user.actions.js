@@ -27,12 +27,14 @@ const getInstructorOrAbove = async (email) => {
 }
 
 const getCourse = async (courseId, userId) => {
-    return await db.course.findUnique({
+    const course = await db.course.findUnique({
         where: {
             id: courseId,
             isPublished: true
         },
         include: {
+            instructor: true,
+            coverImage: true,
             modules: {
                 where: {
                     articles: {
@@ -50,6 +52,7 @@ const getCourse = async (courseId, userId) => {
                             id: true,
                             title: true,
                             isFree: true,
+                            content: true,
                             ...(userId && {
                                 userProgress: {
                                     where: {
@@ -92,6 +95,18 @@ const getCourse = async (courseId, userId) => {
             })
         }
     });
+
+    course.coverImage.data = course.coverImage.data.toString('base64');
+
+    course.modules.forEach(module => {
+        module.articles.forEach(article => {
+            if (!article.isFree) {
+                delete article.content;
+            }
+        });
+    });
+
+    return course;
 }
 
 const getEnrollment = async (courseId, userId) => {

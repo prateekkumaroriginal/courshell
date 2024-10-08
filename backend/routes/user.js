@@ -273,10 +273,10 @@ router.get('/courses/:courseId', async (req, res) => {
         if (req.user) {
             const enrollment = await getEnrollment(courseId, req.user.id);
             const progressPercentage = await getProgress(course.id, req.user.id);
-            res.json({ course, enrollment, progressPercentage });
+            return res.json({ course, enrollment, progressPercentage });
         }
 
-        res.json({ course });
+        return res.json({ course });
     } catch (error) {
         console.log("[USER -> COURSE]", error);
         return res.status(500).json({ error: "Internal server error" });
@@ -404,6 +404,7 @@ router.get('/courses/:courseId/modules/:moduleId/articles/:articleId', authentic
         return res.status(500).json({ error: "Internal server error" });
     }
 });
+
 router.patch('/courses/:courseId/articles/:articleId', authenticateToken, async (req, res) => {
     try {
         const { courseId, articleId } = req.params;

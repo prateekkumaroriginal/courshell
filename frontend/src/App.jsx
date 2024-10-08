@@ -10,7 +10,7 @@ import Article from '@/components/Instructor/Article';
 import Attachment from '@/components/common/Attachment';
 import CreatedCourses from '@/components/Instructor/CreatedCourses';
 import BrowsePage from '@/components/User/BrowsePage';
-import ReadCourse from '@/components/User/ReadCourse';
+import CoursePreview from '@/components/User/CoursePreview';
 import Dashboard from '@/components/User/Dashboard';
 import Analytics from '@/components/Instructor/Analytics';
 import ManageCourses from './components/Admin/ManageCourses';
@@ -50,7 +50,7 @@ function AppRoutes() {
                 <Route path='/signin' element={<Signin setUserRole={setUserRole} />} />
                 <Route path='/browse' element={<BrowsePage />} />
                 <Route path='/dashboard' element={<Dashboard />} />
-                <Route path='/courses/:courseId' element={<ReadCourse userRole={userRole} />} />
+                <Route path='/courses/:courseId' element={<CoursePreview userRole={userRole} />} />
                 <Route path='/courses/:courseId/:moduleId/:articleId' element={<ReadArticle />} />
                 <Route path='/courses/:courseId/attachments/:attachmentId' element={<Attachment />} />
                 <Route path='/instructor/analytics' element={<Analytics />} />

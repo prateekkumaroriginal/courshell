@@ -3,7 +3,7 @@ import 'dotenv/config';
 
 const SECRET = process.env.SECRET;
 
-const authenticateToken = async (req, res, next) => {
+export const authenticateToken = async (req, res, next) => {
     const authHeader = req.headers.authorization;
     if (authHeader) {
         const token = authHeader.split(' ')[1];
@@ -19,7 +19,7 @@ const authenticateToken = async (req, res, next) => {
     }
 }
 
-const authorizeRoles = (...roles) => {
+export const authorizeRoles = (...roles) => {
     return async (req, res, next) => {
         if (!roles.includes(req.user.role)) {
             return res.status(403).json({ message: 'Unauthorized' });
@@ -27,5 +27,3 @@ const authorizeRoles = (...roles) => {
         next();
     }
 }
-
-export {authenticateToken, authorizeRoles};
