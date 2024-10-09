@@ -19,6 +19,24 @@ export const authenticateToken = async (req, res, next) => {
     }
 }
 
+export const optionalAuthenticate = async (req, res, next) => {
+    const authHeader = req.headers.authorization;
+    if (authHeader) {
+        const token = authHeader.split(' ')[1];
+        jwt.verify(token, SECRET, (err, user) => {
+            if (!err) {
+                req.user = user;
+            } else {
+                req.user = null;
+            }
+            next();
+        });
+    } else {
+        req.user = null;
+        next();
+    }
+};
+
 export const authorizeRoles = (...roles) => {
     return async (req, res, next) => {
         if (!roles.includes(req.user.role)) {

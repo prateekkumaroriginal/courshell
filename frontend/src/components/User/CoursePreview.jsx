@@ -13,7 +13,6 @@ import {
 import {
     Dialog,
     DialogContent,
-    DialogDescription,
     DialogHeader,
     DialogTitle,
     DialogTrigger,
@@ -41,6 +40,7 @@ const CoursePreview = ({ userRole }) => {
             }
         });
         const data = await response.json();
+        console.log(data);
         setCourse(data.course);
         setEnrollment(data.enrollment);
         setIsLoading(false);
@@ -90,7 +90,10 @@ const CoursePreview = ({ userRole }) => {
                             </div>
                         </div>
 
-                        <div className='flex w-full justify-start'>
+
+                        <div className='flex flex-col w-full justify-start'>
+                            <h1 className='text-3xl mb-4'>Course Content</h1>
+
                             <Accordion className='w-full md:w-3/5' type="multiple" collapsible>
                                 {course.modules.map(module => (
                                     <AccordionItem value={module.id}>

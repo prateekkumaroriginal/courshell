@@ -2,7 +2,7 @@ import { db } from '../prisma/index.js';
 import { z } from 'zod';
 import jwt from 'jsonwebtoken';
 import express from 'express';
-import { authenticateToken } from '../middleware/auth.js';
+import { authenticateToken, optionalAuthenticate } from '../middleware/auth.js';
 import bcrypt from "bcrypt";
 import { getCourse, getEnrollment, getAllCourses, getProgress, getUser, getArticle, getArticleProgress } from '../actions/user.actions.js';
 import { Role, STATUS } from '@prisma/client';
@@ -261,7 +261,7 @@ router.get('/courses', async (req, res) => {
     }
 });
 
-router.get('/courses/:courseId', async (req, res) => {
+router.get('/courses/:courseId', optionalAuthenticate, async (req, res) => {
     try {
         const { courseId } = req.params;
         const course = await getCourse(courseId, req.user ? req.user.id : null);
