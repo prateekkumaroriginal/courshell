@@ -20,6 +20,10 @@ const markAsCompleteInput = z.object({
     isCompleted: z.boolean()
 });
 
+router.get('/health-check', (req, res)=>{
+    res.send("OK")
+})
+
 router.post('/login', async (req, res) => {
     try {
         const parsedInput = loginInput.safeParse(req.headers);
