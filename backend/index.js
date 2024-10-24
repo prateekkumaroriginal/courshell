@@ -17,6 +17,10 @@ app.use("/superadmin", superadminRouter);
 
 const port = process.env.PORT || 3000;
 
+app.get('/health-check', (req, res) => {
+    res.send("OK")
+});
+
 app.listen(port, () => {
     console.log(`App listening on port ${port}`);
 });
