@@ -5,15 +5,19 @@ import Banner from '../ui/Banner';
 import toast from 'react-hot-toast';
 import { useParams } from 'react-router-dom';
 import CourseProgressButton from './CourseProgressButton';
+import CourseSidebar from './CourseSidebar';
 
-const ReadArticle = ({ isLoading, setIsLoading, enrollment, setProgressPercentage }) => {
+const ReadArticle = () => {
     const { courseId, moduleId, articleId } = useParams();
+    const [isLoading, setIsLoading] = useState(true);
     const [article, setArticle] = useState();
     const [nextArticle, setNextArticle] = useState();
     const [nextModule, setNextModule] = useState();
     const [course, setCourse] = useState();
     const [isLocked, setIsLocked] = useState();
     const [userProgress, setUserProgress] = useState();
+    const [enrollment, setEnrollment] = useState();
+    const [progressPercentage, setProgressPercentage] = useState();
 
     useEffect(() => {
         fetchArticle();
@@ -21,37 +25,44 @@ const ReadArticle = ({ isLoading, setIsLoading, enrollment, setProgressPercentag
 
     const fetchArticle = async () => {
         setIsLoading(true);
-        if (articleId !== undefined) {
-            const response = await fetch(`${VITE_APP_BACKEND_URL}/user/courses/${courseId}/modules/${moduleId}/articles/${articleId}`, {
-                method: 'GET',
-                headers: {
-                    authorization: `Bearer ${localStorage.getItem('token')}`
-                }
-            });
+        try {
+            if (articleId) {
+                const response = await fetch(`${VITE_APP_BACKEND_URL}/user/courses/${courseId}/modules/${moduleId}/articles/${articleId}`, {
+                    method: 'GET',
+                    headers: {
+                        authorization: `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
 
-            if (response.ok) {
-                const data = await response.json();
-                setArticle(data.article);
-                setCourse(data.course);
-                setIsLocked(!data.article.isFree && !data.enrollment);
-                setUserProgress(data.userProgress);
-                setNextArticle(data.nextArticle);
-                setNextModule(data.nextModule);
-                console.log(data);
-            } else {
-                toast.error("Something went wrong");
+                if (response.ok) {
+                    const data = await response.json();
+                    setArticle(data.article);
+                    setCourse(data.course);
+                    setIsLocked(!data.article.isFree && !data.enrollment);
+                    setProgressPercentage(data.progressPercentage);
+                    setUserProgress(data.userProgress);
+                    setNextArticle(data.nextArticle);
+                    setNextModule(data.nextModule);
+                    setEnrollment(data.enrollment);
+                    console.log(data);
+                } else {
+                    toast.error("Something went wrong");
+                }
             }
+        } catch (error) {
+            console.log(error);
+        } finally {
+            setIsLoading(false);
         }
-        setIsLoading(false);
     }
 
-    if (isLoading || articleId === undefined) {
+    if (isLoading || !articleId) {
         return <div className='text-center text-2xl text-muted-foreground mt-10'>
             Loading...
         </div>
     }
 
-    if (!(articleId === undefined) && !article || !course) {
+    if (!article || !course) {
         return <div className='text-center text-2xl text-muted-foreground mt-10'>
             Article or course not found.
         </div>
@@ -59,7 +70,15 @@ const ReadArticle = ({ isLoading, setIsLoading, enrollment, setProgressPercentag
 
     return (
         <>
-            {!isLoading && <div>
+            <div className="flex h-full flex-col fixed inset-y-0 top-14 z-40">
+                {course && <CourseSidebar
+                    course={course}
+                    enrollment={enrollment}
+                    progressPercentage={progressPercentage}
+                />}
+            </div>
+
+            {!isLoading && <div className='px-20'>
                 {userProgress?.isCompleted && <Banner
                     label="You have completed this article."
                     variant="SUCCESS"

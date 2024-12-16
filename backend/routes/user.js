@@ -2,10 +2,10 @@ import { db } from '../prisma/index.js';
 import { z } from 'zod';
 import jwt from 'jsonwebtoken';
 import express from 'express';
-import { authenticateToken } from '../middleware/auth.js';
+import { authenticateToken, optionalAuthenticate } from '../middleware/auth.js';
 import bcrypt from "bcrypt";
 import { getCourse, getEnrollment, getAllCourses, getProgress, getUser, getArticle, getArticleProgress } from '../actions/user.actions.js';
-import { ACCEPTED, ADMIN, INSTRUCTOR, PENDING, REJECTED, SUPERADMIN } from '../constants.js';
+import { Role, STATUS } from '@prisma/client';
 
 const router = express.Router();
 
@@ -16,8 +16,68 @@ const loginInput = z.object({
     password: z.string().min(4).max(64),
 });
 
+const signupInput = z.object({
+    email: z.string().email().min(4).max(200),
+    password: z.string().min(8).max(64),
+    role: z.enum([Role.USER, Role.INSTRUCTOR])
+});
+
 const markAsCompleteInput = z.object({
     isCompleted: z.boolean()
+});
+
+router.post("/signup", async (req, res) => {
+    try {
+        const parsedInput = signupInput.safeParse(req.body);
+        if (!parsedInput.success) {
+            return res.status(400).json({
+                message: parsedInput.error
+            });
+        }
+
+        const existingUser = await db.user.findUnique({
+            where: {
+                email: parsedInput.data.email
+            }
+        });
+
+        if (existingUser) {
+            return res.status(400).json({
+                message: {
+                    issues: [{
+                        message: "User with same email already exists!"
+                    }]
+                }
+            });
+        }
+
+        const hashedPassword = bcrypt.hashSync(parsedInput.data.password, 10);
+
+        const user = await db.user.create({
+            data: {
+                email: parsedInput.data.email,
+                password: hashedPassword,
+                role: parsedInput.data.role
+            },
+            select: {
+                id: true,
+                email: true,
+                role: true
+            }
+        });
+
+        if (user) {
+            const token = jwt.sign({ email: parsedInput.data.email, role: user.role, id: user.id }, SECRET, { expiresIn: '4w' });
+            return res.json({
+                token,
+                role: user.role,
+                email: parsedInput.data.email
+            });
+        }
+    } catch (error) {
+        console.error("[USER]", error);
+        return res.status(500).json({ error: "Internal server error" });
+    }
 });
 
 router.post('/login', async (req, res) => {
@@ -146,7 +206,7 @@ router.get('/dashboard', authenticateToken, async (req, res) => {
 
         const latestRequestedCoursesMap = {};
         user.requestedCourses.forEach(request => {
-            if (request.status === PENDING) {
+            if (request.status === STATUS.PENDING) {
                 const courseId = request.courseId;
                 if (!latestRequestedCoursesMap[courseId] || new Date(request.updatedAt) > new Date(latestRequestedCoursesMap[courseId].updatedAt)) {
                     latestRequestedCoursesMap[courseId] = request;
@@ -175,7 +235,7 @@ router.get('/dashboard', authenticateToken, async (req, res) => {
     }
 });
 
-router.get('/categories', authenticateToken, async (req, res) => {
+router.get('/categories', async (req, res) => {
     try {
         const categories = await db.category.findMany();
         return res.json({ categories });
@@ -185,14 +245,14 @@ router.get('/categories', authenticateToken, async (req, res) => {
     }
 });
 
-router.get('/courses', authenticateToken, async (req, res) => {
+router.get('/courses', async (req, res) => {
     try {
         const { title, categoryId } = req.query;
-        const courses = await getAllCourses(req.user.id, categoryId || null, title || null);
+        const courses = await getAllCourses(req.user ? req.user.id : null, categoryId || null, title || null);
 
         courses.map(course => {
             course.coverImage.data = course.coverImage.data.toString('base64');
-        })
+        });
 
         return res.json({ courses });
     } catch (error) {
@@ -201,19 +261,22 @@ router.get('/courses', authenticateToken, async (req, res) => {
     }
 });
 
-router.get('/courses/:courseId', authenticateToken, async (req, res) => {
+router.get('/courses/:courseId', optionalAuthenticate, async (req, res) => {
     try {
         const { courseId } = req.params;
-        const course = await getCourse(courseId, req.user.id);
+        const course = await getCourse(courseId, req.user ? req.user.id : null);
 
         if (!course) {
             return res.status(404).json({ message: "Course not found" });
         }
 
-        const enrollment = await getEnrollment(courseId, req.user.id);
-        const progressPercentage = await getProgress(course.id, req.user.id);
+        if (req.user) {
+            const enrollment = await getEnrollment(courseId, req.user.id);
+            const progressPercentage = await getProgress(course.id, req.user.id);
+            return res.json({ course, enrollment, progressPercentage });
+        }
 
-        res.json({ course, enrollment, progressPercentage });
+        return res.json({ course });
     } catch (error) {
         console.log("[USER -> COURSE]", error);
         return res.status(500).json({ error: "Internal server error" });
@@ -228,8 +291,23 @@ router.get('/courses/:courseId/modules/:moduleId/articles/:articleId', authentic
                 id: courseId,
                 isPublished: true
             },
-            select: {
-                price: true
+            include: {
+                modules: {
+                    include: {
+                        articles: {
+                            where: {
+                                isPublished: true
+                            },
+                            include: {
+                                userProgress: {
+                                    where: {
+                                        userId: req.user.id
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
         });
 
@@ -238,6 +316,7 @@ router.get('/courses/:courseId/modules/:moduleId/articles/:articleId', authentic
         }
 
         const enrollment = await getEnrollment(courseId, req.user.id);
+
         const article = await getArticle(articleId);
         let nextArticle;
         let nextModule;
@@ -305,7 +384,10 @@ router.get('/courses/:courseId/modules/:moduleId/articles/:articleId', authentic
             }
         }
 
-        const userProgress = await getArticleProgress(articleId, req.user.id);
+        const [userProgress, progressPercentage] = await Promise.all([
+            getArticleProgress(articleId, req.user.id),
+            getProgress(course.id, req.user.id)
+        ]);
 
         return res.json({
             article,
@@ -313,7 +395,8 @@ router.get('/courses/:courseId/modules/:moduleId/articles/:articleId', authentic
             nextArticle,
             nextModule,
             userProgress,
-            enrollment
+            enrollment,
+            progressPercentage
         });
     }
     catch (error) {
@@ -401,7 +484,7 @@ router.post('/courses/:courseId/request', authenticateToken, async (req, res) =>
             }
         });
 
-        if (request && request.status === PENDING) {
+        if (request && request.status === STATUS.PENDING) {
             return res.status(400).json({ message: "Previous request is pending" });
         }
 

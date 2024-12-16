@@ -10,15 +10,21 @@ import Article from '@/components/Instructor/Article';
 import Attachment from '@/components/common/Attachment';
 import CreatedCourses from '@/components/Instructor/CreatedCourses';
 import BrowsePage from '@/components/User/BrowsePage';
-import ReadCourse from '@/components/User/ReadCourse';
+import CoursePreview from '@/components/User/CoursePreview';
 import Dashboard from '@/components/User/Dashboard';
 import Analytics from '@/components/Instructor/Analytics';
 import ManageCourses from './components/Admin/ManageCourses';
 import ManageCourse from './components/Admin/ManageCourse';
 import Users from './components/Superadmin/Users';
 import ToastProvider from './components/ui/ToastProvider';
-import AddUser from './components/Superadmin/AddUser';
+import Signup from './components/common/Signup';
 import RedirectComponent from './components/common/RedirectComponent';
+import ReadArticle from './components/User/ReadArticle';
+import PrivacyPolicy from './components/common/PrivacyPolicy';
+import Terms from './components/common/Terms';
+import Refunds from './components/common/Refunds';
+import ContactUs from './components/common/ContactUs';
+import Shipping from './components/common/Shipping';
 
 const hideNavbarPaths = [
     '/courses/:courseId/attachments/:attachmentId',
@@ -45,11 +51,17 @@ function AppRoutes() {
             {!shouldHideNavbar(location.pathname, hideNavbarPaths) && <Navbar userRole={userRole} setUserRole={setUserRole} />}
             <Routes>
                 <Route path='/' element={<RedirectComponent />} />
+                <Route path='/privacy-policy' element={<PrivacyPolicy />} />
+                <Route path='/terms' element={<Terms />} />
+                <Route path='/refunds' element={<Refunds />} />
+                <Route path='/contact-us' element={<ContactUs />} />
+                <Route path='/shipping' element={<Shipping />} />
+                <Route path='/signup' element={<Signup setUserRole={setUserRole} />} />
                 <Route path='/signin' element={<Signin setUserRole={setUserRole} />} />
                 <Route path='/browse' element={<BrowsePage />} />
                 <Route path='/dashboard' element={<Dashboard />} />
-                <Route path='/courses/:courseId' element={<ReadCourse />} />
-                <Route path='/courses/:courseId/:moduleId/:articleId' element={<ReadCourse />} />
+                <Route path='/courses/:courseId' element={<CoursePreview userRole={userRole} />} />
+                <Route path='/courses/:courseId/:moduleId/:articleId' element={<ReadArticle />} />
                 <Route path='/courses/:courseId/attachments/:attachmentId' element={<Attachment />} />
                 <Route path='/instructor/analytics' element={<Analytics />} />
                 <Route path='/instructor/create' element={<Create />} />
@@ -61,7 +73,6 @@ function AppRoutes() {
                 <Route path='/admin/courses' element={<ManageCourses />} />
                 <Route path='/admin/courses/:courseId' element={<ManageCourse />} />
                 <Route path='/superadmin/users' element={<Users />} />
-                <Route path='/superadmin/users/add' element={<AddUser />} />
             </Routes>
         </>
     )

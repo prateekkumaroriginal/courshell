@@ -32,17 +32,12 @@ const BrowsePage = () => {
     const fetchCategories = useCallback(async () => {
         try {
             const response = await fetch(`${VITE_APP_BACKEND_URL}/user/categories`, {
-                method: 'GET',
-                headers: {
-                    authorization: `Bearer ${localStorage.getItem('token')}`
-                }
+                method: 'GET'
             });
 
             if (response.ok) {
                 const data = await response.json();
                 setCategories(data.categories);
-            } else if (response.status === 401) {
-                return navigate("/signin");
             } else {
                 toast.error("Something went wrong");
             }
@@ -55,17 +50,12 @@ const BrowsePage = () => {
     const fetchCourses = useCallback(async (url) => {
         try {
             const response = await fetch(`${VITE_APP_BACKEND_URL}/user/courses${url}`, {
-                method: 'GET',
-                headers: {
-                    authorization: `Bearer ${localStorage.getItem('token')}`
-                }
+                method: 'GET'
             });
 
             if (response.ok) {
                 const data = await response.json();
                 setCourses(data.courses);
-            } else if (response.status === 401) {
-                return navigate("/signin");
             } else {
                 toast.error("Something went wrong");
             }

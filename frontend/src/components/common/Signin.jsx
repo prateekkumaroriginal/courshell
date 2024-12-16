@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -33,10 +33,11 @@ const Signin = ({ setUserRole }) => {
             });
 
             if (response.ok) {
+                toast.success("Login Successful");
                 const data = await response.json();
                 setUserRole(data.role);
                 localStorage.setItem('token', data.token);
-                navigate(`/dashboard`);
+                return navigate(`/dashboard`);
             } else if (response.status === 401) {
                 toast.error("Invalid Credentials");
             } else {
@@ -53,11 +54,11 @@ const Signin = ({ setUserRole }) => {
             <div className="w-full bg-blue-200 rounded-lg shadow-2xl mt-20 sm:max-w-md xl:p-0">
                 <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
                     <h1 className="text-xl text-center font-bold leading-tight tracking-tight text-gray-900 md:text-2xl">
-                        Courshell
+                        Login
                     </h1>
 
                     <form
-                        className="space-y-4 md:space-y-6"
+                        className="gap-y-4 md:space-y-6"
                         onSubmit={handleSubmit(onSubmit)}
                     >
                         <CustomInput
@@ -81,6 +82,15 @@ const Signin = ({ setUserRole }) => {
                         >
                             Sign In
                         </button>
+
+                        <div className="flex justify-center">
+                            <Link
+                                to="/signup"
+                                className='text-sm text-blue-800 hover:underline'
+                            >
+                                Signup
+                            </Link>
+                        </div>
                     </form>
                 </div>
             </div>

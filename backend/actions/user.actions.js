@@ -27,12 +27,14 @@ const getInstructorOrAbove = async (email) => {
 }
 
 const getCourse = async (courseId, userId) => {
-    return await db.course.findUnique({
+    const course = await db.course.findUnique({
         where: {
             id: courseId,
             isPublished: true
         },
         include: {
+            instructor: true,
+            coverImage: true,
             modules: {
                 where: {
                     articles: {
@@ -50,11 +52,14 @@ const getCourse = async (courseId, userId) => {
                             id: true,
                             title: true,
                             isFree: true,
-                            userProgress: {
-                                where: {
-                                    userId
+                            content: true,
+                            ...(userId && {
+                                userProgress: {
+                                    where: {
+                                        userId
+                                    }
                                 }
-                            }
+                            })
                         },
                         orderBy: {
                             position: 'asc'
@@ -65,29 +70,43 @@ const getCourse = async (courseId, userId) => {
                     position: 'asc'
                 }
             },
-            attachments: {
-                where: {
-                    isCoverImage: false
+            ...(userId && {
+                attachments: {
+                    where: {
+                        isCoverImage: false
+                    },
+                    select: {
+                        id: true,
+                        name: true,
+                        originalName: true,
+                        type: true
+                    }
                 },
-                select: {
-                    id: true,
-                    name: true,
-                    originalName: true,
-                    type: true
+                requestedUsers: {
+                    where: {
+                        userId,
+                        courseId
+                    },
+                    orderBy: {
+                        updatedAt: 'desc'
+                    },
+                    take: 1
                 }
-            },
-            requestedUsers: {
-                where: {
-                    userId,
-                    courseId
-                },
-                orderBy: {
-                    updatedAt: 'desc'
-                },
-                take: 1
-            }
+            })
         }
     });
+
+    course.coverImage.data = course.coverImage.data.toString('base64');
+
+    course.modules.forEach(module => {
+        module.articles.forEach(article => {
+            if (!article.isFree) {
+                delete article.content;
+            }
+        });
+    });
+
+    return course;
 }
 
 const getEnrollment = async (courseId, userId) => {
@@ -173,11 +192,13 @@ const getAllCourses = async (userId, categoryId, title) => {
                     }
                 }
             },
-            enrolledUsers: {
-                where: {
-                    userId
+            ...(userId && {
+                enrolledUsers: {
+                    where: {
+                        userId
+                    }
                 }
-            }
+            })
         },
         orderBy: {
             createdAt: "desc"
@@ -186,7 +207,7 @@ const getAllCourses = async (userId, categoryId, title) => {
 
     const coursesWithProgress = await Promise.all(
         courses.map(async course => {
-            if (course.enrolledUsers.length === 0) {
+            if (!userId || course.enrolledUsers.length === 0) {
                 return {
                     ...course,
                     progress: null

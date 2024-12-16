@@ -1,13 +1,14 @@
 import { VITE_APP_BACKEND_URL } from '@/constants';
 import React, { useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast';
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { DataTable } from '../ui/DataTable';
 import { columns as enrollmentColumns } from './EnrollmentColumns';
 import { columns as requestColumns } from './RequestColumns';
 
 const ManageCourse = () => {
     const { courseId } = useParams();
+    const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(true);
     const [course, setCourse] = useState();
     const [enrollments, setEnrollments] = useState([]);
