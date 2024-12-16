@@ -20,6 +20,11 @@ import ToastProvider from './components/ui/ToastProvider';
 import Signup from './components/common/Signup';
 import RedirectComponent from './components/common/RedirectComponent';
 import ReadArticle from './components/User/ReadArticle';
+import PrivacyPolicy from './components/common/PrivacyPolicy';
+import Terms from './components/common/Terms';
+import Refunds from './components/common/Refunds';
+import ContactUs from './components/common/ContactUs';
+import Shipping from './components/common/Shipping';
 
 const hideNavbarPaths = [
     '/courses/:courseId/attachments/:attachmentId',
@@ -46,6 +51,11 @@ function AppRoutes() {
             {!shouldHideNavbar(location.pathname, hideNavbarPaths) && <Navbar userRole={userRole} setUserRole={setUserRole} />}
             <Routes>
                 <Route path='/' element={<RedirectComponent />} />
+                <Route path='/privacy-policy' element={<PrivacyPolicy />} />
+                <Route path='/terms' element={<Terms />} />
+                <Route path='/refunds' element={<Refunds />} />
+                <Route path='/contact-us' element={<ContactUs />} />
+                <Route path='/shipping' element={<Shipping />} />
                 <Route path='/signup' element={<Signup setUserRole={setUserRole} />} />
                 <Route path='/signin' element={<Signin setUserRole={setUserRole} />} />
                 <Route path='/browse' element={<BrowsePage />} />

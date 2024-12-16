@@ -20,7 +20,7 @@ const PrivacyPolicy = () => {
       </div>
       Your information is used to:
 
-      <ul>
+      <ul className='list-disc list-outside pl-6'>
         <li>Provide and improve our services.</li>
         <li>Communicate updates, respond to queries, and enhance user experience.</li>
         <li>Ensure security and compliance with legal obligations.</li>
