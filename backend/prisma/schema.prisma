@@ -1,6 +1,6 @@
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["fullTextSearch"]
+  previewFeatures = ["fullTextSearchPostgres"]
   binaryTargets   = ["native", "windows", "linux-musl-openssl-3.0.x"]
 }
 
@@ -10,14 +10,18 @@ datasource db {
 }
 
 model User {
-  id               String         @id @default(uuid())
-  email            String         @unique
-  password         String
-  role             Role
-  createdCourses   Course[]
-  enrolledCourses  Enrollment[]
-  requestedCourses Request[]
-  userProgress     UserProgress[]
+  id                String         @id @default(uuid())
+  email             String         @unique
+  password          String
+  role              Role
+  razorpayAccountId String?
+  createdCourses    Course[]
+  enrolledCourses   Enrollment[]
+  requestedCourses  Request[]
+  userProgress      UserProgress[]
+
+  paymentsMade     Payment[] @relation("buyer")
+  paymentsReceived Payment[] @relation("seller")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -36,6 +40,7 @@ model Course {
   instructor   User   @relation(fields: [instructorId], references: [id])
 
   enrolledUsers Enrollment[]
+  payments      Payment[]
 
   title        String      @db.Text
   description  String?     @db.Text
@@ -108,6 +113,40 @@ model Enrollment {
   updatedAt DateTime @updatedAt
 
   @@unique([userId, courseId])
+}
+
+model Payment {
+  id                String        @id @default(uuid())
+  razorpayOrderId   String?       @unique
+  razorpayPaymentId String?       @unique
+  amount            Float
+  currency          String
+  commissionAmount  Float
+  sellerAmount      Float
+  status            PaymentStatus
+
+  courseId String
+  course   Course @relation(fields: [courseId], references: [id])
+
+  buyerId String
+  buyer   User   @relation("buyer", fields: [buyerId], references: [id])
+
+  sellerId String
+  seller   User   @relation("seller", fields: [sellerId], references: [id])
+
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+
+  @@index([courseId])
+  @@index([buyerId])
+  @@index([sellerId])
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESSFUL
+  FAILED
+  REFUNDED
 }
 
 model Article {
