@@ -61,6 +61,7 @@ const CoverImage = ({ course, courseId, fetchData }) => {
                     disabled={isSubmitting}
                     {...register('image')}
                     type="file"
+                    accept='image/*'
                     onChange={handleFileChange}
                     id="imageUrl"
                 />
@@ -83,7 +84,7 @@ const CoverImage = ({ course, courseId, fetchData }) => {
                     </button>
                 </>}
             </form>
-            <img className='rounded-md' src={imageUrl} alt="h2" />
+            {imageUrl && <img className='rounded-md' src={imageUrl} alt="h2" />}
         </div>
     )
 }

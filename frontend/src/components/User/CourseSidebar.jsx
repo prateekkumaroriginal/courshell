@@ -25,7 +25,8 @@ const CourseSidebar = ({ course, enrollment, progressPercentage }) => {
                         >
                             <PanelRightClose className='h-6 w-6' />
                         </div>
-
+                    </SheetTrigger>
+                    <SheetTrigger>
                         <div
                             onClick={() => setTrigger("Attachments")}
                             className='p-2 rounded-md hover:bg-slate-400/25 transition'
@@ -69,7 +70,7 @@ const CourseSidebar = ({ course, enrollment, progressPercentage }) => {
 
                         {trigger === 'Attachments' && (
                             <div className='flex flex-col w-full'>
-                                {enrollment && course.attachments.map(attachment => (
+                                {enrollment && course.attachments && course.attachments.map(attachment => (
                                     <AttachmentsSidebarItem
                                         key={attachment.id}
                                         id={attachment.id}

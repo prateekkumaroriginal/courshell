@@ -8,7 +8,7 @@ import { VITE_APP_BACKEND_URL } from '@/constants';
 import { formatPrice } from '@/lib/format';
 
 const priceSchema = z.object({
-    price: z.coerce.number().multipleOf(0.01)
+    price: z.coerce.number().int()
 });
 
 const PriceForm = ({ courseId, price, setPrice }) => {

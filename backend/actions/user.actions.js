@@ -96,6 +96,10 @@ const getCourse = async (courseId, userId) => {
         }
     });
 
+    if (!course) {
+        return null;
+    }
+
     course.coverImage.data = course.coverImage.data.toString('base64');
 
     course.modules.forEach(module => {

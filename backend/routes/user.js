@@ -17,7 +17,8 @@ const loginInput = z.object({
 });
 
 const signupInput = z.object({
-    email: z.string().email().min(4).max(200),
+    email: z.string().email(),
+    name: z.string().min(2).max(64),
     password: z.string().min(8).max(64),
     role: z.enum([Role.USER, Role.INSTRUCTOR])
 });
@@ -56,13 +57,15 @@ router.post("/signup", async (req, res) => {
         const user = await db.user.create({
             data: {
                 email: parsedInput.data.email,
+                name: parsedInput.data.name,
                 password: hashedPassword,
                 role: parsedInput.data.role
             },
             select: {
                 id: true,
                 email: true,
-                role: true
+                role: true,
+                name: true
             }
         });
 
@@ -189,6 +192,10 @@ router.get('/dashboard', authenticateToken, async (req, res) => {
             }
         });
 
+        if (!user) {
+            return res.status(404).json({message: "User not found"})
+        }        
+
         user.enrolledCourses = await Promise.all(
             user.enrolledCourses
                 .filter(({ course }) => course.isPublished)
@@ -293,7 +300,16 @@ router.get('/courses/:courseId/modules/:moduleId/articles/:articleId', authentic
             },
             include: {
                 modules: {
-                    include: {
+                    where: {
+                        articles: {
+                            some: {
+                                isPublished: true
+                            }
+                        }
+                    },
+                    select: {
+                        id: true,
+                        title: true,
                         articles: {
                             where: {
                                 isPublished: true
@@ -357,6 +373,11 @@ router.get('/courses/:courseId/modules/:moduleId/articles/:articleId', authentic
                         courseId,
                         position: {
                             gt: module?.position
+                        },
+                        articles: {
+                            some: {
+                                isPublished: true
+                            }
                         }
                     },
                     orderBy: {
