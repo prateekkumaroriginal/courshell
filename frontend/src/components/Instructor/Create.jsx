@@ -44,7 +44,7 @@ const Create = () => {
     }
 
     return (
-        <div className='max-w-5xl mx-auto flex flex-wrap items-center justify-center h-full p-6'>
+        <div className='max-w-5xl mx-auto flex flex-col items-center justify-center h-full p-6'>
             <div className='mt-8'>
                 <h1 className='text-4xl'>
                     Name your course

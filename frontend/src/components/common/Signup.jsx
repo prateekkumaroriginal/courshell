@@ -25,6 +25,7 @@ const ROLES = ["USER", "INSTRUCTOR"];
 
 const formSchema = z.object({
     email: z.string().email(),
+    name: z.string().min(2).max(64),
     password: z.string().min(8).max(64),
     confirmPassword: z.string().min(8).max(64),
     role: z.enum(ROLES)
@@ -37,6 +38,7 @@ const Signup = ({ setUserRole }) => {
         resolver: zodResolver(formSchema),
         defaultValues: {
             email: "",
+            name: "",
             password: "",
             confirmPassword: "",
             role: ROLES[1]
@@ -47,7 +49,7 @@ const Signup = ({ setUserRole }) => {
 
     const onSubmit = async (values) => {
         try {
-            const response = await fetch(`${VITE_APP_BACKEND_URL}/user`, {
+            const response = await fetch(`${VITE_APP_BACKEND_URL}/user/signup`, {
                 method: 'POST',
                 headers: {
                     'content-type': 'application/json'
@@ -55,7 +57,8 @@ const Signup = ({ setUserRole }) => {
                 body: JSON.stringify({
                     email: values.email,
                     password: values.password,
-                    role: values.role
+                    role: values.role,
+                    name: values.name
                 })
             });
 
@@ -100,6 +103,14 @@ const Signup = ({ setUserRole }) => {
                                         type="email"
                                         name="email"
                                         label="Email"
+                                        register={register}
+                                    />
+
+                                    <CustomInput
+                                        type="text"
+                                        name="name"
+                                        label="Name"
+                                        placeholder="Enter Your Name"
                                         register={register}
                                     />
 
