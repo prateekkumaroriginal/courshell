@@ -25,6 +25,7 @@ import Terms from './components/common/Terms';
 import Refunds from './components/common/Refunds';
 import ContactUs from './components/common/ContactUs';
 import Shipping from './components/common/Shipping';
+import NotFound from './components/common/NotFound';
 
 const hideNavbarPaths = [
     '/courses/:courseId/attachments/:attachmentId',
@@ -73,6 +74,7 @@ function AppRoutes() {
                 <Route path='/admin/courses' element={<ManageCourses />} />
                 <Route path='/admin/courses/:courseId' element={<ManageCourse />} />
                 <Route path='/superadmin/users' element={<Users />} />
+                <Route path='*' element={<NotFound />} />
             </Routes>
         </>
     )

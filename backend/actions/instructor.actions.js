@@ -109,6 +109,11 @@ const getModule = async (courseId, moduleId) => {
                 orderBy: {
                     position: 'asc'
                 }
+            },
+            course: {
+                select : {
+                    title: true
+                }
             }
         }
     });
@@ -149,6 +154,18 @@ const getArticle = async (moduleId, articleId) => {
         where: {
             moduleId,
             id: articleId
+        },
+        include: {
+            module: {
+                select: {
+                    title: true,
+                    course: {
+                        select: {
+                            title: true
+                        }
+                    }
+                }
+            }
         }
     });
 }

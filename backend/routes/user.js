@@ -6,10 +6,26 @@ import { authenticateToken, optionalAuthenticate } from '../middleware/auth.js';
 import bcrypt from "bcrypt";
 import { getCourse, getEnrollment, getAllCourses, getProgress, getUser, getArticle, getArticleProgress } from '../actions/user.actions.js';
 import { Role, STATUS } from '@prisma/client';
+import { paymentService } from '../lib/payment-service.js';
 
 const router = express.Router();
 
 const SECRET = process.env.SECRET;
+
+const BUSINESS_TYPES = [
+    "llp",
+    "ngo",
+    "other",
+    "individual",
+    "partnership",
+    "proprietorship",
+    "public_limited",
+    "private_limited",
+    "trust",
+    "society",
+    "not_yet_registered",
+    "educational_institutes"
+];
 
 const loginInput = z.object({
     email: z.string().email(),
@@ -17,10 +33,43 @@ const loginInput = z.object({
 });
 
 const signupInput = z.object({
-    email: z.string().email().min(4).max(200),
+    email: z.string().email(),
+    name: z.string().min(2).max(64),
     password: z.string().min(8).max(64),
-    role: z.enum([Role.USER, Role.INSTRUCTOR])
-});
+    role: z.enum([Role.USER, Role.INSTRUCTOR]),
+    legal_business_name: z.string().min(4, "Legal business name must be at least 4 characters").max(200).optional(),
+    phone: z.string().regex(/^[6-9]\d{9}$/, "Phone number must be a 10-digit Indian number starting with 6-9 (e.g., 9876543210)").optional(),
+    address: z.object({
+        street1: z.string().min(1, "Street Line 1 is required").max(100, "Street Line 1 cannot exceed 100 characters"),
+        street2: z.string().min(1, "Street Line 2 is required").max(100, "Street Line 2 cannot exceed 100 characters"),
+        city: z.string().min(1, "City is required"),
+        state: z.string().min(1, "State is required"),
+        postal_code: z.string().min(1, "Zip code is required"),
+    }).optional(),
+    business_type: z.enum(BUSINESS_TYPES).optional(),
+    razorpayPayload: z.object({
+        // bankAccount: z.object({
+        //     accountNumber: z.string().min(1, "Account number is required"),
+        //     ifscCode: z.string().regex(/^[A-Z]{4}0[A-Z0-9]{6}$/, "Invalid IFSC code"),
+        //     beneficiaryName: z.string().min(1, "Beneficiary name is required"),
+        // }),
+        kyc: z.object({
+            pan: z.string().regex(/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/, "Invalid PAN format"),
+            gst: z.string().regex(/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/, "Invalid GSTIN format").optional().nullable(),
+        }),
+    }).optional()
+}).refine(
+    ({ role, phone, address, business_type, legal_business_name, razorpayPayload }) => {
+        if (role === Role.INSTRUCTOR) {
+            return !!phone && !!address && !!business_type && !!legal_business_name && !!razorpayPayload?.kyc.pan;
+        }
+        return true;
+    },
+    {
+        message: "Phone, address, business type, legal business name, and PAN are required for instructors",
+        path: ["phone", "address", "business_type", "legal_business_name", "razorpayPayload"],
+    }
+);
 
 const markAsCompleteInput = z.object({
     isCompleted: z.boolean()
@@ -35,9 +84,21 @@ router.post("/signup", async (req, res) => {
             });
         }
 
+        const {
+            email,
+            name,
+            password,
+            role,
+            phone,
+            address,
+            legal_business_name,
+            business_type,
+            razorpayPayload
+        } = parsedInput.data;
+
         const existingUser = await db.user.findUnique({
             where: {
-                email: parsedInput.data.email
+                email
             }
         });
 
@@ -51,29 +112,86 @@ router.post("/signup", async (req, res) => {
             });
         }
 
-        const hashedPassword = bcrypt.hashSync(parsedInput.data.password, 10);
+        let razorpayAccountId;
+        if (role === Role.INSTRUCTOR) {
+            try {
+                const linkedAccount = await paymentService.razorpay.accounts.create({
+                    email,
+                    phone: `+91${phone}`,
+                    contact_name: name,
+                    legal_business_name,
+                    business_type,
+                    type: "route",
+                    profile: {
+                        category: process.env.BUSINESS_CATEGORY,
+                        subcategory: process.env.BUSINESS_SUB_CATEGORY,
+                        addresses: {
+                            registered: {
+                                street1: address.street1,
+                                street2: address.street2,
+                                city: address.city,
+                                state: address.state,
+                                postal_code: address.postal_code,
+                                country: "IN",
+                            },
+                        },
+                    },
+                    legal_info: {
+                        pan: razorpayPayload.kyc.pan,
+                        ...(razorpayPayload.kyc.gst && {gst: razorpayPayload.kyc.gst}),
+                    },
+                    // bank_account: {
+                    //     name: razorpayPayload.bankAccount.beneficiaryName,
+                    //     account_number: razorpayPayload.bankAccount.accountNumber,
+                    //     ifsc: razorpayPayload.bankAccount.ifscCode,
+                    // },
+                });
+
+                razorpayAccountId = linkedAccount.id;
+                console.log(linkedAccount);
+            } catch (error) {
+                console.error("[SIGNUP -> RAZORPAY]", error);
+                return res.status(400).json({
+                    message: {
+                        issues: [{
+                            message: error.error?.description || "Failed to create Razorpay Linked Account",
+                        }],
+                    },
+                });
+            }
+        }
+
+        const hashedPassword = bcrypt.hashSync(password, 10);
 
         const user = await db.user.create({
             data: {
-                email: parsedInput.data.email,
+                email,
+                name,
                 password: hashedPassword,
-                role: parsedInput.data.role
+                role,
+                ...(role === Role.INSTRUCTOR && {
+                    phone,
+                    address,
+                    legal_business_name,
+                    businessType: business_type,
+                    razorpayAccountId
+                })
             },
             select: {
                 id: true,
                 email: true,
-                role: true
+                role: true,
+                name: true
             }
         });
 
-        if (user) {
-            const token = jwt.sign({ email: parsedInput.data.email, role: user.role, id: user.id }, SECRET, { expiresIn: '4w' });
-            return res.json({
-                token,
-                role: user.role,
-                email: parsedInput.data.email
-            });
-        }
+        const token = jwt.sign({ email, role: user.role, id: user.id }, SECRET, { expiresIn: '4w' });
+
+        return res.json({
+            token,
+            role: user.role,
+            email: parsedInput.data.email
+        });
     } catch (error) {
         console.error("[USER]", error);
         return res.status(500).json({ error: "Internal server error" });
@@ -189,6 +307,10 @@ router.get('/dashboard', authenticateToken, async (req, res) => {
             }
         });
 
+        if (!user) {
+            return res.status(404).json({ message: "User not found" })
+        }
+
         user.enrolledCourses = await Promise.all(
             user.enrolledCourses
                 .filter(({ course }) => course.isPublished)
@@ -293,7 +415,16 @@ router.get('/courses/:courseId/modules/:moduleId/articles/:articleId', authentic
             },
             include: {
                 modules: {
-                    include: {
+                    where: {
+                        articles: {
+                            some: {
+                                isPublished: true
+                            }
+                        }
+                    },
+                    select: {
+                        id: true,
+                        title: true,
                         articles: {
                             where: {
                                 isPublished: true
@@ -357,6 +488,11 @@ router.get('/courses/:courseId/modules/:moduleId/articles/:articleId', authentic
                         courseId,
                         position: {
                             gt: module?.position
+                        },
+                        articles: {
+                            some: {
+                                isPublished: true
+                            }
                         }
                     },
                     orderBy: {

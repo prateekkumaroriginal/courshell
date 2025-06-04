@@ -52,7 +52,7 @@ router.get('/analytics', authenticateToken, authorizeRoles(SUPERADMIN, ADMIN, IN
         });
 
         const groupedEarnings = groupEnrollmentsByCourse(enrollments);
-        const data = Object.entries(groupedEarnings).map(([courseId, {total, title}]) => ({
+        const data = Object.entries(groupedEarnings).map(([courseId, { total, title }]) => ({
             courseId,
             title,
             total

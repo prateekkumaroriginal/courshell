@@ -52,7 +52,7 @@ const CourseProgressButton = ({ articleId, moduleId, courseId, nextArticleId, ne
                 variant={isCompleted ? 'default' : 'success'}
                 className='w-full md:w-auto'
             >
-                {isCompleted ? "Mark as incomplete" : "Mark as complete"}
+                {isCompleted ? "Mark as Incomplete" : "Mark as Complete"}
                 <Icon className='h-4 w-4 ml-2' />
             </Button>
         </div>

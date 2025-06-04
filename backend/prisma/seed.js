@@ -26,6 +26,7 @@ const main = async () => {
             console.log("Categories Addition: Fail");
         }
     } catch (error) {
+        console.log("Categories Addition: Fail");
         console.log(error);
     }
 
@@ -39,10 +40,14 @@ const main = async () => {
             create: {
                 email: process.env.SUPERADMIN_EMAIL,
                 password: hashedPassword,
-                role: Role.SUPERADMIN
+                role: Role.SUPERADMIN,
+                name: "Super Admin",
+                razorpayAccountId: process.env.SUPERADMIN_RAZORPAY_ACCOUNT_ID
             },
             update: {
-                password: hashedPassword
+                email: process.env.SUPERADMIN_EMAIL,
+                password: hashedPassword,
+                razorpayAccountId: process.env.SUPERADMIN_RAZORPAY_ACCOUNT_ID
             }
         });
 

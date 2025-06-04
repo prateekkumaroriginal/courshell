@@ -10,14 +10,28 @@ datasource db {
 }
 
 model User {
-  id               String         @id @default(uuid())
-  email            String         @unique
-  password         String
-  role             Role
+  id                String  @id @default(uuid())
+  name              String
+  email             String  @unique
+  password          String
+  phone             String?
+  address           Json?
+  role              Role
+  razorpayAccountId String?
+
   createdCourses   Course[]
   enrolledCourses  Enrollment[]
   requestedCourses Request[]
   userProgress     UserProgress[]
+
+  paymentsMade     Payment[] @relation("buyer")
+  paymentsReceived Payment[] @relation("seller")
+
+  legal_business_name String?
+  businessType        String?
+  // send these only to Razorpay
+  // bankAccount         Json?
+  // kyc                 Json?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -36,6 +50,7 @@ model Course {
   instructor   User   @relation(fields: [instructorId], references: [id])
 
   enrolledUsers Enrollment[]
+  payments      Payment[]
 
   title        String      @db.Text
   description  String?     @db.Text
@@ -99,15 +114,49 @@ model Category {
 }
 
 model Enrollment {
-  id        String   @id @default(uuid())
-  userId    String
-  courseId  String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                String   @id @default(uuid())
+  userId            String
+  courseId          String
+  isPaymentVerified Boolean  @default(false)
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course            Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 
   @@unique([userId, courseId])
+}
+
+model Payment {
+  id                String        @id @default(uuid())
+  razorpayOrderId   String?       @unique
+  razorpayPaymentId String?       @unique
+  amount            Float
+  currency          String
+  commissionAmount  Float
+  sellerAmount      Float
+  status            PaymentStatus
+
+  courseId String
+  course   Course @relation(fields: [courseId], references: [id])
+
+  buyerId String
+  buyer   User   @relation("buyer", fields: [buyerId], references: [id])
+
+  sellerId String
+  seller   User   @relation("seller", fields: [sellerId], references: [id])
+
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+
+  @@index([courseId])
+  @@index([buyerId])
+  @@index([sellerId])
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESSFUL
+  FAILED
 }
 
 model Article {

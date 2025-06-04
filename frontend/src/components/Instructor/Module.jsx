@@ -1,12 +1,13 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { z } from 'zod';
 import ArticlesList from '@/components/Instructor/ArticlesList';
 import { Loader2 } from 'lucide-react';
 import { VITE_APP_BACKEND_URL } from '@/constants';
 import toast from 'react-hot-toast';
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
 
 const formSchema = z.object({
     title: z.string().min(4).max(200),
@@ -93,6 +94,7 @@ const Module = () => {
 
     const articleOnSubmit = async (values) => {
         try {
+            setIsCreating(false);
             const creatingToast = toast.loading("Creating...");
             const response = await fetch(`${VITE_APP_BACKEND_URL}/instructor/courses/${courseId}/modules/${moduleId}/articles`, {
                 method: 'POST',
@@ -103,7 +105,6 @@ const Module = () => {
                 body: JSON.stringify(values)
             });
             toast.dismiss(creatingToast);
-            setIsCreating(false);
 
             if (response.ok) {
                 toast.success("Article Created");
@@ -149,6 +150,23 @@ const Module = () => {
 
     return (
         <div className='md:p-6'>
+            <div className="p-4">
+                <Breadcrumb>
+                    <BreadcrumbList>
+                        <BreadcrumbItem>
+                            <BreadcrumbLink asChild>
+                                <Link to={`/instructor/courses/${courseId}`}>
+                                    {module?.course?.title}
+                                </Link>
+                            </BreadcrumbLink>
+                        </BreadcrumbItem>
+                        <BreadcrumbSeparator />
+                        <BreadcrumbItem>
+                            <BreadcrumbPage>{title}</BreadcrumbPage>
+                        </BreadcrumbItem>
+                    </BreadcrumbList>
+                </Breadcrumb>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                     <div className='mt-6 border bg-slate-200 rounded-md p-4'>
@@ -258,7 +276,6 @@ const Module = () => {
                         </>}
                     </div>
                 </div>
-
             </div>
         </div>
     )

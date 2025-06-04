@@ -79,6 +79,9 @@ const CoursePreview = ({ userRole }) => {
                                         size="lg"
                                         variant="secondary"
                                         className='w-full md:w-auto text-xl px-8 py-4'
+                                        onClick={() => {
+                                            navigate(`/courses/${courseId}/${course.modules[0].id}/${course.modules[0].articles[0].id}`);
+                                        }}
                                     >
                                         Go To Course
                                     </Button> : <CourseEnrollButton

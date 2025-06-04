@@ -10,6 +10,7 @@ import Banner from '@/components/ui/Banner';
 import ArticleActions from '@/components/Instructor/ArticleActions';
 import { VITE_APP_BACKEND_URL } from '@/constants';
 import toast from 'react-hot-toast';
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
 
 const formSchema = z.object({
     title: z.string().min(4).max(200),
@@ -102,15 +103,30 @@ const Article = () => {
                 variant={"WARNING"}
             />}
 
-            <div className='flex items-center justify-center my-4'>
-                <div className='w-full'>
-                    <Link
-                        to={`/instructor/courses/${courseId}/${moduleId}`}
-                        className='flex w-fit items-center justify-center p-4 rounded-lg font-semibold text-sm text-white bg-gray-700 hover:bg-gray-800'
-                    >
-                        <ArrowLeft className='w-6 h-6 mr-2' /> Back to Module
-                    </Link>
-                </div>
+            <div className='flex items-center my-4'>
+                <Breadcrumb>
+                    <BreadcrumbList>
+                        <BreadcrumbItem>
+                            <BreadcrumbLink asChild>
+                                <Link to={`/instructor/courses/${courseId}`}>
+                                    {article?.module?.course?.title}
+                                </Link>
+                            </BreadcrumbLink>
+                        </BreadcrumbItem>
+                        <BreadcrumbSeparator />
+                        <BreadcrumbItem>
+                            <BreadcrumbLink asChild>
+                                <Link to={`/instructor/courses/${courseId}/${moduleId}`}>
+                                    {article?.module?.title}
+                                </Link>
+                            </BreadcrumbLink>
+                        </BreadcrumbItem>
+                        <BreadcrumbSeparator />
+                        <BreadcrumbItem>
+                            <BreadcrumbPage>{title}</BreadcrumbPage>
+                        </BreadcrumbItem>
+                    </BreadcrumbList>
+                </Breadcrumb>
             </div>
 
 
