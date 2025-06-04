@@ -127,16 +127,17 @@ class PaymentService {
     });
     console.log("here7")
 
+    // Commented because initial state of transfers is pending
     // Check if all transfers are successful
-    console.log("transfers.items: ", transfers.items);
-    const allTransfersSuccessful = transfers.items.every(
-      (transfer) => transfer.status === 'processed'
-    );
-    console.log("here8")
+    // console.log("transfers.items: ", transfers.items);
+    // const allTransfersSuccessful = transfers.items.every(
+    //   (transfer) => transfer.status === 'processed'
+    // );
+    // console.log("here8")
 
-    if (!allTransfersSuccessful) {
-      throw new Error('Not all transfers were successful');
-    }
+    // if (!allTransfersSuccessful) {
+    //   throw new Error('Not all transfers were successful');
+    // }
     console.log("here9")
 
     // Update payment and create enrollment in a transaction
