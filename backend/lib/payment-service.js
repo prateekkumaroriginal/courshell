@@ -141,7 +141,7 @@ class PaymentService {
     console.log("here9")
 
     // Update payment and create enrollment in a transaction
-    await prisma.$transaction(async (tx) => {
+    await db.$transaction(async (tx) => {
       // Update payment status
       const payment = await tx.payment.update({
         where: { razorpayOrderId: orderEntity.id },
