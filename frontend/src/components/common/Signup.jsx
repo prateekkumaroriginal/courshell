@@ -246,12 +246,14 @@ const Signup = ({ setUserRole }) => {
                                                 type="text"
                                                 name="legal_business_name"
                                                 label="Legal Business Name"
+                                                placeholder="Enter Legal Business Name..."
                                                 register={register}
                                             />
                                             <CustomInput
                                                 type="text"
                                                 name="phone"
                                                 label="Phone Number"
+                                                placeholder="Enter Phone Number..."
                                                 register={register}
                                             />
                                             {/* <CustomInput
@@ -302,30 +304,35 @@ const Signup = ({ setUserRole }) => {
                                                 name="address.street1"
                                                 label="Street Line 1"
                                                 register={register}
+                                                placeholder="Enter Street Line 1..."
                                             />
                                             <CustomInput
                                                 type="text"
                                                 name="address.street2"
                                                 label="Street Line 2"
                                                 register={register}
+                                                placeholder="Enter Street Line 2..."
                                             />
                                             <CustomInput
                                                 type="text"
                                                 name="address.city"
                                                 label="City"
                                                 register={register}
+                                                placeholder="Enter City..."
                                             />
                                             <CustomInput
                                                 type="text"
                                                 name="address.state"
                                                 label="State"
                                                 register={register}
+                                                placeholder="Enter State..."
                                             />
                                             <CustomInput
                                                 type="text"
                                                 name="address.postal_code"
                                                 label="Zip Code"
                                                 register={register}
+                                                placeholder="Enter Zip Code..."
                                             />
                                         </div>
                                         <div className="grid grid-cols-2 gap-x-4">
@@ -334,12 +341,14 @@ const Signup = ({ setUserRole }) => {
                                                 name="razorpayPayload.kyc.pan"
                                                 label="PAN"
                                                 register={register}
+                                                placeholder="Enter PAN..."
                                             />
                                             <CustomInput
                                                 type="text"
                                                 name="razorpayPayload.kyc.gstin"
                                                 label="GSTIN (Optional)"
                                                 register={register}
+                                                placeholder="Enter GSTIN..."
                                             />
                                         </div>
                                     </div>
