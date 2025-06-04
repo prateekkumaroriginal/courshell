@@ -17,13 +17,14 @@ const Signin = ({ setUserRole }) => {
 
     const form = useForm({
         resolver: zodResolver(formSchema),
+        mode: "all",
         defaultValues: {
             email: "",
             password: "",
         },
     });
 
-    const { handleSubmit, register, formState: { isSubmitting, isValid } } = form;
+    const { handleSubmit, register, formState: { isSubmitting, isValid, errors } } = form;
 
     const onSubmit = async (values) => {
         try {
@@ -62,6 +63,7 @@ const Signin = ({ setUserRole }) => {
                         onSubmit={handleSubmit(onSubmit)}
                     >
                         <CustomInput
+                            errors={errors}
                             type="email"
                             name="email"
                             label="Email"
@@ -69,6 +71,7 @@ const Signin = ({ setUserRole }) => {
                         />
 
                         <CustomInput
+                            errors={errors}
                             type="password"
                             name="password"
                             label="Password"

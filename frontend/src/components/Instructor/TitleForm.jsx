@@ -15,10 +15,11 @@ const TitleForm = ({ course, courseId, title, setTitle }) => {
 
     const form = useForm({
         resolver: zodResolver(formSchema),
+        mode: "all",
         defaultValues: course
     }, []);
 
-    const { handleSubmit, reset, register, formState: { isSubmitting, isValid } } = form;
+    const { handleSubmit, reset, register, formState: { isSubmitting, isValid, errors } } = form;
 
     const onSubmit = async (values) => {
         try {
@@ -84,6 +85,7 @@ const TitleForm = ({ course, courseId, title, setTitle }) => {
                     name={'title'}
                     register={register}
                     defaultValue={title}
+                    errors={errors}
                 />
             </form> : <p className='text-md font-semibold mt-2 py-1'>
                 {title}

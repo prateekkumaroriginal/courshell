@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { VITE_APP_BACKEND_URL } from '@/constants'
+import CustomInput from '../ui/CustomInput'
 
 const formSchema = z.object({
     title: z.string().min(4).max(200)
@@ -14,12 +15,13 @@ const Create = () => {
 
     const form = useForm({
         resolver: zodResolver(formSchema),
+        mode: "all",
         defaultValues: {
             title: ""
         }
     });
 
-    const { handleSubmit, formState: { isSubmitting, isValid } } = form;
+    const { handleSubmit, register, formState: { isSubmitting, isValid, errors } } = form;
 
     const onSubmit = async (values) => {
         try {
@@ -65,12 +67,14 @@ const Create = () => {
                 >
                     <div>
                         <label className='text-gray-700 text-xl font-bold mr-4' htmlFor="title">Course Title</label>
-                        <input className='p-1 shadow-lg appearance-none border-2 rounded w-full hover:bg-zinc-200/40 focus:bg-zinc-200/40'
+                        <CustomInput
+                            name='title'
+                            type="text"
+                            className='p-1 shadow-lg appearance-none border-2 rounded w-full hover:bg-zinc-200/40 focus:bg-zinc-200/40'
                             disabled={isSubmitting}
                             placeholder="e.g. 'Full Stack Web Development'"
-                            type="text"
-                            id='title'
-                            {...form.register('title')}
+                            register={register}
+                            errors={errors}
                         />
                     </div>
                     <div className='flex gap-2 mt-8'>

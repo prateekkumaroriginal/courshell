@@ -18,12 +18,13 @@ const ModulesForm = ({ course, courseId, fetchData }) => {
 
     const form = useForm({
         resolver: zodResolver(formSchema),
+        mode: "all",
         defaultValues: {
             title: "",
         },
     }, []);
 
-    const { handleSubmit, reset, register, formState: { isSubmitting, isValid } } = form;
+    const { handleSubmit, reset, register, formState: { isSubmitting, isValid, errors } } = form;
 
     const onSubmit = async (values) => {
         try {
@@ -122,6 +123,7 @@ const ModulesForm = ({ course, courseId, fetchData }) => {
                     type={'text'}
                     name={'title'}
                     register={register}
+                    errors={errors}
                 />
             </form> : <>
                 <div className={!course.modules.length ? 'text-zinc-600 text-sm font-semibold mt-2 italic' : 'mt-2'}>

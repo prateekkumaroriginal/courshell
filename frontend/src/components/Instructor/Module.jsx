@@ -24,6 +24,7 @@ const Module = () => {
 
     const moduleForm = useForm({
         resolver: zodResolver(formSchema),
+        mode: "all",
         defaultValues: module
     });
 
@@ -35,6 +36,7 @@ const Module = () => {
 
     const articleForm = useForm({
         resolver: zodResolver(formSchema),
+        mode: "all",
         defaultValues: {
             title: ""
         }

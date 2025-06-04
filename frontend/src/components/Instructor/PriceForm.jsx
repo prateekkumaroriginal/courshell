@@ -8,7 +8,7 @@ import { VITE_APP_BACKEND_URL } from '@/constants';
 import { formatPrice } from '@/lib/format';
 
 const priceSchema = z.object({
-    price: z.coerce.number().int()
+    price: z.coerce.number().int().min(10)
 });
 
 const PriceForm = ({ courseId, price, setPrice }) => {
@@ -16,12 +16,13 @@ const PriceForm = ({ courseId, price, setPrice }) => {
 
     const form = useForm({
         resolver: zodResolver(priceSchema),
+        mode: "all",
         defaultValues: {
             price
         }
     }, [price]);
 
-    const { handleSubmit, reset, register, formState: { isSubmitting, isValid } } = form;
+    const { handleSubmit, reset, register, formState: { isSubmitting, isValid, errors } } = form;
 
     const onSubmit = async (values) => {
         try {
@@ -89,6 +90,7 @@ const PriceForm = ({ courseId, price, setPrice }) => {
                     placeholder={"Enter course selling price..."}
                     type={'number'}
                     register={register}
+                    errors={errors}
                 />
             </form> : <p className='text-md font-semibold mt-2 py-1'>
                 <span className={`${!price && 'italic text-zinc-600'}`}>

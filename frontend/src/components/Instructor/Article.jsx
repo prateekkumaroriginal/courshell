@@ -11,6 +11,7 @@ import ArticleActions from '@/components/Instructor/ArticleActions';
 import { VITE_APP_BACKEND_URL } from '@/constants';
 import toast from 'react-hot-toast';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
+import CustomInput from '../ui/CustomInput';
 
 const formSchema = z.object({
     title: z.string().min(4).max(200),
@@ -29,12 +30,13 @@ const Article = () => {
 
     const form = useForm({
         resolver: zodResolver(formSchema),
+        mode: "all",
         defaultValues: {
             isFree: !!article?.isFree
         }
     });
 
-    const { handleSubmit, reset, formState: { isSubmitting, isValid } } = form;
+    const { handleSubmit, reset, register, formState: { isSubmitting, isValid, errors } } = form;
 
     const fetchArticle = async () => {
         const response = await fetch(`${VITE_APP_BACKEND_URL}/instructor/courses/${courseId}/modules/${moduleId}/articles/${articleId}`, {
@@ -180,14 +182,15 @@ const Article = () => {
                         className='mt-2'
                         onSubmit={handleSubmit(onSubmit)}
                     >
-                        <input
+                        <CustomInput 
                             className='p-1 shadow-lg appearance-none rounded w-full outline-none'
                             type="text"
-                            id='title'
+                            name='title'
                             placeholder="e.g. 'Full stack web development'"
                             disabled={isSubmitting}
                             defaultValue={article?.title}
-                            {...form.register('title')}
+                            register={register}
+                            errors={errors}
                         />
                         <div className="flex items-center">
                         </div>

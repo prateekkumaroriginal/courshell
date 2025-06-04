@@ -86,6 +86,7 @@ const Signup = ({ setUserRole }) => {
 
     const form = useForm({
         resolver: zodResolver(formSchema),
+        mode: "all",
         defaultValues: {
             email: "",
             password: "",
@@ -115,7 +116,7 @@ const Signup = ({ setUserRole }) => {
         register,
         watch,
         control,
-        formState: { isSubmitting, isValid }
+        formState: { isSubmitting, isValid, errors }
     } = form;
     const selectedRole = watch("role");
 
@@ -181,6 +182,7 @@ const Signup = ({ setUserRole }) => {
                             </h1>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <CustomInput
+                                    errors={errors}
                                     type="email"
                                     name="email"
                                     label="Email"
@@ -188,6 +190,7 @@ const Signup = ({ setUserRole }) => {
                                 />
 
                                 <CustomInput
+                                    errors={errors}
                                     type="text"
                                     name="name"
                                     label="Name"
@@ -196,6 +199,7 @@ const Signup = ({ setUserRole }) => {
                                 />
 
                                 <CustomInput
+                                    errors={errors}
                                     type="password"
                                     name="password"
                                     label="Password"
@@ -203,6 +207,7 @@ const Signup = ({ setUserRole }) => {
                                 />
 
                                 <CustomInput
+                                    errors={errors}
                                     type="password"
                                     name="confirmPassword"
                                     label="Confirm Password"
@@ -243,6 +248,7 @@ const Signup = ({ setUserRole }) => {
                                     <div className="space-y-4">
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                             <CustomInput
+                                                errors={errors}
                                                 type="text"
                                                 name="legal_business_name"
                                                 label="Legal Business Name"
@@ -250,6 +256,7 @@ const Signup = ({ setUserRole }) => {
                                                 register={register}
                                             />
                                             <CustomInput
+                                                errors={errors}
                                                 type="text"
                                                 name="phone"
                                                 label="Phone Number"
@@ -257,18 +264,21 @@ const Signup = ({ setUserRole }) => {
                                                 register={register}
                                             />
                                             {/* <CustomInput
+                                            errors={errors}
                                                 type="text"
                                                 name="razorpayPayload.bankAccount.accountNumber"
                                                 label="Bank Account Number"
                                                 register={register}
                                             />
                                             <CustomInput
+                                            errors={errors}
                                                 type="text"
                                                 name="razorpayPayload.bankAccount.ifscCode"
                                                 label="IFSC Code"
                                                 register={register}
                                             />
                                             <CustomInput
+                                            errors={errors}
                                                 type="text"
                                                 name="razorpayPayload.bankAccount.beneficiaryName"
                                                 label="Beneficiary Name"
@@ -300,6 +310,7 @@ const Signup = ({ setUserRole }) => {
                                         </div>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                             <CustomInput
+                                                errors={errors}
                                                 type="text"
                                                 name="address.street1"
                                                 label="Street Line 1"
@@ -307,6 +318,7 @@ const Signup = ({ setUserRole }) => {
                                                 placeholder="Enter Street Line 1..."
                                             />
                                             <CustomInput
+                                                errors={errors}
                                                 type="text"
                                                 name="address.street2"
                                                 label="Street Line 2"
@@ -314,6 +326,7 @@ const Signup = ({ setUserRole }) => {
                                                 placeholder="Enter Street Line 2..."
                                             />
                                             <CustomInput
+                                                errors={errors}
                                                 type="text"
                                                 name="address.city"
                                                 label="City"
@@ -321,6 +334,7 @@ const Signup = ({ setUserRole }) => {
                                                 placeholder="Enter City..."
                                             />
                                             <CustomInput
+                                                errors={errors}
                                                 type="text"
                                                 name="address.state"
                                                 label="State"
@@ -328,6 +342,7 @@ const Signup = ({ setUserRole }) => {
                                                 placeholder="Enter State..."
                                             />
                                             <CustomInput
+                                                errors={errors}
                                                 type="text"
                                                 name="address.postal_code"
                                                 label="Zip Code"
@@ -337,6 +352,7 @@ const Signup = ({ setUserRole }) => {
                                         </div>
                                         <div className="grid grid-cols-2 gap-x-4">
                                             <CustomInput
+                                                errors={errors}
                                                 type="text"
                                                 name="razorpayPayload.kyc.pan"
                                                 label="PAN"
@@ -344,6 +360,7 @@ const Signup = ({ setUserRole }) => {
                                                 placeholder="Enter PAN..."
                                             />
                                             <CustomInput
+                                                errors={errors}
                                                 type="text"
                                                 name="razorpayPayload.kyc.gstin"
                                                 label="GSTIN (Optional)"

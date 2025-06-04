@@ -14,12 +14,13 @@ const DescriptionForm = ({ course, courseId, description, setDescription }) => {
     const [isEditing, setIsEditing] = useState(false);
     const form = useForm({
         resolver: zodResolver(formSchema),
+        mode: "all",
         defaultValues: {
             description
         }
     }, []);
 
-    const { handleSubmit, reset, register, formState: { isSubmitting, isValid } } = form;
+    const { handleSubmit, reset, register, formState: { isSubmitting, isValid, errors } } = form;
 
     const onSubmit = async (values) => {
         try {
@@ -84,9 +85,10 @@ const DescriptionForm = ({ course, courseId, description, setDescription }) => {
                     name={"description"}
                     register={register}
                     defaultValue={description}
+                    errors={errors}
                 />
             </form> : <p className='text-md font-semibold mt-2 py-1'>
-                {description || <span className='text-sm italic text-zinc-600'>No Description</span>}
+                {description || <span className='text-sm italic text-zinc-600'>Not set</span>}
             </p>}
         </div>
     )

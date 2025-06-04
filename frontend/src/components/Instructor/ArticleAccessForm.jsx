@@ -15,6 +15,7 @@ const ArticleAccessForm = ({ article, courseId, moduleId, articleId }) => {
 
     const form = useForm({
         resolver: zodResolver(formSchema),
+        mode: "all",
         defaultValues: {
             isFree
         }
