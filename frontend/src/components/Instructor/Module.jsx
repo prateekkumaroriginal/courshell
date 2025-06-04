@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { z } from 'zod';
 import ArticlesList from '@/components/Instructor/ArticlesList';
 import { Loader2 } from 'lucide-react';
@@ -154,10 +154,10 @@ const Module = () => {
                 <Breadcrumb>
                     <BreadcrumbList>
                         <BreadcrumbItem>
-                            <BreadcrumbLink href="/">
-                                <span>
+                            <BreadcrumbLink asChild>
+                                <Link to={`/instructor/courses/${courseId}`}>
                                     {module?.course?.title}
-                                </span>
+                                </Link>
                             </BreadcrumbLink>
                         </BreadcrumbItem>
                         <BreadcrumbSeparator />

@@ -107,17 +107,18 @@ const Article = () => {
                 <Breadcrumb>
                     <BreadcrumbList>
                         <BreadcrumbItem>
-                            <BreadcrumbLink href="/">
-                                <span>
+                            <BreadcrumbLink asChild>
+                                <Link to={`/instructor/courses/${courseId}`}>
                                     {article?.module?.course?.title}
-                                </span>
+                                </Link>
                             </BreadcrumbLink>
                         </BreadcrumbItem>
+                        <BreadcrumbSeparator />
                         <BreadcrumbItem>
-                            <BreadcrumbLink href="/">
-                                <span>
+                            <BreadcrumbLink asChild>
+                                <Link to={`/instructor/courses/${courseId}/${moduleId}`}>
                                     {article?.module?.title}
-                                </span>
+                                </Link>
                             </BreadcrumbLink>
                         </BreadcrumbItem>
                         <BreadcrumbSeparator />

@@ -16,7 +16,7 @@ const CategoryItem = ({ label, value, icon: Icon, setIsLoading }) => {
         const newTitle = searchParams.get("title");
         setCurrentTitle(newTitle);
         setIsSelected(currentCategoryId === value);
-    }, [searchParams, value]);
+    }, [searchParams]);
 
     const onClick = () => {
         setIsLoading(true);

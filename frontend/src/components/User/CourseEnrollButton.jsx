@@ -25,16 +25,16 @@ const CourseEnrollButton = ({ courseId, userRole }) => {
     const createOrder = async (courseId) => {
         try {
             const res = await fetch(`${VITE_APP_BACKEND_URL}/payment/create`, {
-              method: 'POST',
-              headers: {
-                authorization: `Bearer ${localStorage.getItem('token')}`,
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({ courseId }),
+                method: 'POST',
+                headers: {
+                    authorization: `Bearer ${localStorage.getItem('token')}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ courseId }),
             });
-      
+
             if (!res.ok) throw new Error('Failed to create Razorpay order');
-      
+
             const data = await res.json();
             return data;
         } catch (err) {
@@ -52,9 +52,9 @@ const CourseEnrollButton = ({ courseId, userRole }) => {
             name: "Courshell",
             description: "Course Purchase",
             order_id: order.id,
-            handler: (response) => {
+            handler: (_response) => {
                 // Razorpay auto-triggers webhook on backend
-                console.log("Payment Response: ", response);
+                // console.log("Payment Response: ", _response);
                 toast.success("Payment Successful! You're now enrolled in the course.");
                 navigate(`/courses/${courseId}`);
                 window.location.reload();
@@ -70,15 +70,15 @@ const CourseEnrollButton = ({ courseId, userRole }) => {
                 color: "#6366f1",
             },
         };
-      
+
         const razorpay = new window.Razorpay(options);
         razorpay.open();
-      };
+    };
 
 
     const onClick = async () => {
         if (!userRole) {
-            return navigate("/");
+            return navigate("/signin");
         }
 
         const isLoaded = await loadRazorpayScript();

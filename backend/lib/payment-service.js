@@ -1,7 +1,6 @@
 import { db } from "../prisma/index.js";
 import 'dotenv/config';
 import Razorpay from 'razorpay';
-import crypto from 'crypto';
 
 class PaymentService {
   razorpay;
@@ -14,8 +13,11 @@ class PaymentService {
   }
 
   calculateSplit(amount) {
-    const platformAmount = amount * parseFloat(process.env.COMMISSION_PERCENTAGE);
-    const sellerAmount = amount - platformAmount;
+    const commissionRate = process.env.COMMISSION_PERCENTAGE / 100;
+    const razorpayCommissionRate = 0.0236; // 2.36% (including GST)
+    const razorpayCommissionAndGST = Math.floor(amount * razorpayCommissionRate);
+    const platformAmount = Math.floor(amount * commissionRate);
+    const sellerAmount = amount - platformAmount - razorpayCommissionAndGST;
 
     return {
       sellerAmount,
@@ -41,7 +43,6 @@ class PaymentService {
     const { sellerAmount, platformAmount } = this.calculateSplit(amount);
 
     const isInstructorPlatformItself = course.instructor.razorpayAccountId === process.env.RAZORPAY_PLATFORM_ACCOUNT_ID;
-
     const razorpayOrder = await this.razorpay.orders.create({
       amount,
       currency: "INR",
@@ -50,8 +51,8 @@ class PaymentService {
         buyerId
       },
       transfers: isInstructorPlatformItself
-      ? []
-      : [
+        ? []
+        : [
           {
             account: course.instructor.razorpayAccountId,
             amount: sellerAmount,
@@ -64,23 +65,11 @@ class PaymentService {
               "type",
               "courseId"
             ]
-          },
-          {
-            account: process.env.RAZORPAY_PLATFORM_ACCOUNT_ID,
-            amount: platformAmount,
-            currency: "INR",
-            notes: {
-              type: "Platform Commission",
-              courseId,
-              buyerId
-            },
-            linked_account_notes: [
-              "type",
-              "courseId"
-            ]
           }
         ]
     });
+
+    console.log("here2");
 
     const payment = await db.payment.create({
       data: {
@@ -111,43 +100,43 @@ class PaymentService {
     //   .digest('hex');
     // console.log('Computed Signature:', computedSignature);
 
-    // console.log("here1")
+    console.log("here1")
     const isValid = Razorpay.validateWebhookSignature(webhookBody, signature, process.env.RAZORPAY_WEBHOOK_SECRET);
-    // console.log("here2", isValid);
+    console.log("here2", isValid);
     if (!isValid) {
       throw new Error("Invalid Razorpay webhook signature");
     }
 
-    // console.log("here3")
+    console.log("here3")
     const webhookData = JSON.parse(webhookBody);
-    // console.log("here4")
+    console.log("here4")
 
     const orderEntity = webhookData.payload.order.entity;
     const paymentEntity = webhookData.payload.payment.entity;
     console.log(orderEntity.id, paymentEntity.id)
-    // console.log("here5")
-    
+    console.log("here5")
+
     if (webhookData.payload.payment.entity.status !== 'captured') {
       throw new Error('Payment not captured');
     }
-    // console.log("here6")
-    
+    console.log("here6")
+
     // Verify transfers were successful
     const transfers = await this.razorpay.transfers.all({
       payment_id: paymentEntity.id
     });
-    // console.log("here7")
-    
+    console.log("here7")
+
     // Check if all transfers are successful
     const allTransfersSuccessful = transfers.items.every(
       (transfer) => transfer.status === 'processed'
     );
-    // console.log("here8")
-    
+    console.log("here8")
+
     if (!allTransfersSuccessful) {
       throw new Error('Not all transfers were successful');
     }
-    // console.log("here9")
+    console.log("here9")
 
     // Update payment and create enrollment in a transaction
     await prisma.$transaction(async (tx) => {
