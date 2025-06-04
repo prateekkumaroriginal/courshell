@@ -128,6 +128,7 @@ class PaymentService {
     console.log("here7")
 
     // Check if all transfers are successful
+    console.log("transfers.items: ", transfers.items);
     const allTransfersSuccessful = transfers.items.every(
       (transfer) => transfer.status === 'processed'
     );
