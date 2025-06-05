@@ -26,6 +26,7 @@ import Refunds from './components/common/Refunds';
 import ContactUs from './components/common/ContactUs';
 import Shipping from './components/common/Shipping';
 import NotFound from './components/common/NotFound';
+import Loader from './components/ui/loader';
 
 const hideNavbarPaths = [
     '/courses/:courseId/attachments/:attachmentId',
@@ -49,6 +50,7 @@ function AppRoutes() {
     return (
         <>
             <ToastProvider />
+            <Loader />
             {!shouldHideNavbar(location.pathname, hideNavbarPaths) && <Navbar userRole={userRole} setUserRole={setUserRole} />}
             <Routes>
                 <Route path='/' element={<RedirectComponent />} />
@@ -64,16 +66,16 @@ function AppRoutes() {
                 <Route path='/courses/:courseId' element={<CoursePreview userRole={userRole} />} />
                 <Route path='/courses/:courseId/:moduleId/:articleId' element={<ReadArticle />} />
                 <Route path='/courses/:courseId/attachments/:attachmentId' element={<Attachment />} />
-                <Route path='/instructor/analytics' element={<Analytics />} />
+                {/* <Route path='/instructor/analytics' element={<Analytics />} /> */}
                 <Route path='/instructor/create' element={<Create />} />
                 <Route path='/instructor/courses' element={<CreatedCourses />} />
                 <Route path='/instructor/courses/:courseId' element={<Course />} />
                 <Route path='/instructor/courses/:courseId/attachments/:attachmentId' element={<Attachment />} />
                 <Route path='/instructor/courses/:courseId/:moduleId' element={<Module />} />
                 <Route path='/instructor/courses/:courseId/:moduleId/:articleId' element={<Article />} />
-                <Route path='/admin/courses' element={<ManageCourses />} />
+                {/* <Route path='/admin/courses' element={<ManageCourses />} />
                 <Route path='/admin/courses/:courseId' element={<ManageCourse />} />
-                <Route path='/superadmin/users' element={<Users />} />
+                <Route path='/superadmin/users' element={<Users />} /> */}
                 <Route path='*' element={<NotFound />} />
             </Routes>
         </>

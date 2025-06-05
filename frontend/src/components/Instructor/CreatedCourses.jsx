@@ -3,15 +3,18 @@ import { DataTable } from '@/components/ui/DataTable'
 import { columns } from '../ui/columns'
 import toast from 'react-hot-toast'
 import { VITE_APP_BACKEND_URL } from '@/constants'
+import { useLoader } from '@/hooks/useLoaderStore'
 
 const CreatedCourses = () => {
     const [courses, setCourses] = useState([]);
+    const { setMainLoading } = useLoader();
 
     useEffect(() => {
         fetchCourses();
     }, []);
 
     const fetchCourses = async () => {
+        setMainLoading(true);
         try {
             const response = await fetch(`${VITE_APP_BACKEND_URL}/instructor/courses`, {
                 method: 'GET',
@@ -29,6 +32,8 @@ const CreatedCourses = () => {
         } catch (error) {
             console.log(error);
             toast.error("Something went wrong");
+        } finally {
+            setMainLoading(false);
         }
     }
 

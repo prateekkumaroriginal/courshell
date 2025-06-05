@@ -10,10 +10,12 @@ import CourseActions from '@/components/Instructor/CourseActions';
 import PriceForm from '@/components/Instructor/PriceForm';
 import CoverImage from '@/components/Instructor/CoverImage';
 import AttachmentsForm from '@/components/Instructor/AttachmentsForm';
+import { useLoader } from '@/hooks/useLoaderStore';
 
 const Course = () => {
     const { courseId } = useParams();
     const navigate = useNavigate();
+    const { setMainLoading } = useLoader();
     const [course, setCourse] = useState(null);
     const [completionText, setCompletionText] = useState();
     const [isLoading, setIsLoading] = useState(true);
@@ -44,6 +46,7 @@ const Course = () => {
     };
 
     useEffect(() => {
+        setMainLoading(true);
         fetchData();
     }, []);
 
@@ -78,11 +81,12 @@ const Course = () => {
 
                 setIsPublished(data.course.isPublished);
                 updateCompletionStatus(data.course);
-                setIsLoading(false);
             }
         } catch (error) {
             console.error('Error fetching course data:', error);
+        } finally {
             setIsLoading(false);
+            setMainLoading(false);
         }
     };
 

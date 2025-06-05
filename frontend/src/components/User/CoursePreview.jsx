@@ -20,6 +20,8 @@ import {
 import { cn } from '@/lib/utils';
 import { Newspaper } from 'lucide-react';
 import parse from "html-react-parser";
+import { useLoader } from '@/hooks/useLoaderStore';
+import toast from 'react-hot-toast';
 
 const CoursePreview = ({ userRole }) => {
     const { courseId } = useParams();
@@ -27,23 +29,32 @@ const CoursePreview = ({ userRole }) => {
     const [enrollment, setEnrollment] = useState();
     const [isLoading, setIsLoading] = useState(true);
     const navigate = useNavigate();
+    const { setMainLoading } = useLoader();
 
     useEffect(() => {
         fetchCourse();
     }, []);
 
     const fetchCourse = async () => {
-        const response = await fetch(`${VITE_APP_BACKEND_URL}/user/courses/${courseId}`, {
-            method: 'GET',
-            headers: {
-                authorization: `Bearer ${localStorage.getItem('token')}`
-            }
-        });
-        const data = await response.json();
-        console.log(data);
-        setCourse(data.course);
-        setEnrollment(data.enrollment);
-        setIsLoading(false);
+        setMainLoading(true);
+        try {
+            const response = await fetch(`${VITE_APP_BACKEND_URL}/user/courses/${courseId}`, {
+                method: 'GET',
+                headers: {
+                    authorization: `Bearer ${localStorage.getItem('token')}`
+                }
+            });
+            const data = await response.json();
+            console.log(data);
+            setCourse(data.course);
+            setEnrollment(data.enrollment);
+            setIsLoading(false);
+        } catch (error) {
+            console.log(error);
+            toast.error("Something went wrong")
+        } finally {
+            setMainLoading(false);
+        }
     }
 
     return (

@@ -6,15 +6,17 @@ import queryString from 'query-string';
 import Categories from '@/components/User/Categories';
 import SearchInput from '@/components/User/SearchInput';
 import CoursesGrid from '@/components/User/CoursesGrid';
+import { useLoader } from '@/hooks/useLoaderStore';
 
 const BrowsePage = () => {
     const [categories, setCategories] = useState([]);
     const [searchParams] = useSearchParams();
     const [courses, setCourses] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
-    const navigate = useNavigate();
+    const { setMainLoading } = useLoader();
 
     useEffect(() => {
+        setMainLoading(true);
         fetchCategories();
     }, []);
 
@@ -64,6 +66,7 @@ const BrowsePage = () => {
             toast.error("Something went wrong");
         } finally {
             setIsLoading(false);
+            setMainLoading(false);
         }
     }, []);
 

@@ -6,6 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import CustomInput from '@/components/ui/CustomInput';
 import { VITE_APP_BACKEND_URL } from '@/constants';
 import toast from 'react-hot-toast';
+import { useLoader } from '@/hooks/useLoaderStore';
 
 const formSchema = z.object({
     email: z.string().email(),
@@ -14,6 +15,7 @@ const formSchema = z.object({
 
 const Signin = ({ setUserRole }) => {
     const navigate = useNavigate();
+    const { setMainLoading } = useLoader();
 
     const form = useForm({
         resolver: zodResolver(formSchema),
@@ -27,6 +29,7 @@ const Signin = ({ setUserRole }) => {
     const { handleSubmit, register, formState: { isSubmitting, isValid, errors } } = form;
 
     const onSubmit = async (values) => {
+        setMainLoading(true);
         try {
             const response = await fetch(`${VITE_APP_BACKEND_URL}/user/login`, {
                 method: 'POST',
@@ -47,6 +50,8 @@ const Signin = ({ setUserRole }) => {
         } catch (e) {
             console.log(e);
             toast.error("Something went wrong");
+        } finally {
+            setMainLoading(false);
         }
     }
 

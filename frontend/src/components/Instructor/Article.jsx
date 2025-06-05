@@ -12,6 +12,7 @@ import { VITE_APP_BACKEND_URL } from '@/constants';
 import toast from 'react-hot-toast';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
 import CustomInput from '../ui/CustomInput';
+import { useLoader } from '@/hooks/useLoaderStore';
 
 const formSchema = z.object({
     title: z.string().min(4).max(200),
@@ -27,6 +28,7 @@ const Article = () => {
     const [isEditing, setIsEditing] = useState(false);
     const [isPublished, setIsPublished] = useState();
     const navigate = useNavigate();
+    const { setMainLoading } = useLoader();
 
     const form = useForm({
         resolver: zodResolver(formSchema),
@@ -39,33 +41,43 @@ const Article = () => {
     const { handleSubmit, reset, register, formState: { isSubmitting, isValid, errors } } = form;
 
     const fetchArticle = async () => {
-        const response = await fetch(`${VITE_APP_BACKEND_URL}/instructor/courses/${courseId}/modules/${moduleId}/articles/${articleId}`, {
-            method: 'GET',
-            headers: {
-                authorization: `Bearer ${localStorage.getItem('token')}`
+        setMainLoading(true);
+        try {
+            const response = await fetch(`${VITE_APP_BACKEND_URL}/instructor/courses/${courseId}/modules/${moduleId}/articles/${articleId}`, {
+                method: 'GET',
+                headers: {
+                    authorization: `Bearer ${localStorage.getItem('token')}`
+                }
+            });
+
+            if (response.status === 401) {
+                return navigate("/signin");
             }
-        });
 
-        if (response.status === 401) {
-            return navigate("/signin");
+            if (response.ok) {
+                const data = await response.json();
+                setArticle(data.article);
+                setTitle(data.article.title);
+                setIsPublished(data.article.isPublished);
+                const requiredFields = [
+                    data.article.title,
+                    data.article.content
+                ];
+                const totalFields = requiredFields.length;
+                const completedFields = requiredFields.filter(Boolean).length;
+                setIsComplete(requiredFields.every(Boolean));
+
+                setCompletionText(`${completedFields}/${totalFields}`);
+            } else {
+                toast.error("Something went wrong");
+            }
+        } catch (error) {
+            console.log(error);
+            toast.error("Something went wrong");
+        } finally {
+            setIsLoading(false);
+            setMainLoading(false);
         }
-
-        if (response.ok) {
-            const data = await response.json();
-            setArticle(data.article);
-            setTitle(data.article.title);
-            setIsPublished(data.article.isPublished);
-            const requiredFields = [
-                data.article.title,
-                data.article.content
-            ];
-            const totalFields = requiredFields.length;
-            const completedFields = requiredFields.filter(Boolean).length;
-            setIsComplete(requiredFields.every(Boolean));
-
-            setCompletionText(`${completedFields}/${totalFields}`);
-        }
-        setIsLoading(false);
     }
 
     const onSubmit = async (values) => {
@@ -182,7 +194,7 @@ const Article = () => {
                         className='mt-2'
                         onSubmit={handleSubmit(onSubmit)}
                     >
-                        <CustomInput 
+                        <CustomInput
                             className='p-1 shadow-lg appearance-none rounded w-full outline-none'
                             type="text"
                             name='title'
@@ -199,22 +211,22 @@ const Article = () => {
                     </p>}
                 </div>
 
-                {!isLoading && <ArticleAccessForm
+                <ArticleAccessForm
                     article={article}
                     courseId={courseId}
                     moduleId={moduleId}
                     articleId={articleId}
-                />}
+                />
             </div>
 
             <div className='flex items-center justify-between w-full mb-8'>
                 <div className='flex flex-col gap-y-2'>
-                    <h1 className='text-2xl font-semibold'>Article Creation</h1>
+                    <h1 className='text-2xl font-semibold'>Article Content</h1>
                 </div>
             </div>
 
             <div>
-                {!isLoading && <Editor defaultContent={article.content} setIsComplete={setIsComplete} setCompletionText={setCompletionText} />}
+                <Editor defaultContent={article?.content} setIsComplete={setIsComplete} setCompletionText={setCompletionText} />
             </div>
         </div>
     )

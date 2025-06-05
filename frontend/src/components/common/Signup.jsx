@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/select";
 import { Link, useNavigate } from 'react-router-dom';
 import { toTitleCase } from '@/lib/format';
+import { useLoader } from '@/hooks/useLoaderStore';
 
 const ROLES = ["USER", "INSTRUCTOR"];
 const BUSINESS_TYPES = [
@@ -83,6 +84,7 @@ const formSchema = z.object({
 
 const Signup = ({ setUserRole }) => {
     const navigate = useNavigate();
+    const { setMainLoading } = useLoader();
 
     const form = useForm({
         resolver: zodResolver(formSchema),
@@ -135,6 +137,7 @@ const Signup = ({ setUserRole }) => {
     }, [watch, form]);
 
     const onSubmit = async (values) => {
+        setMainLoading(true);
         try {
             const { confirmPassword, ...payload } = values;
 
@@ -162,6 +165,8 @@ const Signup = ({ setUserRole }) => {
         } catch (error) {
             console.log(error);
             toast.error("Something went wrong");
+        } finally {
+            setMainLoading(false);
         }
     }
 

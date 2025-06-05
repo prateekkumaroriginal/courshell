@@ -6,6 +6,7 @@ import toast from 'react-hot-toast';
 import { useParams } from 'react-router-dom';
 import CourseProgressButton from './CourseProgressButton';
 import CourseSidebar from './CourseSidebar';
+import { useLoader } from '@/hooks/useLoaderStore';
 
 const ReadArticle = () => {
     const { courseId, moduleId, articleId } = useParams();
@@ -18,6 +19,7 @@ const ReadArticle = () => {
     const [userProgress, setUserProgress] = useState();
     const [enrollment, setEnrollment] = useState();
     const [progressPercentage, setProgressPercentage] = useState();
+    const { setMainLoading } = useLoader();
 
     useEffect(() => {
         fetchArticle();
@@ -25,6 +27,7 @@ const ReadArticle = () => {
 
     const fetchArticle = async () => {
         setIsLoading(true);
+        setMainLoading(true);
         try {
             if (articleId) {
                 const response = await fetch(`${VITE_APP_BACKEND_URL}/user/courses/${courseId}/modules/${moduleId}/articles/${articleId}`, {
@@ -51,8 +54,10 @@ const ReadArticle = () => {
             }
         } catch (error) {
             console.log(error);
+            toast.error("Something went wrong");
         } finally {
             setIsLoading(false);
+            setMainLoading(false);
         }
     }
 

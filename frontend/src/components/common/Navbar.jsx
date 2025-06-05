@@ -36,18 +36,18 @@ const Navbar = ({ userRole, setUserRole }) => {
 
     useEffect(() => {
         setRoutes([
-            (userRole === "SUPERADMIN") && {
-                label: "Users",
-                href: "/superadmin/users"
-            },
+            // (userRole === "SUPERADMIN") && {
+            //     label: "Users",
+            //     href: "/superadmin/users"
+            // },
             (["SUPERADMIN", "ADMIN", "INSTRUCTOR"].includes(userRole)) && {
                 label: "Courses",
                 href: ["SUPERADMIN", "ADMIN"].includes(userRole) ? '/admin/courses' : '/instructor/courses'
             },
-            (["SUPERADMIN", "ADMIN", "INSTRUCTOR"].includes(userRole)) && {
-                label: "Analytics",
-                href: "/instructor/analytics"
-            },
+            // (["SUPERADMIN", "ADMIN", "INSTRUCTOR"].includes(userRole)) && {
+            //     label: "Analytics",
+            //     href: "/instructor/analytics"
+            // },
             {
                 label: "Browse",
                 href: "/browse"

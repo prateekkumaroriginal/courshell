@@ -11,7 +11,7 @@ const formSchema = z.object({
 
 const ArticleAccessForm = ({ article, courseId, moduleId, articleId }) => {
     const [isEditing, setIsEditing] = useState(false);
-    const [isFree, setIsFree] = useState(article.isFree);
+    const [isFree, setIsFree] = useState(!!article?.isFree);
 
     const form = useForm({
         resolver: zodResolver(formSchema),

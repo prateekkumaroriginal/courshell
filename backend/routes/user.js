@@ -422,12 +422,18 @@ router.get('/courses/:courseId/modules/:moduleId/articles/:articleId', authentic
                             }
                         }
                     },
+                    orderBy: {
+                        position: 'asc'
+                    },
                     select: {
                         id: true,
                         title: true,
                         articles: {
                             where: {
                                 isPublished: true
+                            },
+                            orderBy: {
+                                position: 'asc'
                             },
                             include: {
                                 userProgress: {

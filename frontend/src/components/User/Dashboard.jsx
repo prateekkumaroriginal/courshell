@@ -5,13 +5,14 @@ import { useNavigate } from 'react-router-dom';
 import InfoCard from './InfoCard';
 import { CheckCircle, Clock } from 'lucide-react';
 import CoursesGrid from './CoursesGrid';
+import { useLoader } from '@/hooks/useLoaderStore';
 
 const Dashboard = () => {
     const navigate = useNavigate();
-    const [isLoading, setIsLoading] = useState(true);
     const [completedCourses, setCompletedCourses] = useState([]);
     const [coursesInProgress, setCoursesInProgress] = useState([]);
-    const [requestedCourses, setRequestedCourses] = useState([]);
+    // const [requestedCourses, setRequestedCourses] = useState([]);
+    const { setMainLoading } = useLoader();
 
     useEffect(() => {
         fetchUser();
@@ -19,7 +20,7 @@ const Dashboard = () => {
 
     const fetchUser = useCallback(async () => {
         try {
-            setIsLoading(true);
+            setMainLoading(true);
             const response = await fetch(`${VITE_APP_BACKEND_URL}/user/dashboard`, {
                 method: 'GET',
                 headers: {
@@ -40,7 +41,7 @@ const Dashboard = () => {
                 });
                 setCompletedCourses(tempCompletedCourses);
                 setCoursesInProgress(tempCoursesInProgress);
-                setRequestedCourses(data.user.requestedCourses);
+                // setRequestedCourses(data.user.requestedCourses);
             } else if (response.status === 401) {
                 return navigate('/signin');
             } else {
@@ -50,7 +51,7 @@ const Dashboard = () => {
             console.log(error);
             toast.error("Something went wrong");
         } finally {
-            setIsLoading(false);
+            setMainLoading(false);
         }
     }, []);
 
@@ -77,12 +78,12 @@ const Dashboard = () => {
                 <CoursesGrid items={[...coursesInProgress, ...completedCourses]} />
             </>}
 
-            {requestedCourses.length > 0 && <>
+            {/* {requestedCourses.length > 0 && <>
                 <div className="text-3xl pt-4 text-center">
                     Requested Courses
                 </div>
                 <CoursesGrid items={requestedCourses} />
-            </>}
+            </>} */}
         </div>
     )
 }

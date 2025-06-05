@@ -5,13 +5,15 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { VITE_APP_BACKEND_URL } from '@/constants'
 import CustomInput from '../ui/CustomInput'
+import { useLoader } from '@/hooks/useLoaderStore'
 
 const formSchema = z.object({
     title: z.string().min(4).max(200)
 });
 
 const Create = () => {
-    const navigate = useNavigate()
+    const navigate = useNavigate();
+    const { setMainLoading } = useLoader();
 
     const form = useForm({
         resolver: zodResolver(formSchema),
@@ -24,6 +26,7 @@ const Create = () => {
     const { handleSubmit, register, formState: { isSubmitting, isValid, errors } } = form;
 
     const onSubmit = async (values) => {
+        setMainLoading(true);
         try {
             const response = await fetch(`${VITE_APP_BACKEND_URL}/instructor/courses`, {
                 method: 'POST',

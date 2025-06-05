@@ -8,6 +8,7 @@ import { Loader2 } from 'lucide-react';
 import { VITE_APP_BACKEND_URL } from '@/constants';
 import toast from 'react-hot-toast';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
+import { useLoader } from '@/hooks/useLoaderStore';
 
 const formSchema = z.object({
     title: z.string().min(4).max(200),
@@ -21,6 +22,7 @@ const Module = () => {
     const [isEditing, setIsEditing] = useState(false);
     const [isCreating, setIsCreating] = useState(false);
     const [isUpdating, setIsUpdating] = useState(false);
+    const { setMainLoading } = useLoader();
 
     const moduleForm = useForm({
         resolver: zodResolver(formSchema),
@@ -50,21 +52,29 @@ const Module = () => {
 
 
     const fetchModule = async () => {
-        const response = await fetch(`${VITE_APP_BACKEND_URL}/instructor/courses/${courseId}/modules/${moduleId}`, {
-            method: 'GET',
-            headers: {
-                authorization: `Bearer ${localStorage.getItem('token')}`
+        try {
+            const response = await fetch(`${VITE_APP_BACKEND_URL}/instructor/courses/${courseId}/modules/${moduleId}`, {
+                method: 'GET',
+                headers: {
+                    authorization: `Bearer ${localStorage.getItem('token')}`
+                }
+            });
+            if (response.ok) {
+                const data = await response.json();
+                setModule(data.module);
+                setTitle(data.module.title);
             }
-        });
-        if (response.ok) {
-            const data = await response.json();
-            setModule(data.module);
-            setTitle(data.module.title);
+        } catch (error) {
+            console.log(error);
+            toast.error("Something went wrong");
+        } finally {
+            setIsLoading(false);
+            setMainLoading(false);
         }
-        setIsLoading(false);
     }
 
     useEffect(() => {
+        setMainLoading(true);
         fetchModule();
     }, []);
 

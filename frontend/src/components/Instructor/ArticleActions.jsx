@@ -59,7 +59,7 @@ const ArticleActions = ({ disabled, courseId, moduleId, articleId, isPublished, 
             <button
                 disabled={disabled || isLoading}
                 onClick={onClick}
-                className={isPublished ? 'px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md' : 'px-4 py-2 text-white font-semibold bg-gradient-to-r from-indigo-500 to-purple-500 hover:bg-gradient-to-r hover:from-indigo-700 hover:to-purple-600 rounded-md'}
+                className={isPublished ? 'px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md' : 'px-4 py-2 text-white font-semibold bg-gradient-to-r from-indigo-500 to-purple-500 hover:bg-gradient-to-r hover:from-indigo-700 hover:to-purple-600 rounded-md disabled:opacity-50 disabled:pointer-events-none'}
             >
                 {isPublished ? "Unpublish" : "Publish"}
             </button>

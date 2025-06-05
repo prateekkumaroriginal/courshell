@@ -7,7 +7,7 @@ const CustomInput = ({ type, name, errors, label, register, defaultValue, classN
         email: "johndoe@example.com",
         textarea: "Start Typing..."
     }
-    console.log(errors);
+
     return (
         <div>
             {label && <div className="block">
