@@ -66,7 +66,7 @@ const ArticleActions = ({ disabled, courseId, moduleId, articleId, isPublished, 
 
             <button
                 onClick={() => { setOpen(true) }}
-                className="block text-white bg-red-600 hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 rounded-md p-2"
+                className="text-white bg-red-600 hover:bg-red-600/90 focus:outline-none rounded-md p-2"
             >
                 <Trash2
                     className='h-6 w-6'

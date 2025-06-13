@@ -36,7 +36,7 @@ const CourseSidebar = ({ course, enrollment, progressPercentage }) => {
                     </SheetTrigger>
                 </div>
 
-                <SheetContent side="left" className='p-0 bg-white w-80 inset-y-0 top-14 h-screen overflow-auto'>
+                <SheetContent side="left" className='p-0 bg-white w-80 inset-y-0 top-[60px] h-screen overflow-auto'>
                     <SheetHeader>
                         <SheetTitle>
                             <div className='px-8 py-4 mt-12 flex flex-col border-y'>

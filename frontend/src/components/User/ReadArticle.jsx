@@ -75,7 +75,7 @@ const ReadArticle = () => {
 
     return (
         <>
-            <div className="flex h-full flex-col fixed inset-y-0 top-14 z-40">
+            <div className="flex h-full flex-col fixed inset-y-0 top-[58px] z-40">
                 {course && <CourseSidebar
                     course={course}
                     enrollment={enrollment}
