@@ -15,6 +15,7 @@ const Loader = () => {
               <span
                 className="inline-block animate-bounce text-3xl md:text-4xl lg:text-5xl"
                 style={{ animationDelay: `${ind * 0.2}s`, animationDuration: '1s' }}
+                key={ind}
               >
                 .
               </span>

@@ -6,19 +6,21 @@ import userRouter from './routes/user.js';
 import adminRouter from './routes/admin.js';
 import superadminRouter from './routes/superadmin.js';
 import paymentRouter from './routes/payment.js';
+import uploadthingRouter from './routes/uploadthing.js'
 import 'dotenv/config';
 
 const app = express();
 app.use(cors());
 
-app.use("/payment", paymentRouter);
+app.use("/api/payment", paymentRouter);
 
 app.use(bodyParser.json());
 
-app.use("/instructor", instructorRouter);
-app.use("/user", userRouter);
-app.use("/admin", adminRouter);
-app.use("/superadmin", superadminRouter);
+app.use("/api/instructor", instructorRouter);
+app.use("/api/user", userRouter);
+app.use("/api/admin", adminRouter);
+app.use("/api/superadmin", superadminRouter);
+app.use("/api/uploadthing", uploadthingRouter);
 
 const port = process.env.PORT || 3000;
 

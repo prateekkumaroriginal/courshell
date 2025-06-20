@@ -2,89 +2,131 @@ import { VITE_APP_BACKEND_URL } from '@/constants'
 import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import toast from 'react-hot-toast';
+import { UploadDropzone } from '@/lib/uploadthing';
+import { Button } from '../ui/button';
 
 const CoverImage = ({ course, courseId, fetchData }) => {
-    const [imageUrl, setImageUrl] = useState(course.coverImage && `data:image/jpeg;base64,${course.coverImage}`);
     const [isEditing, setIsEditing] = useState(false);
-    const form = useForm();
+    const [coverImageUrl, setCoverImageUrl] = useState(course.coverImageUrl || (course.coverImage && `data:image/jpeg;base64,${course.coverImage}`));
 
-    const { handleSubmit, reset, register, formState: { isSubmitting } } = form;
+    const form = useForm({
+        defaultValues: {
+            coverImageUrl: coverImageUrl || ''
+        },
+        mode: 'onChange'
+    });
 
-    const onSubmit = async () => {
+    const { handleSubmit, reset, watch, formState: { isSubmitting } } = form;
+
+    const currentImageUrl = watch('coverImageUrl');
+
+    const onSubmit = async (values) => {
+        const updatingToast = toast.loading("Updating...");
         try {
-            const updatingToast = toast.loading("Updating...");
-            const file = form.getValues('image')[0];
-            const formData = new FormData();
-            formData.append('file', file);
+            // const file = form.getValues('image')[0];
+            // const formData = new FormData();
+            // formData.append('file', file);
 
             const response = await fetch(`${VITE_APP_BACKEND_URL}/instructor/courses/${courseId}`, {
                 method: 'PATCH',
-                body: formData,
                 headers: {
                     authorization: `Bearer ${localStorage.getItem('token')}`,
                 },
+                body: JSON.stringify(values)
             });
-            toast.dismiss(updatingToast);
 
             if (response.ok) {
                 toast.success("Cover Image Updated");
+                setCoverImageUrl(values.coverImageUrl);
                 fetchData();
             } else {
                 toast.error("Something went wrong");
-                setImageUrl(`data:image/jpeg;base64,${course.coverImage}`);
+                reset();
             }
-            document.getElementById("imageUrl").value = "";
             setIsEditing(false);
         } catch (error) {
             console.error('Error while uploading image:', error);
             toast.error("Something went wrong");
-            setImageUrl(`data:image/jpeg;base64,${course.coverImage}`);
+            reset();
+        } finally {
+            toast.dismiss(updatingToast);
         }
     }
 
-    const handleFileChange = (e) => {
-        try {
-            const file = e.target.files[0];
-            setImageUrl(URL.createObjectURL(file));
-            setIsEditing(true);
-        } catch (error) {
-            console.log(error);
-        }
-    };
-
     return (
-        <div className='mt-6 border bg-slate-200 rounded-md p-4'>
-            <p className='font-bold text-zinc-600 pt-2 pb-4'>Course Cover Image</p>
+        <div className='relative mt-6 border bg-slate-200 rounded-md p-4'>
+            <div className="flex items-center justify-between pb-2">
+                <p className='font-bold text-zinc-600'>Course Cover Image</p>
+                {isEditing && (
+                    <div className='flex gap-2'>
+                        <Button
+                            variant="destructive"
+                            onClick={() => {
+                                setIsEditing(false);
+                                reset();
+                            }}
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            type='submit'
+                            disabled={isSubmitting || !currentImageUrl}
+                            variant="default"
+                        >
+                            Save
+                        </Button>
+                    </div>
+                )}
+
+                {!isEditing && currentImageUrl && (
+                    <div className='flex gap-2'>
+                        <Button
+                            variant="destructive"
+                            onClick={() => {
+                                setIsEditing(true);
+                                form.setValue("coverImageUrl", "");
+                            }}
+                        >
+                            Remove
+                        </Button>
+                        {coverImageUrl !== currentImageUrl && (
+                            <Button
+                                type='submit'
+                                disabled={isSubmitting || !currentImageUrl}
+                                variant="default"
+                            >
+                                Save
+                            </Button>
+                        )}
+                    </div>
+                )}
+            </div>
             <form onSubmit={handleSubmit(onSubmit)}>
-                <input
+                {/* <input
                     className='p-1 mb-6 shadow-lg bg-white appearance-none rounded w-full'
                     disabled={isSubmitting}
                     {...register('image')}
                     type="file"
                     accept='image/*'
                     onChange={handleFileChange}
-                    id="imageUrl"
-                />
-                {isEditing && <>
-                    <button
-                        className='px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md'
-                        onClick={() => {
+                    id="coverImageUrl"
+                /> */}
+
+                {!currentImageUrl && (
+                    <UploadDropzone
+                        endpoint="coverImage"
+                        onClientUploadComplete={(res) => {
+                            form.setValue('coverImageUrl', res[0].ufsUrl);
                             setIsEditing(false);
-                            fetchImage();
-                            reset(form);
-                            document.getElementById("imageUrl").value = "";
-                        }}>
-                        Cancel
-                    </button>
-                    <button
-                        type='submit'
-                        disabled={isSubmitting}
-                        className='px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md'>
-                        Save
-                    </button>
-                </>}
+                        }}
+                        onUploadError={(err) => {
+                            console.log(err);
+                            toast.error("Failed to upload image!");
+                        }}
+                    />
+                )}
             </form>
-            {imageUrl && <img className='rounded-md' src={imageUrl} alt="h2" />}
+            {currentImageUrl && <img className='rounded-md' src={currentImageUrl} alt="Image Preview" />}
         </div>
     )
 }
