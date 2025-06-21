@@ -34,7 +34,6 @@ const getCourse = async (courseId, userId) => {
         },
         include: {
             instructor: true,
-            coverImage: true,
             modules: {
                 where: {
                     articles: {
@@ -99,8 +98,6 @@ const getCourse = async (courseId, userId) => {
     if (!course) {
         return null;
     }
-
-    course.coverImage.data = course.coverImage.data.toString('base64');
 
     course.modules.forEach(module => {
         module.articles.forEach(article => {
@@ -183,7 +180,6 @@ const getAllCourses = async (userId, categoryId, title) => {
         },
         include: {
             category: true,
-            coverImage: true,
             modules: {
                 include: {
                     articles: {

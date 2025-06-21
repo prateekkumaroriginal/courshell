@@ -67,7 +67,7 @@ const CoursePreview = ({ userRole }) => {
                         <div className="grid grid-cols-1 md:grid-cols-2 w-full py-4 px-8 gap-y-4 justify-between bg-slate-800">
                             <div className='flex flex-col text-white space-y-4'>
                                 <div className="w-full relative rounded-md my-2">
-                                    <img className='object-contain max-h-[400px]' src={`data:image/jpeg;base64,${course.coverImage.data}`} alt="" />
+                                    <img className='object-contain max-h-[400px]' src={course.coverImageUrl} alt="" />
                                 </div>
                                 <p className='font-semibold text-3xl'>
                                     {course.title}

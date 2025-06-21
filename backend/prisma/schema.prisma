@@ -52,10 +52,9 @@ model Course {
   enrolledUsers Enrollment[]
   payments      Payment[]
 
-  title        String      @db.Text
-  description  String?     @db.Text
-  coverImageId String?     @unique
-  coverImage   Attachment? @relation("CoverImage", fields: [coverImageId], references: [id])
+  title         String  @db.Text
+  description   String? @db.Text
+  coverImageUrl String?
 
   price       Float?
   isPublished Boolean @default(false)
@@ -95,8 +94,6 @@ model Attachment {
   type         String
   isCoverImage Boolean @default(false)
   data         Bytes   @db.ByteA
-
-  courseCoverImage Course? @relation("CoverImage")
 
   courseId String
   course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)

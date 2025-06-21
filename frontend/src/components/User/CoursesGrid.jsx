@@ -9,7 +9,7 @@ const CoursesGrid = ({ items }) => {
                     key={item.id}
                     id={item.id}
                     title={item.title}
-                    imageUrl={`data:image/jpeg;base64,${item.coverImage.data}`}
+                    imageUrl={item.coverImageUrl}
                     articlesLength={item.modules.reduce((acc, curr) => acc + curr.articles.length, 0)}
                     price={item.price}
                     progress={item.progress}

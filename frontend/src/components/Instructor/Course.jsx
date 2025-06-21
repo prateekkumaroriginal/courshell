@@ -24,7 +24,7 @@ const Course = () => {
 
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
-    const [coverImage, setCoverImage] = useState('');
+    const [coverImageUrl, setCoverImageUrl] = useState('');
     const [price, setPrice] = useState();
     const [categoryId, setCategoryId] = useState('');
     const [modules, setModules] = useState([]);
@@ -33,7 +33,7 @@ const Course = () => {
         const requiredFields = [
             course.title,
             course.description,
-            course.coverImage,
+            course.coverImageUrl,
             course.price,
             course.categoryId,
             course.modules.some(module => module.articles.some(article => article.isPublished))
@@ -51,9 +51,9 @@ const Course = () => {
     }, []);
 
     useEffect(() => {
-        const course = { title, description, coverImage, price, categoryId, modules }
+        const course = { title, description, coverImageUrl, price, categoryId, modules }
         updateCompletionStatus(course);
-    }, [title, description, coverImage, price, categoryId, modules]);
+    }, [title, description, coverImageUrl, price, categoryId, modules]);
 
     const fetchData = async () => {
         try {
@@ -74,7 +74,7 @@ const Course = () => {
 
                 setTitle(data.course.title);
                 setDescription(data.course.description);
-                setCoverImage(data.course.coverImage);
+                setCoverImageUrl(data.course.coverImageUrl);
                 setPrice(data.course.price);
                 setCategoryId(data.course.categoryId);
                 setModules(data.course.modules);

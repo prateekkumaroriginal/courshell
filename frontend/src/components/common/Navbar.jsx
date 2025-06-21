@@ -45,7 +45,8 @@ const Navbar = ({ userRole, setUserRole }) => {
             // },
             (["SUPERADMIN", "ADMIN", "INSTRUCTOR"].includes(userRole)) && {
                 label: "Courses",
-                href: ["SUPERADMIN", "ADMIN"].includes(userRole) ? '/admin/courses' : '/instructor/courses'
+                // href: ["SUPERADMIN", "ADMIN"].includes(userRole) ? '/admin/courses'   : '/instructor/courses'
+                href: "/instructor/courses"
             },
             // (["SUPERADMIN", "ADMIN", "INSTRUCTOR"].includes(userRole)) && {
             //     label: "Analytics",

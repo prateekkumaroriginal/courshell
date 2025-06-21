@@ -253,7 +253,6 @@ router.get('/dashboard', authenticateToken, async (req, res) => {
                     select: {
                         course: {
                             include: {
-                                coverImage: true,
                                 category: true,
                                 enrolledUsers: {
                                     where: {
@@ -281,7 +280,6 @@ router.get('/dashboard', authenticateToken, async (req, res) => {
                         updatedAt: true,
                         course: {
                             include: {
-                                coverImage: true,
                                 category: true,
                                 enrolledUsers: {
                                     where: {
@@ -316,7 +314,6 @@ router.get('/dashboard', authenticateToken, async (req, res) => {
                 .filter(({ course }) => course.isPublished)
                 .map(async ({ course }) => {
                     const { enrolledUsers, ...courseWithoutEnrolledUsers } = course;
-                    course.coverImage.data = course.coverImage.data.toString('base64');
 
                     const progressPercentage = await getProgress(courseWithoutEnrolledUsers.id, req.user.id);
                     return {
@@ -342,7 +339,6 @@ router.get('/dashboard', authenticateToken, async (req, res) => {
                 .filter(({ course }) => course.isPublished)
                 .map(async ({ course }) => {
                     const { enrolledUsers, ...courseWithoutEnrolledUsers } = course;
-                    course.coverImage.data = course.coverImage.data.toString('base64');
 
                     return {
                         ...courseWithoutEnrolledUsers
@@ -371,10 +367,6 @@ router.get('/courses', async (req, res) => {
     try {
         const { title, categoryId } = req.query;
         const courses = await getAllCourses(req.user ? req.user.id : null, categoryId || null, title || null);
-
-        courses.map(course => {
-            course.coverImage.data = course.coverImage.data.toString('base64');
-        });
 
         return res.json({ courses });
     } catch (error) {

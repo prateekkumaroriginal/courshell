@@ -21,6 +21,7 @@ const courseUpdateInput = z.object({
     description: z.string().optional(),
     price: z.number().optional(),
     categoryId: z.string().min(1).optional(),
+    coverImageUrl: z.string().url().optional(),
 });
 
 const reorderInput = z.object({
@@ -112,11 +113,6 @@ router.get('/courses/:courseId', authenticateToken, authorizeRoles(SUPERADMIN, A
             return res.status(404).json({ message: "Course not found" });
         }
 
-        if (course.coverImageId) {
-            const coverImage = await getAttachment(course.id, course.coverImageId);
-            course.coverImage = coverImage.data.toString('base64');
-        }
-
         return res.json({ course });
     } catch (error) {
         console.log("[INSTRUCTOR -> COURSES]", error);
@@ -124,21 +120,11 @@ router.get('/courses/:courseId', authenticateToken, authorizeRoles(SUPERADMIN, A
     }
 });
 
-router.patch('/courses/:courseId', authenticateToken, authorizeRoles(SUPERADMIN, ADMIN, INSTRUCTOR), upload.single('file'), async (req, res) => {
+router.patch('/courses/:courseId', authenticateToken, authorizeRoles(SUPERADMIN, ADMIN, INSTRUCTOR), async (req, res) => {
     try {
         const course = await getCourse(req.params.courseId);
         if (!course || !isValidInstructorOrAbove(req.user, course.instructor.email)) {
             return res.status(404).json({ message: "Course not found" });
-        }
-
-        let updatedCourse;
-        if (req.file) {
-            if (req.file.mimetype.startsWith('image/')) {
-                const attachment = await createAttachment(req.file, course.id, true);
-                updatedCourse = await updateCourse(course.id, { coverImageId: attachment.id });
-            } else {
-                return res.status(400).json({ message: "Uploaded file was not an image" });
-            }
         }
 
         const parsedInput = courseUpdateInput.safeParse(req.body);
@@ -148,7 +134,7 @@ router.patch('/courses/:courseId', authenticateToken, authorizeRoles(SUPERADMIN,
             });
         }
 
-        updatedCourse = await updateCourse(course.id, parsedInput.data);
+        const updatedCourse = await updateCourse(course.id, parsedInput.data);
 
         return res.json({ message: "Course updated successfully", course: updatedCourse })
     } catch (error) {

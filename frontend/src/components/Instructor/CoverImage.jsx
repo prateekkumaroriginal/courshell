@@ -7,7 +7,7 @@ import { Button } from '../ui/button';
 
 const CoverImage = ({ course, courseId, fetchData }) => {
     const [isEditing, setIsEditing] = useState(false);
-    const [coverImageUrl, setCoverImageUrl] = useState(course.coverImageUrl || (course.coverImage && `data:image/jpeg;base64,${course.coverImage}`));
+    const [coverImageUrl, setCoverImageUrl] = useState(course.coverImageUrl);
 
     const form = useForm({
         defaultValues: {
@@ -23,13 +23,10 @@ const CoverImage = ({ course, courseId, fetchData }) => {
     const onSubmit = async (values) => {
         const updatingToast = toast.loading("Updating...");
         try {
-            // const file = form.getValues('image')[0];
-            // const formData = new FormData();
-            // formData.append('file', file);
-
             const response = await fetch(`${VITE_APP_BACKEND_URL}/instructor/courses/${courseId}`, {
                 method: 'PATCH',
                 headers: {
+                    'Content-Type': 'application/json',
                     authorization: `Bearer ${localStorage.getItem('token')}`,
                 },
                 body: JSON.stringify(values)
@@ -55,41 +52,20 @@ const CoverImage = ({ course, courseId, fetchData }) => {
 
     return (
         <div className='relative mt-6 border bg-slate-200 rounded-md p-4'>
-            <div className="flex items-center justify-between pb-2">
-                <p className='font-bold text-zinc-600'>Course Cover Image</p>
-                {isEditing && (
-                    <div className='flex gap-2'>
-                        <Button
-                            variant="destructive"
-                            onClick={() => {
-                                setIsEditing(false);
-                                reset();
-                            }}
-                        >
-                            Cancel
-                        </Button>
-                        <Button
-                            type='submit'
-                            disabled={isSubmitting || !currentImageUrl}
-                            variant="default"
-                        >
-                            Save
-                        </Button>
-                    </div>
-                )}
-
-                {!isEditing && currentImageUrl && (
-                    <div className='flex gap-2'>
-                        <Button
-                            variant="destructive"
-                            onClick={() => {
-                                setIsEditing(true);
-                                form.setValue("coverImageUrl", "");
-                            }}
-                        >
-                            Remove
-                        </Button>
-                        {coverImageUrl !== currentImageUrl && (
+            <form onSubmit={handleSubmit(onSubmit)}>
+                <div className="flex items-center justify-between pb-2">
+                    <p className='font-bold text-zinc-600'>Course Cover Image</p>
+                    {isEditing && (
+                        <div className='flex gap-2'>
+                            <Button
+                                variant="destructive"
+                                onClick={() => {
+                                    setIsEditing(false);
+                                    form.setValue('coverImageUrl', coverImageUrl);
+                                }}
+                            >
+                                Cancel
+                            </Button>
                             <Button
                                 type='submit'
                                 disabled={isSubmitting || !currentImageUrl}
@@ -97,27 +73,38 @@ const CoverImage = ({ course, courseId, fetchData }) => {
                             >
                                 Save
                             </Button>
-                        )}
-                    </div>
-                )}
-            </div>
-            <form onSubmit={handleSubmit(onSubmit)}>
-                {/* <input
-                    className='p-1 mb-6 shadow-lg bg-white appearance-none rounded w-full'
-                    disabled={isSubmitting}
-                    {...register('image')}
-                    type="file"
-                    accept='image/*'
-                    onChange={handleFileChange}
-                    id="coverImageUrl"
-                /> */}
+                        </div>
+                    )}
+
+                    {!isEditing && currentImageUrl && (
+                        <div className='flex gap-2'>
+                            <Button
+                                variant="destructive"
+                                onClick={() => {
+                                    setIsEditing(true);
+                                    form.setValue("coverImageUrl", "");
+                                }}
+                            >
+                                Remove
+                            </Button>
+                            {coverImageUrl !== currentImageUrl && (
+                                <Button
+                                    type='submit'
+                                    disabled={isSubmitting || !currentImageUrl}
+                                    variant="default"
+                                >
+                                    Save
+                                </Button>
+                            )}
+                        </div>
+                    )}
+                </div>
 
                 {!currentImageUrl && (
                     <UploadDropzone
                         endpoint="coverImage"
                         onClientUploadComplete={(res) => {
                             form.setValue('coverImageUrl', res[0].ufsUrl);
-                            setIsEditing(false);
                         }}
                         onUploadError={(err) => {
                             console.log(err);
